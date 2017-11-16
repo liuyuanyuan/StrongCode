@@ -9,6 +9,6 @@ I will include all aspects of Eclipse RCP Developments here, step by step :)
  
  
   
-Welcome to exchange knowledge:) Thanks~
+Welcome to exchange knowledge :)
 
 Yuanyuan 
