@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="com.highgo.admin.migrator.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="initial"
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="com.highgo.admin.advance.tools">
+      <tools>
+         <tool
+               class="com.highgo.admin.migrator.handlers.HelloWorldHandler"
+               id="com.highgo.admin.migrator"
+               label="Hello">
+         </tool>
+      </tools>
+   </extension>
+
+</plugin>
