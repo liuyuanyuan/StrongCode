@@ -9,6 +9,9 @@ This is an Eclipse Rich Client Platform Development Guid.
 * [Eclipse, RCP, Plugin and OSGi Development](http://www.vogella.com/tutorials/eclipse.html)
   * [Eclipse RCP (Rich Client Platform) - Tutorial](http://www.vogella.com/tutorials/EclipseRCP/article.html)
   * [Eclipse I18n/L10n and UI Language switch](http://www.vogella.com/tutorials/EclipseInternationalization/article.html)
+  
+  
+  * [Eclipse Install/Update Packaging Conventions](https://www.eclipse.org/equinox/p2/repository_packaging.html)
  
 
 ## Git
