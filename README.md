@@ -1,9 +1,8 @@
 # Smart Coding
-> Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
+Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
  
- > [Blog](https://my.oschina.net/liuyuanyuangogo)
- 
- > [Lofter](http://poetryface.lofter.com/)
+* [Blog](https://my.oschina.net/liuyuanyuangogo)
+* [Lofter](http://poetryface.lofter.com/)
 
 ## Good Website
 * [OSChina](https://my.oschina.net/)
