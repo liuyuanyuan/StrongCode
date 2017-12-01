@@ -23,6 +23,7 @@ This is an Eclipse Rich Client Platform Development Guid.
  
 
 ## Git
+Use git to manage code and team development.
 
 
   
