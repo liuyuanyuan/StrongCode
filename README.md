@@ -1,5 +1,6 @@
 # Smart Coding
 Tutorials to help coding, especially in java.
+Welcome to exchange knowledge :)
 
 ## eclipse rcp
 This is an Eclipse Rich Client Platform Development Guid.
@@ -18,6 +19,4 @@ This is an Eclipse Rich Client Platform Development Guid.
 
 
   
-Welcome to exchange knowledge :)
 
-Yuanyuan 
