@@ -1,5 +1,5 @@
 # Smart Coding
-This is a resource to help programming, especially in java.
+Tutorials to help coding, especially in java.
 
 ## eclipse rcp
 This is an Eclipse Rich Client Platform Development Guid.
