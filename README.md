@@ -1,6 +1,12 @@
 # Smart Coding
-Tutorials to help coding, especially in java.
-Welcome to exchange knowledge :)
+Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
+
+[Yuanyuan's Blog](https://my.oschina.net/liuyuanyuangogo)
+
+
+## Good Website
+* [OSChina](https://my.oschina.net/)
+
 
 ## eclipse rcp
 This is an Eclipse Rich Client Platform Development Guid.
