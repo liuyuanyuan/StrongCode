@@ -4,7 +4,7 @@ Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
 * [OSC Blog](https://my.oschina.net/liuyuanyuangogo)
 * [Lofter Page](http://poetryface.lofter.com/)
 
-## Good Website
+## Learning Website
 * [OSChina](https://my.oschina.net/)
 
 ## Java SE
