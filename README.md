@@ -20,7 +20,8 @@ This is an Eclipse Rich Client Platform Development Guid.
   * [Eclipse RCP (Rich Client Platform) - Tutorial](http://www.vogella.com/tutorials/EclipseRCP/article.html)
   * [Eclipse I18n/L10n and UI Language switch](http://www.vogella.com/tutorials/EclipseInternationalization/article.html) 
   * [Eclipse Install/Update Packaging Conventions](https://www.eclipse.org/equinox/p2/repository_packaging.html)
- 
+  * [Eclipse Wizard Page Progress](https://www.eclipse.org/forums/index.php/t/369944/)
+  * [Eclipse Progress Job](http://www.vogella.com/tutorials/EclipseJobs/article.html)
 
 ## Git
 Use git to manage code and team development.
