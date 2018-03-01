@@ -10,6 +10,7 @@ Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
 ## Java SE
 * [Java SE Pdf](https://github.com/liuyuanyuan/smart-coding/tree/master/java-se)
 * [Java SE Design Pattern](https://github.com/iluwatar/java-design-patterns)
+* [Java Concurrency in practice](http://jcip.net/)
 
 ## Eclipse RCP
 This is an Eclipse Rich Client Platform Development Guid.
