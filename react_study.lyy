@@ -82,9 +82,34 @@ Note that the development build is not optimized.
 To create a production build, use npm run build.
 
 此时，系统会自动打开浏览器并且地址为http://localhost:3000的网址，就是myapp的内容。
-
 npm默认端口是3000，可以尽情去改里面的内容，他会自动保存、编译、更新在网页上。
 
+此时myapp底下的文件有：
+node_modules
+public
+src
+.gitignore
+package.json
+package-lock.json
+README.md
+
+此时package.json的文件内容：
+{
+  "name": "myapp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
 
 4.React知识入门学习及练习
 React官方首页：https://reactjs.org/
