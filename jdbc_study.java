@@ -9,7 +9,6 @@ Establish a connection with a database or access any tabular data source
 Send SQL statements
 Process the results
 
-
 ------------------------------------------------------------------
 1.JDBC模型 — 深入理解JDBC设计思想（探究Class.forName("DBDriver")）：
 参考: https://blog.csdn.net/daijin888888/article/details/50969621
@@ -155,7 +154,6 @@ try {
 
 2.2 JDBC数据类型
 下表列出了默认的JDBC数据类型与Java数据类型转换，当使用PreparedStatement或CallableStatement对象时可调用setXXX()方法或ResultSet.updateXXX()方法。
-
 SQL	JDBC/Java	setXXX	updateXXX
 VARCHAR	java.lang.String	setString	updateString
 CHAR	java.lang.String	setString	updateString
@@ -224,14 +222,10 @@ JDBC数据流
 PreparedStatement对象有能力使用提供参数数据的输入和输出流。这使您可以将整个文件到数据库中，可容纳较大的值，如CLOB和BLOB数据类型的列。
 
 有下列方法可用于流数据：
-
 setAsciiStream(): 此方法用于提供大的ASCII数据值。
 setCharacterStream(): 此方法用于提供大的UNICODE数据值。
 setBinaryStream(): 使用此方法用于提供大的二进制数据值。
 setXXXStream()方法需要一个额外的参数，文件大小(除了参数占位符)。此参数通知应发送多少数据到数据库来使用流的驱动程序。
-
 对于一个详细的关于所有这些概念，这里只是一个简单的入门教程，还需要读者去学习完整的教程，有关JDBC的后续教程，可以从左侧文章中了解和学习。
-
-
 
 
