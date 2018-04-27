@@ -123,7 +123,7 @@ React官方首页：https://reactjs.org/
 5.webpack、babel学习
 Webpack官网教程：https://webpack.js.org/guides/getting-started/
 简书webpack、babel入门：https://www.jianshu.com/p/42e11515c10f
-阮一峰ES6入门：http://es6.ruanyifeng.com/#README
+阮一峰ES6入门(也就是javascript)：http://es6.ruanyifeng.com/#README
 入门后会感觉插件又多又杂又乱的，的确是这样。npm的好处是你想用什么就可以去下载什么插件，然后通过webpack、babel进行打包，使用了哪些就打包哪些，并不会把下载的插件全部打包。
 
 6.学习路由
