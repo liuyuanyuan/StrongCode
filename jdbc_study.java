@@ -126,8 +126,24 @@ public class Test2 {
 Oracle的f1()方法实现
 MySQL的f1()方法实现
 
+---------------------------------------------------------
+2.JDBC要点总结、SQL注入示例（Statement和PreparedStatement）
+https://blog.csdn.net/daijin888888/article/details/50965232
+
+使用原有Statement有以下问题：
+--容易遭受注入式攻击
+--拼写SQL繁琐和麻烦
+通过PrepareStatement可以解决上述问题，因为：
+PrepareStatement是一个预编译的Statement，将带占位符？的SQL语句发送给数据库后，SQL语句不会立即执行，数据库会生成一个执行计划，此时SQL语句结构已确定，不可更改注入，然后利用setXXX()方法给sql的?设置参数值，传参后即执行计划，返回结果集。另外，由于执行计划已生成，只要传入参数就可执行计划，这在大批量存入数据时，编码更简单，效率更高。
+
+PrepareStatement使用步骤：
+--编写带?号的sql
+--利用con.prepareStatement(sql);方法获取PrepareStatement对象
+--利用setXXX()方法给sql的?设置参数值
+--调用无参的executeUpdate()或executeQuery()执行sql.
+
 ------------------------------------------------------------------
-2.JDBC中文教程： https://www.yiibai.com/jdbc/jdbc-driver-types.html
+3.JDBC中文教程： https://www.yiibai.com/jdbc/jdbc-driver-types.html
 2.1 SQLException中的方法
 一个SQLException类既可以发生在驱动程序和数据库中。当这样的异常时，SQLException类型的对象将被传递到catch子句。
 通过SQLException对象有以下几种方法可用于获取更多的关于异常的信息：
