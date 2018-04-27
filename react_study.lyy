@@ -1,0 +1,124 @@
+1.安装nodejs,了解npm命令。
+安装nodejs：http://www.runoob.com/nodejs/nodejs-install-setup.html
+（一般默认会安装到\Program Files\nodejs\底下， 后期使用cmd窗口执行npm执行即可。）
+
+2.通过npm命令创建react项目
+----------------------------------------------------
+F:\2017Project\Hdata>npm install -g create-react-app
+C:\Users\highgoer\AppData\Roaming\npm\create-react-app -> C:\Users\highgoer\AppData\Roaming\npm\node_modules\create-react-app\index.js
++ create-react-app@1.5.2
+added 67 packages in 7.457s
+
+
+   ╭─────────────────────────────────────╮
+   │                                     │
+   │   Update available 5.0.3 → 6.0.0    │
+   │     Run npm i -g npm to update      │
+   │                                     │
+   ╰─────────────────────────────────────╯
+
+-------------------------------------------
+F:\2017Project\Hdata>create-react-app myapp
+
+Creating a new React app in F:\2017Project\Hdata\myapp.
+
+Installing packages. This might take a couple of minutes.
+Installing react, react-dom, and react-scripts...
+
+
+> fsevents@1.2.2 install F:\2017Project\Hdata\myapp\node_modules\fsevents
+> node install
+
+
+> uglifyjs-webpack-plugin@0.4.6 postinstall F:\2017Project\Hdata\myapp\node_modules\uglifyjs-webpack-plugin
+> node lib/post_install.js
+
++ react-scripts@1.1.4
++ react-dom@16.3.2
++ react@16.3.2
+added 1388 packages in 143.057s
+
+Success! Created myapp at F:\2017Project\Hdata\myapp
+Inside that directory, you can run several commands:
+
+  npm start
+    Starts the development server.
+
+  npm run build
+    Bundles the app into static files for production.
+
+  npm test
+    Starts the test runner.
+
+  npm run eject
+    Removes this tool and copies build dependencies, configuration files
+    and scripts into the app directory. If you do this, you can’t go back!
+
+We suggest that you begin by typing:
+
+  cd myapp
+  npm start
+
+Happy hacking!
+
+
+3.通过npm命令运行react项目
+------------------------------------
+F:\2017Project\Hdata>cd myapp
+
+F:\2017Project\Hdata\myapp>npm start
+
+> myapp@0.1.0 start F:\2017Project\Hdata\myapp
+> react-scripts start
+Starting the development server...
+Compiled successfully!
+
+You can now view myapp in the browser.
+
+  Local:            http://localhost:3000/
+  On Your Network:  http://192.168.100.172:3000/
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+此时，系统会自动打开浏览器并且地址为http://localhost:3000的网址，就是myapp的内容。
+
+npm默认端口是3000，可以尽情去改里面的内容，他会自动保存、编译、更新在网页上。
+
+
+4.React知识入门学习及练习
+React官方首页：https://reactjs.org/
+代码编辑器：webstorm或subline，安装好后将项目放进去跑一遍。
+仔细了解myapp的项目结构，比如html、js、css都在哪，如何引用的等等。
+
+5.webpack、babel学习
+Webpack官网教程：https://webpack.js.org/guides/getting-started/
+简书webpack、babel入门：https://www.jianshu.com/p/42e11515c10f
+阮一峰ES6入门：http://es6.ruanyifeng.com/#README
+入门后会感觉插件又多又杂又乱的，的确是这样。npm的好处是你想用什么就可以去下载什么插件，然后通过webpack、babel进行打包，使用了哪些就打包哪些，并不会把下载的插件全部打包。
+
+6.学习路由
+路由类似于<a>标签中的跳转。
+官网地址：https://reacttraining.com/react-router/web/guides/quick-start	看不懂可以搜中文教程，了解react-router的作用、应用场景、地址栏变化等。周期2天。
+动态路由如果想学，可以再加1天周期。使用动态路由的NodeJs进行发布。
+
+7.使用前端框架美化UI
+环境、react代码、书写规范、打包发布、页面跳转等都学习差不多了，这时候可以增添一些比较炫酷的UI。
+阿里的前端UI框架Ant Design：https://ant.design/docs/react/introduce-cn
+
+8.React知识深入和强化
+比如接口
+此时，我们会的已经很多了，需要把各个知识点用逻辑串起来，当然少不了接口请求方式，可以在搜一下react接口请求方式有哪些，各自有和特点。
+后台Java需要建一个servlet去配合调用。
+
+比如生命周期
+接口请求方式搞定了，我们开始思考，首先发布一个项目、网页，我们需要预加载、销毁等过程，这里少不了react的生命周期，这里是重点。
+
+8.React项目发布
+动态部署：与开发调试时相同，在服务器上先安装NODE.JS然后再将myapp源码包拷贝过去；然后再运行npm run start
+
+静态部署：
+        1.将对应后端项目MyappBack部署到Tomcat/webapps底下；
+        2.在myapp前端代码底下执行npm run build，
+        将build目录底下的文件复制粘贴到Tomcat/webapps/MyappBack/WebContent底下即可。
+        3.启动Tomcat服务，myapp的前端和后端共用Tomcat配置的端口。
