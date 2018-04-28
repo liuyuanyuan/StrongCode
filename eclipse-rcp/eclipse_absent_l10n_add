@@ -1,3 +1,9 @@
+-----------------------------------
+Eclipse Babel Project 本地化项目
+http://babel.eclipse.org/babel/translate.php
+
+
+-----------------------------------
 Eclipse自有plug-in中汉化缺失的添加方法：
 
 举例：“首选项”中按钮“Apply and Close”的汉化：
