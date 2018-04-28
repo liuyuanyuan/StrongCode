@@ -1,0 +1,31 @@
+Eclipse自有plug-in中汉化缺失的添加方法：
+
+举例：“首选项”中按钮“Apply and Close”的汉化：
+
+定位方法：
+首先根据UI去到项目的源码中找引用位置；
+如果没有思路，就在界面中使用快捷键shif+alt+F1/F2查看相应的plugin或者class，
+然后逐步确认代码位置。
+
+
+引用位置：
+引用plugin：org.eclipse.jface
+引用Class: PreferenceDialog
+引用资源文件bundle(org.eclipse.jface/messages.properties): 
+       PreferencesDialog.okButtonLabel=Apply and Close
+
+
+添加方法1：
+在Eclipse IDE中引入源码org.eclipse.jface对应的nl的fragment：
+在对应的org.eclipse.jface/messages.properties)中加入：
+#lyy#
+PreferencesDialog.okButtonLabel=\u5E94\u7528\u5E76\u5173\u95ED
+#lyy#
+然后在run comfiguration-plugin中选中插件（取消多余的同名插件），此后运行或打包即可。
+
+添加方法2(这种方式更简洁方便):
+自己程序打包后在执行包的plugin/org.eclipse.jface.nl_vxxx.jar中
+在对应的org.eclipse.jface/messages.properties)中加入：
+#lyy#
+PreferencesDialog.okButtonLabel=\u5E94\u7528\u5E76\u5173\u95ED
+#lyy#
