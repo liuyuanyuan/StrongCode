@@ -1,6 +1,5 @@
 # Smart Coding
 Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
- 
 * [OSC Blog](https://my.oschina.net/liuyuanyuangogo)
 * [Lofter Page](http://poetryface.lofter.com/)
 
@@ -23,6 +22,13 @@ This is an Eclipse Rich Client Platform Development Guid.
   * [Eclipse Install/Update Packaging Conventions](https://www.eclipse.org/equinox/p2/repository_packaging.html)
   * [Eclipse Wizard Page Progress](https://www.eclipse.org/forums/index.php/t/369944/)
   * [Eclipse Progress Job](http://www.vogella.com/tutorials/EclipseJobs/article.html)
+
+## React/Vue
+
+## Python Django
+
+## Go/Golang
+
 
 ## Git
 Use git to manage code and team development.
