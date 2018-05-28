@@ -30,8 +30,9 @@ This is an Eclipse Rich Client Platform Development Guid.
 ## Go/Golang
 
 ## Eclipse IDE and Debug
-*[Java Debugging with Eclipse - Tutorial](http://www.vogella.com/tutorials/EclipseDebugging/article.html)
-*[Eclipse Remote Debug](http://blog.ankursharma.org/2010/05/remote-debugging-eclipse.html)
+* [Java Debugging with Eclipse - Tutorial](http://www.vogella.com/tutorials/EclipseDebugging/article.html)
+* [Eclipse Remote Debug](http://blog.ankursharma.org/2010/05/remote-debugging-eclipse.html)
+
 
 ## Git
 Use git to manage code and team development.
