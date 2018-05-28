@@ -31,7 +31,8 @@ This is an Eclipse Rich Client Platform Development Guid.
 
 ## Eclipse IDE and Debug
 * [Java Debugging with Eclipse - Tutorial](http://www.vogella.com/tutorials/EclipseDebugging/article.html)
-* [Remote Debug Eclipse RCP Product](http://zhoujianboy.iteye.com/blog/1852823)
+* [Eclipse Remote Debug(Local code must same to product)](http://blog.ankursharma.org/2010/05/remote-debugging-eclipse.html)
+  Steps ref: http://zhoujianboy.iteye.com/blog/1852823
 
 
 ## Git
