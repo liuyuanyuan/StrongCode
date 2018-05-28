@@ -25,7 +25,7 @@ This is an Eclipse Rich Client Platform Development Guid.
 
 ## React/Vue
 
-## Python Django
+## Python & Django
 
 ## Go/Golang
 
