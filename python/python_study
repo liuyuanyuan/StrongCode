@@ -1,0 +1,8 @@
+Eclipse Python dev config:
+1.Install PyDev(online by Install New Software, or offline by download,unzip and move plugins and features to eclipse )
+2.install Python;
+3.Eclipse -preference - configure: python Interpreter to path to python.exe;
+
+
+Use 
+
