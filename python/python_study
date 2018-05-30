@@ -1,8 +1,10 @@
 Eclipse Python dev config:
 1.Install PyDev(online by Install New Software, or offline by download,unzip and move plugins and features to eclipse )
 2.install Python;
-3.Eclipse -preference - configure: python Interpreter to path to python.exe;
+3.Install Django
+download and unzip：https://www.djangoproject.com/download/
+run: python setup.py install
 
+4.Eclipse -preference - configure: python Interpreter to path to python.exe;
 
-Use 
 
