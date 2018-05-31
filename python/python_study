@@ -2,14 +2,14 @@ Python+Django dev config
 WINDOWS:
 1. install Python
 download and unzip;
-add python to ENV PATH;
+add E:\Python\Python36 to ENV PATH;
 then we can use python 
 
 2.install pip
 download and unzip 
 cd pathtp/pip
 python setup.py install
-add python/Scripts to ENV PATH
+add E:\Python\Python36\Scripts to ENV PATH
 then we can use pip
 
 3.Install Django
