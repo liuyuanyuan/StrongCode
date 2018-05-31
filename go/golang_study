@@ -3,4 +3,52 @@ Config Golang Dev ENV:
 1.install go
 download, unzip, add E:\Go\bin EVN PATH;
 2.create Go workspace
+E:\>tree /f GoWorkspace
+E:\GOWORKSPACE
+├─bin
+│      hello.exe
+│
+├─pkg
+│  └─windows_amd64
+│      ├─github.com
+│      │  ├─golang
+│      │  │      dep.a
+│      │  │
+│      │  ├─lib
+│      │  │      pq.a
+│      │  │
+│      │  ├─Unknwon
+│      │  │      com.a
+│      │  │      log.a
+│      │  │
+│      │  └─urfave
+│      │          cli.a
+│      │
+│      └─gopkg.in
+│          └─fsnotify
+│                  fsnotify.v1.a
+│
+└─src
+    ├─github.com
+    │  │  guru.exe
+
+3. create and run hello world
+In e:\GoWorkspace\src\ create hello folder and hello.go:
+#hello.go
+package main
+import "fmt"
+func main() {
+    fmt.Printf("hello, world\n")
+}
+
+E:\GoWorkspace\src>tree /f hello
+  E:\GOWORKSPACE\SRC\HELLO
+    hello.go
+
+E:\GoWorkspace\src>cd hello
+E:\GoWorkspace\src\hello>go run hello.go
+hello, world
+
+
+
 
