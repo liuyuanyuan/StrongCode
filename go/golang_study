@@ -50,5 +50,12 @@ E:\GoWorkspace\src\hello>go run hello.go
 hello, world
 
 
+4.to get dependency project
+execute: go get github.com/Unknwon/bra
+need: download and install git, and add C:\Program Files\Git\bin to ENV Path
+(pay attention to network when download dependency project).
+
+
+
 
 
