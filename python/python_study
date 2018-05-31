@@ -35,7 +35,6 @@ E:\PYTHON\MYWEB
 E:\Python>cd myweb
 E:\Python\myweb>python manage.py runserver
 Performing system checks...
-
 System check identified no issues (0 silenced).
 
 You have 14 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
@@ -46,11 +45,20 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 
 
+
 Config Eclipse to dev python + django
-1.Install PyDev(online by Install New Software, or offline by download,unzip and move plugins and features to eclipse )
+1.Install PyDev
+online(not stable) by Install New Software with：python - http://pydev.org/updates
+offline by download,unzip and move plugins and features to eclipse;
 2.Eclipse -preference - configure: python Interpreter to path to python.exe;
 3.create new: PyDev Django Project
 4.run as:PyDev Django
+
+
+
+Deploy Python(Django) Project
+Win+Nginx: https://my.oschina.net/ranvane/blog/343770
+
 
 
 
