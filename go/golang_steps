@@ -2,7 +2,7 @@
 Config Golang Dev ENV:
 1.install go
 download, unzip, add E:\Go\bin EVN PATH;
-2.create Go workspace
+2.create Go workspace(anywhere)
 E:\>tree /f GoWorkspace
 E:\GOWORKSPACE
 ├─bin
