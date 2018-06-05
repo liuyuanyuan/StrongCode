@@ -1,7 +1,8 @@
 package main
 
-//简单的 JSON Restful API 演示(服务端) 
+//JSON Restful API example(server side) 
 //ref: https://studygolang.com/articles/3603
+//run Restful api by: go run api.go
 import (
 	"log"
 	"encoding/json"
@@ -66,6 +67,7 @@ func TodoShow(w http.ResponseWriter, r *http.Request) {
 
 
 func main0() {
+	//simple start server
 	http.HandleFunc("/", JsonHandler)
 	err := http.ListenAndServe("192.168.100.172:8085", nil)
 	if err != nil {
