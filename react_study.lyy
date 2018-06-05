@@ -2,7 +2,6 @@
 阮一峰 React语法入门教程：https://github.com/ruanyf/react-demos
 阮一峰 React测试入门教程： https://github.com/ruanyf/react-testing-demo
 
-
 1.安装nodejs,了解npm命令。
 安装nodejs：http://www.runoob.com/nodejs/nodejs-install-setup.html
 （一般默认会安装到\Program Files\nodejs\底下， 后期使用cmd窗口执行npm执行即可。）
