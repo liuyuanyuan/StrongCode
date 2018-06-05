@@ -23,14 +23,24 @@ gcc hello.c
 ls -l
 -----
 hello.c
-a.out
+a.out (defult)
 ----
 
+or
+
+gcc hello.c -o hello.out 
+ls -l
+-----
+hello.c
+hello.out
+
+
 4.execute a.out
-./a.out
+./a.out  (or ./hello.out)
 ------------
 Hello World
 -----------
+
 
 
 
