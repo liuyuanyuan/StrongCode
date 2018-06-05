@@ -1,0 +1,13 @@
+
+ref: <access linux kernal data by /proc file system> https://www.ibm.com/developerworks/cn/linux/l-cn-sysfs/
+related concept: Linux kernal space and user space.
+
+Linux Kernal
+/sys/*
+/proc/*
+/dev/*
+
+
+
+
+
