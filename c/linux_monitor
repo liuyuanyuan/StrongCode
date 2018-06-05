@@ -8,6 +8,12 @@ Linux Kernal
 /dev/*
 
 
+Netdata
+main.c - main()
+web_client_api_v1_init();
+web_server_threading_selection()
+
+
 
 
 
