@@ -3,17 +3,26 @@ Java的递归实现
 例1：求任意整数的阶乘
 x!=x*(x-1)! 或者 x!=x*(x-1)*...3*2*1
 实现：
-public int fun(int x)
+public int fun(int x)//递归方法实现
 {
    if(x <= 1)
       return 1;
    else
       return x*fun(x-1); 
 }
-
+public int fun2(int x)//普通方法实现
+{
+    int y = 1;
+    for(int i=x; i>=1; i--)
+    {
+       y=y*i;
+    }
+    return y; 
+}
 public static void main(String[] args)
 {
    System.out.println("10的阶乘是：" + fun(10));   
+   System.out.println("10的阶乘是：" + fun2(10)); 
 }
 
 例2：打印99乘法表
