@@ -116,6 +116,8 @@ README.md
   }
 }
 
+注意每次package.json中内容更新后需要执行: yarn install .
+
 4.React知识入门学习及练习
 React官方首页：https://reactjs.org/
 代码编辑器：webstorm或sublime，安装好后将项目放进去跑一遍。
