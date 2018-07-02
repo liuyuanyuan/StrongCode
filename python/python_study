@@ -61,4 +61,10 @@ Win+Nginx: https://my.oschina.net/ranvane/blog/343770
 
 
 
+Linux：
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
+pip -V　　#查看pip版本
+
+pip install Django
 
