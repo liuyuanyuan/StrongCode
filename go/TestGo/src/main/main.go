@@ -1,6 +1,6 @@
 package main
 
-
+/*
 import (
 	"../do" //import do package
 	"log"
@@ -11,6 +11,7 @@ func main() {
 	router := do.NewRouter()
 	log.Fatal(http.ListenAndServe(":8085", router))
 }
+*/
 
 
 /*
@@ -36,10 +37,10 @@ func main() {
 	say("2")
 }
 */
-/*
+
 import (
 	"../do"
-	"fmt"
+	//"fmt"
 	"log"
 	"os"
 )
@@ -56,6 +57,5 @@ func main() {
 	//		array[1] = 1
 	//		collection.PassArray(&array)
 
-	fmt.Println(do.QDatSession())
+	do.GetOSName()
 }
-*/
