@@ -43,3 +43,13 @@ func GetDatSize(w http.ResponseWriter, r *http.Request){
     }
 }
 
+func GetDatSession(w http.ResponseWriter, r *http.Request){
+    datas := getDatSession()
+    
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(http.StatusOK)
+    if err := json.NewEncoder(w).Encode(datas); err != nil {
+        panic(err)
+    }
+}
+

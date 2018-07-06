@@ -20,8 +20,8 @@ var routes = Routes{
     //http://localhost:8085/todos/1
     Route{"TodoShow", "GET", "/todos/{todoId}", TodoShow},
     
-    //http://localhost:8085/getDatSize
 	Route{"GetDatSize", "GET", "/getDatSize", GetDatSize},
+	Route{"GetDatSession", "GET", "/getDatSession", GetDatSession},
 }
 
 func NewRouter() *mux.Router {

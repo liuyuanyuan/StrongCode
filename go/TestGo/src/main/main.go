@@ -1,5 +1,6 @@
 package main
-/*
+
+
 import (
 	"../do" //import do package
 	"log"
@@ -10,7 +11,7 @@ func main() {
 	router := do.NewRouter()
 	log.Fatal(http.ListenAndServe(":8085", router))
 }
-*/
+
 
 /*
 import (
@@ -35,14 +36,14 @@ func main() {
 	say("2")
 }
 */
-
-
+/*
 import (
 	"../do"
 	"fmt"
 	"log"
 	"os"
 )
+
 // init is called prior to main.
 func init() {
 	// Change the device for logging to stdout.
@@ -51,8 +52,10 @@ func init() {
 
 // main is the entry point for the program.
 func main() {
-//		var array [2]int
-//		array[1] = 1
-//		collection.PassArray(&array)
-	fmt.Println(do.GetOSMemory)
+	//		var array [2]int
+	//		array[1] = 1
+	//		collection.PassArray(&array)
+
+	fmt.Println(do.QDatSession())
 }
+*/
