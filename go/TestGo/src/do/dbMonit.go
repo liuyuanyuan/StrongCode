@@ -1,8 +1,10 @@
 package do
 import (
-	"fmt"
+	//"fmt"
 	"time"
 )
+
+var timeFormat string = "2006-01-02 15:04:05"//必须是这个时间点, 据说是go诞生之日
 
 func getDatSize()([]DatSize){
 	var sql = `SELECT datname, pg_database_size(oid)/(1024*1024) 
@@ -18,11 +20,11 @@ func getDatSize()([]DatSize){
         err = rows.Scan(&datname, &datsize)
         //fmt.Println("datname = ", datname, "datsize = ", datsize)
         checkErr(err)
-        d := DatSize{time.Now(), datname, datsize}
+        d := DatSize{time.Now().Format(timeFormat), datname, datsize}
         datas = append(datas, d)
     }
     
-    fmt.Println("Return: size=", len(datas))
+    //fmt.Println("Return: size=", len(datas))
     return datas
 }
 
@@ -37,14 +39,14 @@ func getDatSession()([]DatSession){
     var datas []DatSession
     for rows.Next() {
     	var data DatSession
-    	data.Current = time.Now()
+    	data.Current = time.Now().Format(timeFormat)
         err = rows.Scan( &data.Pid, &data.DatName, &data.UserName, &data.AppName,
 	        &data.ClientAddr, &data.ClientPort, &data.State, &data.Query, &data.BackendStart)
 	    checkErr(err)
 	    datas = append(datas, data)        
     }
     
-    fmt.Println("Return: size=",len(datas))
+    //fmt.Println("Return: size=",len(datas))
 	return datas
 }
 	

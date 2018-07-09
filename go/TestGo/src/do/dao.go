@@ -1,11 +1,8 @@
 package do
 
 import (
-	"fmt"
-	//"io"
-	//"lib"
+	//"fmt"
 	//"log"
-	//"net/http"
 	
      "database/sql"
      _ "github.com/lib/pq"
@@ -26,7 +23,7 @@ func sqlOpen(){
 }
 
 func query(sql string)(*sql.Rows, error) {
-	fmt.Println("Enter:", sql)
+	//fmt.Println("Enter:", sql)
     rows, err := db.Query(sql)
     return rows, err
 }
@@ -35,11 +32,7 @@ func sqlClose() {
     db.Close()
 }
 
-func checkErr(err error) {
-    if err != nil {
-        panic(err)
-    }
-}
+
 
 /*
 func TestQuery() {

@@ -34,22 +34,28 @@ func TodoShow(w http.ResponseWriter, r *http.Request){
 }
 
 func GetDatSize(w http.ResponseWriter, r *http.Request){
-    datas := getDatSize()
+    datas := datSizeMap[len(datSizeMap)-1] //getDatSize()
     
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     w.WriteHeader(http.StatusOK)
-    if err := json.NewEncoder(w).Encode(datas); err != nil {
+    err := json.NewEncoder(w).Encode(datas)
+    checkErr(err)
+    
+    /*if err := json.NewEncoder(w).Encode(datas); err != nil {
         panic(err)
-    }
+    }*/
 }
 
 func GetDatSession(w http.ResponseWriter, r *http.Request){
-    datas := getDatSession()
+    datas := datSessionMap[len(datSessionMap)-1] //getDatSession()
     
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     w.WriteHeader(http.StatusOK)
-    if err := json.NewEncoder(w).Encode(datas); err != nil {
+    err := json.NewEncoder(w).Encode(datas)
+    checkErr(err)
+    
+    /*if err := json.NewEncoder(w).Encode(datas); err != nil {
         panic(err)
-    }
+    }*/
 }
 

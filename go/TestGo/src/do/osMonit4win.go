@@ -7,7 +7,7 @@ import(
 
 
 func GetOSMemory() {
-	vcpu, err = runtime.NumCPU()
+	vcpu := runtime.NumCPU()
 	fmt.Println("CPU: ", vcpu)
 }
 
