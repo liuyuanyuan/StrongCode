@@ -5,6 +5,6 @@ import(
 
 func checkErr(err error) {
     if err != nil {
-        panic(err)
+        Error.Panic(err) //panic相当于OO里面常用的异常捕获
     }
 }

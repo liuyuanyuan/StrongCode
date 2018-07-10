@@ -7,6 +7,12 @@ import (
 	"net/http"
 )
 
+
+func init(){
+	
+}
+
+
 func main() {
 	go do.CacheDatas()
 	
