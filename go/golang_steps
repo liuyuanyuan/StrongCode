@@ -1,5 +1,5 @@
 
-Config Golang Dev ENV:
+Config Golang on Win:
 1.install go
 download, unzip, add E:\Go\bin EVN PATH;
 2.create Go workspace(anywhere)
@@ -57,10 +57,39 @@ need: download and install git, and add C:\Program Files\Git\bin to ENV Path
 
 
 
-
-Config Eclipse with Go
+Config Eclipse dev with Go
 ref:https://blog.csdn.net/youbaopipa/article/details/75530665
 
 
 
+Config Golang on Linux
+1. install golang
+yum install golang
+2. get install path
+go env
+returns GOROOT=/usr/lib/golang
+3. create go workspace
+makedir /root/Desktop/GoWorkspace
+4. config env
+vi ~/.bash_profile
+export GOROOT=/usr/lib/golang
+export GOPATH=/root/Desktop/GoWorkspace
+PATH=$PATH:$GOROOT/bin
+export PTAH
 
+source ~/.bash_profile
+
+5. code and run
+cd /root/Desktop/GoWorkspace
+
+vi hello.go
+package main
+import "fmt"
+func main(){
+	fmt.println("hello")
+}
+
+go run hello.go 
+---------
+hello
+---------
