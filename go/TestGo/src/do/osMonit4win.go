@@ -6,7 +6,7 @@ import(
 )
 
 
-func GetOSMemory() {
+func GetOSMem() {
 	vcpu := runtime.NumCPU()
 	fmt.Println("CPU: ", vcpu)
 }

@@ -14,7 +14,7 @@ func init() {
 	sqlOpen()
 }
 func sqlOpen(){
-    var dbUrl = "port=5433 user=postgres password=postgres dbname=postgres sslmode=disable"
+    var dbUrl = "port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
     var err error
     db, err = sql.Open("postgres", dbUrl)
     // sslmode就是安全验证模式, 还可以是这种方式打开

@@ -2,7 +2,7 @@ package do
 
 import (
 	"io"
-	"io/ioutil"
+//	"io/ioutil"
 	"log"
 	"os"
 )

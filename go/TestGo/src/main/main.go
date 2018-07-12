@@ -1,17 +1,15 @@
 package main
 
-
+/*
 import (
 	"../do" //import do package
 	"log"
 	"net/http"
 )
 
-
 func init(){
 	
 }
-
 
 func main() {
 	go do.CacheDatas()
@@ -19,7 +17,7 @@ func main() {
 	router := do.NewRouter()
 	log.Fatal(http.ListenAndServe(":8085", router))
 }
-
+*/
 
 /*
 import (
@@ -45,7 +43,7 @@ func main() {
 }
 */
 
-/*
+
 import (
 	"../do"
 	//"fmt"
@@ -65,6 +63,6 @@ func main() {
 	//		array[1] = 1
 	//		collection.PassArray(&array)
 
-	do.CacheDatas()
+    do.GetOSCpu()
 }
-*/
+
