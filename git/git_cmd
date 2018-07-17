@@ -9,4 +9,15 @@ git commit -m "Delete some files."
 git push origin xxx
 
 
+创建分支
+git branch newbranch
+提交到远程库
+git push origin newbranch
+查看分支情况
+git branch -a
+
+删除分支
+git branch -r -d origin/branchname
+提交到远程库
+git push origin :branchname
 
