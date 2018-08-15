@@ -93,3 +93,12 @@ go run hello.go
 ---------
 hello
 ---------
+
+
+
+Deploy Golang App to server
+ref：https://www.jianshu.com/p/bfaba9b6d46d
+go build main.go
+then generated main.exe(win) or main(linux)
+./main.exe or ./main
+
