@@ -96,9 +96,22 @@ hello
 
 
 
-Deploy Golang App to server
+==Deploy Golang App to server==
 ref：https://www.jianshu.com/p/bfaba9b6d46d
 go build main.go
 then generated main.exe(win) or main(linux)
 ./main.exe or ./main
+
+
+==Go Test xxx_test.go==
+highgoer@DESKTOP-1QJVH6I MINGW64 /e/GoWorkspace/src/gopl.io/ch9 (master)
+$ cd bank2
+
+highgoer@DESKTOP-1QJVH6I MINGW64 /e/GoWorkspace/src/gopl.io/ch9/bank2 (master)
+$ go  test
+PASS
+ok      gopl.io/ch9/bank2       0.052s
+
+
+
 
