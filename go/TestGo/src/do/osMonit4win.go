@@ -6,12 +6,13 @@ import(
 )
 
 
-func GetOSMem() {
+func GetCPUNum() (int){
 	vcpu := runtime.NumCPU()
-	fmt.Println("CPU: ", vcpu)
+	//fmt.Println("CPU: ", vcpu)
+	return vcpu
 }
 
-func GetOSName(){
+func GetOSName() {
 	 host, err := os.Hostname()
 	 checkErr(err)
 	 fmt.Println("HostName: ", host)

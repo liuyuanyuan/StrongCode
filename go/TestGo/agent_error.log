@@ -1,0 +1,13 @@
+ERROR: 2018/07/11 22:10:34 logger.go:39: Test Error log
+ERROR: 2018/07/11 22:28:42 logger.go:39: Test Error log
+ERROR: 2018/07/11 22:32:28 logger.go:39: Test Error log
+ERROR: 2018/07/11 22:35:20 logger.go:39: Test Error log
+ERROR: 2018/07/11 23:07:50 logger.go:39: Test Error log
+ERROR: 2018/07/11 23:08:40 logger.go:39: Test Error log
+ERROR: 2018/07/11 23:09:30 logger.go:39: Test Error log
+ERROR: 2018/07/11 23:12:47 logger.go:39: Test Error log
+ERROR: 2018/07/11 23:32:12 logger.go:39: Test Error log
+ERROR: 2018/07/11 23:52:14 logger.go:39: Test Error log
+ERROR: 2018/07/12 02:28:44 logger.go:39: Test Error log
+ERROR: 2018/08/16 00:21:19 logger.go:39: Test Error log
+ERROR: 2018/08/16 00:24:47 logger.go:39: Test Error log

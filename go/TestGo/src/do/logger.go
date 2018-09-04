@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	file, err := os.OpenFile("agent_error.log",
+	file, err := os.OpenFile("agent.log",
 		os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("Failed to open error log file:", err)
@@ -26,9 +26,11 @@ func init() {
 
 	//Trace = log.New(ioutil.Discard,
 	//	"TRACE: ", log.Ldate|log.Ltime|log.Lshortfile)
-	Info = log.New(os.Stdout,
+	//Info = log.New(os.Stdout,
+	//	"INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+	Info = log.New(io.MultiWriter(file, os.Stdout),
 		"INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	Warn = log.New(os.Stdout,
+	Warn = log.New(io.MultiWriter(file, os.Stdout),
 		"WARN: ", log.Ldate|log.Ltime|log.Lshortfile)
 	Error = log.New(io.MultiWriter(file, os.Stderr),
 		"ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)

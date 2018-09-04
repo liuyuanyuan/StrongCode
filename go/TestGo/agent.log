@@ -1,0 +1,60 @@
+INFO: 2018/09/03 15:10:00 logger.go:39: Test Info log
+WARN: 2018/09/03 15:10:00 logger.go:40: Test Warn log
+ERROR: 2018/09/03 15:10:00 logger.go:41: Test Error log
+INFO: 2018/09/03 15:10:00 main.go:15: Current pid= 13128
+INFO: 2018/09/03 15:10:00 main.go:29: Fail to start server, %s
+ listen tcp 192.168.100.170:1208: bind: The requested address is not valid in its context.
+INFO: 2018/09/03 15:10:01 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:10:01 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:10:02 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:10:02 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:10:03 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:10:03 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+ERROR: 2018/09/03 15:10:03 utils.go:13: dial tcp [::1]:5432: connectex: No connection could be made because the target machine actively refused it.
+ERROR: 2018/09/03 15:10:03 utils.go:13: dial tcp [::1]:5432: connectex: No connection could be made because the target machine actively refused it.
+INFO: 2018/09/03 15:14:31 logger.go:39: Test Info log
+WARN: 2018/09/03 15:14:31 logger.go:40: Test Warn log
+ERROR: 2018/09/03 15:14:31 logger.go:41: Test Error log
+INFO: 2018/09/03 15:14:31 main.go:15: Current pid= 21740
+INFO: 2018/09/03 15:14:31 main.go:29: Fail to start server, %s
+ listen tcp 192.168.100.170:1208: bind: The requested address is not valid in its context.
+INFO: 2018/09/03 15:14:32 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:14:32 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:14:33 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:14:33 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:14:34 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 15:14:34 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+ERROR: 2018/09/03 15:14:34 utils.go:13: dial tcp [::1]:5432: connectex: No connection could be made because the target machine actively refused it.
+INFO: 2018/09/03 16:14:56 logger.go:39: Test Info log
+WARN: 2018/09/03 16:14:56 logger.go:40: Test Warn log
+ERROR: 2018/09/03 16:14:56 logger.go:41: Test Error log
+INFO: 2018/09/03 16:14:56 main.go:30: Current pid= 𞇐
+ERROR: 2018/09/03 16:14:56 main.go:35: open goagent.pid: The system cannot find the file specified.
+ERROR: 2018/09/03 16:14:56 main.go:39: <nil>
+ERROR: 2018/09/03 16:14:56 main.go:42: <nil>
+INFO: 2018/09/03 16:14:56 main.go:60: Fail to start server, %s
+ listen tcp 192.168.100.170:1208: bind: The requested address is not valid in its context.
+INFO: 2018/09/03 16:14:57 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:14:57 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:14:58 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:14:58 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:14:59 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:14:59 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+ERROR: 2018/09/03 16:14:59 utils.go:13: dial tcp [::1]:5432: connectex: No connection could be made because the target machine actively refused it.
+INFO: 2018/09/03 16:16:51 logger.go:39: Test Info log
+WARN: 2018/09/03 16:16:51 logger.go:40: Test Warn log
+ERROR: 2018/09/03 16:16:51 logger.go:41: Test Error log
+INFO: 2018/09/03 16:16:51 main.go:31: Current pid= 123344
+ERROR: 2018/09/03 16:16:51 main.go:36: <nil>
+ERROR: 2018/09/03 16:16:51 main.go:47: <nil>
+INFO: 2018/09/03 16:16:51 main.go:53: Read= ㄀
+INFO: 2018/09/03 16:16:51 main.go:61: Fail to start server, %s
+ listen tcp 192.168.100.170:1208: bind: The requested address is not valid in its context.
+INFO: 2018/09/03 16:16:52 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:16:52 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:16:53 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:16:53 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:16:54 cache.go:29: Enter: datSizeMap= 0 datSessionMap 0
+INFO: 2018/09/03 16:16:54 cache.go:40: Return: datSizeMap= 0 datSessionMap 0
+ERROR: 2018/09/03 16:16:55 utils.go:13: dial tcp [::1]:5432: connectex: No connection could be made because the target machine actively refused it.
+ERROR: 2018/09/03 16:16:55 utils.go:13: dial tcp [::1]:5432: connectex: No connection could be made because the target machine actively refused it.
