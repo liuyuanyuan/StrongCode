@@ -1,0 +1,13 @@
+pid=$(cat goagent.pid)
+echo $pid
+
+#status=$(cat /proc/${pid})
+pidfile="/proc/${pid}"
+#echo $pidfile
+if [ ! -d "$pidfile" ]; then #dir not exist
+   echo "stoped"
+else
+   echo "running"
+fi
+
+
