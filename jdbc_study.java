@@ -1,4 +1,24 @@
+=pgjdbc dev and build jar=
+source: https://github.com/pgjdbc/pgjdbc
+dev: eclipse import as maven project from .\pgjdbc-master\pgjdbc (ignore pom.xml error)
+build jar: eclipse run as - maven build
+           eclipse run as - run configuration:(Goals:jar:jar --ref from pom.xml maven-jar-plugin) (skip test:check)
+           postgresql-42.2.6-SNAPSHOT.jar: will generated in .\pgjdbc-master\pgjdbc\target
+skip test: because some url in java for test can not pass.
 
+source main:
+     PGStream: a socket to connect to pg db;
+  
+     PGCallableStatement: callableStatement() for plpgsql function or procedure
+     
+     PGPreparedStatement: preparedStatement() for sql query
+     QueryExecutorImpl: to send query by different preferQueryMode
+     QueryExecutorBase:
+ 
+
+
+==================================================================================================================
+ 
 0.Oracle JDBC ref : http://www.oracle.com/technetwork/java/overview-141217.html
 The JDBC API is the industry standard for database-independent connectivity between the Java programming language and a wide range of databases. The JDBC API provides a call-level API for SQL-based database access. JDBC technology allows you to use the Java programming language to exploit "Write Once, Run Anywhere" capabilities for applications that require access to enterprise data.
  
