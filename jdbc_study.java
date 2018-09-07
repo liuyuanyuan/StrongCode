@@ -1,11 +1,15 @@
 =pgjdbc dev and build jar=
 source: https://github.com/pgjdbc/pgjdbc
 dev: eclipse import as maven project from .\pgjdbc-master\pgjdbc (ignore pom.xml error)
-build jar: eclipse run as - maven build
+build jar by eclipse:
+           eclipse run as - maven build
            eclipse run as - run configuration:(Goals:jar:jar --ref from pom.xml maven-jar-plugin) (skip test:check) - Apply and Run
            postgresql-42.2.6-SNAPSHOT.jar: will generated in .\pgjdbc-master\pgjdbc\target
-skip test: because some url in java for test can not pass.
+           (skip test: because some url in java for test can not pass.)
+build jar by mvn command:
+           mvn clean package jar:jar -Dmaven.test.skip=true
 
+                      
 source main:
      PGStream: a socket to connect to pg db;
   
