@@ -9,17 +9,27 @@ git commit -m "Delete some files."
 git push origin xxx
 
 
-创建分支
-git branch newbranch
-提交到远程库
-git push origin newbranch
 查看分支情况
 git branch -a
 
+创建分支
+git branch newbranch
+提交分支到远程库
+git push origin newbranch
+
 删除分支
 git branch -r -d origin/branchname
-提交到远程库
+
+提交本地分支到远程库origin
 git push origin :branchname
+
+创建与远程分支对应的本地分支并下载代码到本地
+git checkout -b remotebranch origin/remotebranch
+
+提交所有分支到远程库origin
+git push -u origin --all
+
+
 
 撤销git add .操作
 git add . （空格 + 点） 表示当前目录所有文件，不小心就会提交其他文件
