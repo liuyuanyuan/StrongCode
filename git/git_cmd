@@ -38,3 +38,26 @@ git add 如果添加了错误的文件，撤销操作如下：
 git status 先看一下add 中的文件 
 git reset HEAD 如果后面什么都不跟的话 就是上一次add 里面的全部撤销了 
 git reset HEAD XXX/XXX/XXX.java 就是对某个文件进行撤销了
+
+
+代码回退到某一次commit(不可逆)
+查看提交历史，找到要回退到的commit id
+git log 
+回退代码到制定commit id
+git reset --hard commitId
+再次查看提交历史，commit id之后的历史不存在了
+git log
+
+修改本次commit的message
+git commit --amend
+进入编辑状态，修改message内容即可。
+
+
+
+
+
+
+
+
+
+
