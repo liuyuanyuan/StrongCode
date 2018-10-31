@@ -50,7 +50,7 @@ git log
 
 修改本次commit的message
 git commit --amend
-进入编辑状态，修改message内容即可。
+进入编辑状态，修改message内容即可（与vim用法类似）。
 
 
 
