@@ -53,6 +53,11 @@ git commit --amend
 进入编辑状态，修改message内容即可（与vim用法类似）。
 
 
+修改远程库
+git remote rename origin old-origin
+git remote add origin git@host:kernel/xx.git
+git push -u origin --all
+git push -u origin --tags
 
 
 
