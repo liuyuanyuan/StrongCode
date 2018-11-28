@@ -48,6 +48,10 @@ git reset --hard commitId
 再次查看提交历史，commit id之后的历史不存在了
 git log
 
+查看所有提交历史
+git log
+切换到某次提交
+git checkout commitID
 修改本次commit的message
 git commit --amend
 进入编辑状态，修改message内容即可（与vim用法类似）。
