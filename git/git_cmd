@@ -30,7 +30,6 @@ git checkout -b remotebranch origin/remotebranch
 git push -u origin --all
 
 
-
 撤销git add .操作
 git add . （空格 + 点） 表示当前目录所有文件，不小心就会提交其他文件
 git add 如果添加了错误的文件，撤销操作如下：
@@ -48,6 +47,7 @@ git reset --hard commitId
 再次查看提交历史，commit id之后的历史不存在了
 git log
 
+
 查看所有提交历史
 git log
 切换到某次提交
@@ -57,16 +57,23 @@ git commit --amend
 进入编辑状态，修改message内容即可（与vim用法类似）。
 
 
-修改远程库
+#修改远程库
 git remote rename origin old-origin
 git remote add origin git@host:kernel/xx.git
 git push -u origin --all
 git push -u origin --tags
 
 
+#git 一次add 多个文件的方法
+git add file_1 file_2 file_3
 
 
-
-
-
+#撤销git commit的内容 
+1、找到之前提交的git commit的id 
+git log 
+找到想要撤销的id 
+2、git reset –hard id 
+完成撤销,同时将代码恢复到前一commit_id 对应的版本 
+3、git reset id 
+完成Commit命令的撤销，但是不对代码修改进行撤销，可以直接通过git commit 重新提交对本地代码的修改
 
