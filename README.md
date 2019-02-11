@@ -1,10 +1,9 @@
 # Smart Coding
 Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
-* [OSC Blog](https://my.oschina.net/liuyuanyuangogo)
-* [Lofter Page](http://poetryface.lofter.com/)
 
 ## Learning Website
-* [OSChina](https://my.oschina.net/)
+* [OSC Blog](https://my.oschina.net/liuyuanyuangogo)
+* [Lofter Page](http://poetryface.lofter.com/)
 
 ## Java SE
 * [Java SE Pdf](https://github.com/liuyuanyuan/smart-coding/tree/master/java-se)
@@ -23,20 +22,18 @@ This is an Eclipse Rich Client Platform Development Guid.
   * [Eclipse Wizard Page Progress](https://www.eclipse.org/forums/index.php/t/369944/)
   * [Eclipse Progress Job](http://www.vogella.com/tutorials/EclipseJobs/article.html)
 
-## React/Vue
-
-## Python & Django
-
-## Go/Golang
-
 ## Eclipse IDE and Debug
 * [Java Debugging with Eclipse - Tutorial](http://www.vogella.com/tutorials/EclipseDebugging/article.html)
 * [Eclipse Remote Debug(Local code must same to product)](http://blog.ankursharma.org/2010/05/remote-debugging-eclipse.html)
   Steps ref: http://zhoujianboy.iteye.com/blog/1852823
 
-
 ## Git
 Use git to manage code and team development.
 [compile](https://github.com/marketplace/category/continuous-integration)
 
+## Python & Django
+
+## Go/Golang
+
+## Javascript/React/Vue
 
