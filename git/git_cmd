@@ -60,8 +60,11 @@ git commit --amend
 #修改远程库
 git remote rename origin old-origin
 git remote add origin git@host:kernel/xx.git
+#从远程库拉提交码
 git push -u origin --all
-git push -u origin --tags
+git push -u origin --tags #提交包括tag
+#向远程库拉取代码,如需拉取tag，需要加--tag
+git pull remotename remotebranch:localbranch  
 
 
 #git 一次add 多个文件的方法
