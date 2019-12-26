@@ -4,6 +4,11 @@
 阮一峰 React语法入门教程：https://github.com/ruanyf/react-demos
 阮一峰 React测试入门教程： https://github.com/ruanyf/react-testing-demo
 
+优秀的前端框架
+antd：
+bootstrap：
+
+
 1.安装nodejs,了解npm命令。
 安装nodejs：http://www.runoob.com/nodejs/nodejs-install-setup.html
 （一般默认会安装到\Program Files\nodejs\底下， 后期使用cmd窗口执行npm执行即可。）
@@ -117,7 +122,7 @@ README.md
   }
 }
 
-注意每次package.json中内容更新后需要执行: yarn install .
+注意每次package.json中内容更新后需要执行: yarn install （来下载依赖资源包到node_modules） .
 
 4.React知识入门学习及练习
 React官方首页：https://reactjs.org/
