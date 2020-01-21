@@ -3,7 +3,6 @@ Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
 
 ## Learning Website
 * [OSC Blog](https://my.oschina.net/liuyuanyuangogo)
-* [Lofter Page](http://poetryface.lofter.com/)
 
 ## Java SE
 * [Java SE Pdf](https://github.com/liuyuanyuan/smart-coding/tree/master/java-se)
