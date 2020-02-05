@@ -39,7 +39,7 @@
 
 - Set - 不能包含重复元素的集合。
   
-- SortedSet(升序Set) - 按升序管理元素的Set。
+  - SortedSet(升序Set) - 按升序管理元素的Set。
   
 - Queue - 用于在处理之前保存多个元素的集合。
 
@@ -125,11 +125,11 @@
 - 使用 for循环（适用于简单操作）：
 
   ```java
-  //for循环比以下等效的forEach代码更简洁
+  //for循环在简单操作时，比以下等效的forEach代码更简洁
   for (Person p : roster) {
       System.out.println(p.getName());
   }
-  <==>
+  //等效的forEach
   roster
       .stream()
       .forEach(e -> System.out.println(e.getName());          
@@ -363,8 +363,6 @@ jdk1.8之后的HashMap在解决哈希冲突时有较大变化，当链表长度�
 
 
 
-
-
 ##### **底层数据结构**
 
 **HashMap** is **Hash table based** implementation of the **Map** interface. This implementation provides all of the optional map operations, and **permits {@code null} values and the {@code null} key**.  (The {@code HashMap} class is roughly equivalent to {@code Hashtable}, except that it is unsynchronized and permits nulls.) This class makes no guarantees as tothe order of the map; in particular, it does not guarantee that the order will remain constant over time.
@@ -433,8 +431,6 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 ```
 
   
-
-
 
 **Hashtable(注意table首字母小写)** class implements a hash table, which maps keys to values. **Any non-{@code null} object can be used as a key or as a value**. To successfully store and retrieve objects from a hashtable, the objects used as keys must implement the {@code hashCode} method and the {@code equals} method. 
 

@@ -4,9 +4,9 @@
 
 递归好处：代码更简洁清晰，可读性更好；
 递归坏处：由于递归需要系统堆栈，所以空间消耗要比非递归代码要大很多。而且，如果递归深度太大，可能系统撑不住。 
-总结：递归要慎用，非必要时不使用递归。
+总结：**递归要慎用，非必要时不使用递归。**
 
-典型例子：求阶乘，求文件夹大小，删除文件夹等等。
+**典型例子：**求阶乘，求文件夹大小，删除文件夹等等。
 参考：https://www.jianshu.com/p/edfc4e35f383
 
 #### 例1：求任意整数的阶乘
@@ -14,17 +14,18 @@
 x!=x*(x-1)! 或者 x!=x*(x-1)*...3*2*1
 实现：
 
-```
-public static BigInteger getFactorial(int num)//递归方法实现
-
+```java
+// 递归方法实现
+public static BigInteger getFactorial(int num)
 {
     if (num == 1)
     {
-	return BigInteger.ONE;
+				return BigInteger.ONE;
     }
     return BigInteger.valueOf(num).multiply(getFactorial(num - 1));
 }	
-public static BigInteger getFactorial2(int x)// 普通方法实现
+// 普通方法实现
+public static BigInteger getFactorial2(int x)
 {
     BigInteger y = BigInteger.ONE;
     for (int i = x; i >= 1; i--)
@@ -33,6 +34,7 @@ public static BigInteger getFactorial2(int x)// 普通方法实现
     }
     return y;
 }
+
 public static void main(String[] args)
 {
    System.out.println("10的阶乘是：" + getFactorial(10));   
@@ -56,7 +58,7 @@ public class MultiTable
     {		
 				MultiTable mt = new MultiTable();
         mt.normal();//普通方法实现
-				mt.recursive2(1);、、递归方法实现
+				mt.recursive2(1);//递归方法实现
     }
   
 		public void normal()

@@ -9,7 +9,7 @@
 - 用户账号UID/GID管理 /etc/passwd
 - 用户密码管理 /etc/shadow
 - 用户组及成员管理 /etc/group
-- 账号管理
+- 账号管理命令（useradd， passwd）
 
 ## 用户账号UID/GID管理 /etc/passwd
 
@@ -43,9 +43,7 @@
 >
 > 是该用户的初始用户组。
 >
-> **全名：**
->
-> 
+> **全名：**用户相关的详细信息
 >
 > **主文件夹：**
 >
@@ -111,7 +109,7 @@
   
 
 
-## 账号管理（useradd， passwd）
+## 账号管理命令（useradd， passwd）
 
 新增用户是用useradd命令，详细命令项如下：
 

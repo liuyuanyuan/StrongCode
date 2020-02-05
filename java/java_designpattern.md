@@ -106,8 +106,6 @@ public class StaticSingleton {
 
 
 
-
-
 ## 享元模式（Flyweight Pattern）
 
 主要用于减少创建对象的数量，以减少内存占用和提高性能。它属于**结构型模式**。它提供了减少对象数量从而改善应用所需的对象结构的方式。
@@ -116,7 +114,7 @@ public class StaticSingleton {
 
 ## 值对象模式（Value Object Pattern）
 
-当一组属性需要同时访问时，分别访问将会繁琐难维护；值对象模式将远程调用的传递数据封装在一个串行化的对象中进行传输。用封装后的对象的在网络中传递，从而使系统拥有更好的交互模式；并减少网络通信数据，从而提高系统性能。
+当一组属性需要同时访问时，分别访问将会繁琐难维护；**值对象模式将远程调用的传递数据封装在一个串行化的对象中进行传输**。用封装后的对象的在网络中传递，从而使系统拥有更好的交互模式；并减少网络通信数据，从而提高系统性能。
 
 
 
@@ -132,5 +130,5 @@ public class StaticSingleton {
 
 **注意：** 1、JDK已经实现了一套观察者模式，可以直接复用相关代码。 2、避免循环引用。 3、如果顺序执行，某一观察者错误会导致系统卡壳，一般采用异步方式。
 
-观察者模式最典型的应用便是：Swing框架的JButton实现。当按钮被单击时，通过AbstractButton的fireActionPerformed()方法，回调ActionListener.actionPerformed()方法实现。应用开发中，只需实现ActionListener接口（Observer），就可将其添加到按钮（Subject）的观察者列表中，当点击事件发生，就自动触发监听器的业务处理函数。
+**观察者模式最典型的应用便是：Swing框架的JButton实现。**当按钮被单击时，通过AbstractButton的fireActionPerformed()方法，回调ActionListener.actionPerformed()方法实现。应用开发中，只需实现ActionListener接口（Observer），就可将其添加到按钮（Subject）的观察者列表中，当点击事件发生，就自动触发监听器的业务处理函数。
 

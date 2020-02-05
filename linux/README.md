@@ -6,4 +6,5 @@ Linux是一套免费使用和自由传播的[类Unix](https://baike.baidu.com/it
 
 - [文件/目录及权限](file_permission.md)
 
-- [SELinux](selinux.md)
+- [安全增强模块SELinux](selinux.md)
+
