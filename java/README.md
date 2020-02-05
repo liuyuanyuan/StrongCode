@@ -1,9 +1,11 @@
 # Java
 
 - [集合](java_collection.md)
+- I/O(Java Input/Output)
 - [多线程]()
-- [JVM（Java 虚拟机）]()
+- JVM（Java Virtual Machine)
 - [设计模式]()
+- 优化组件
 - [递归实现](java_recursion.md)
 - 
 

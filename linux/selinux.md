@@ -30,9 +30,9 @@ SELinux是由美国国家安全局（NAS)开发的。因为很多企业发现，
 
 **root具有最高权限**，如果某个程序的不小心被有心人士取得，且该进程属于root权限，那么这个程序就可以在系统上进行任何资源的访问；如果不小心将某个目录的权限设置为777，由于对任何人的权限编程rwx，因此该目录就会被任何人随意访问。这些问题很严重。
 
-##### 以策略规则制定执行特定程序读取特定文件：委托访问控制MAC
+##### 以策略规则指定特定程序读取特定文件：强制访问控制MAC
 
-为了避免DAC容易发生的资源误用问题，因此SELinux导入了**强制访问控制（Mandatory AccessControl， MAC）**。可以针对特定的进程与特定的文件资源来进行权限的控制。
+为了避免DAC容易发生的资源误用问题，因此SELinux导入了**强制访问控制（Mandatory AccessControl， MAC），用于针对特定的进程与特定的文件资源来进行权限的控制**。
 
 
 
@@ -90,7 +90,7 @@ identity:role:type
 
 ## SELinux的查看与启动、关闭
 
-目前SELinux支持三种模式：
+##### 目前SELinux支持三种模式：
 
 - enforcing：强制模式，代表SELinux正在运行中，且已经开始限制domain/type了；
 
@@ -126,11 +126,11 @@ sestatus [-vb]
 
 如果修改策略，则需要重启后才生效；
 
-如果修改模式，由Enforcing/Permissive改成disabled，或由disabled改成Enforcing/Permissive，则需要重启后生效；
+如果修改模式，由enforcing/permissive改成disabled，或由disabled改成enforcing/permissive，则需要重启后生效；
 
 当从disbaled模式转到启动SELinux模式时，由于系统必须要针对文件写入安全上下文（有时也称作security label）的信息，因此开机过程会多消耗这个时间，并且写完后还要再重启一次。
 
-当在Enforcing模式下，遇到因为设置问题导致SELinux让某些服务无法正常运行，此时可以将Enforcing模式改为permissive的模式，让SELinux只会警告无法顺利连接的信息，而不是直接抵挡主体进程的读取权限。
+当在enforcing模式下，遇到因为设置问题导致SELinux让某些服务无法正常运行，此时可以将Enforcing模式改为permissive的模式，让SELinux只会警告无法顺利连接的信息，而不是直接抵挡主体进程的读取权限。
 
 在SELinux运行时，可以通过setenforce切换Enforcing和Permissive两个模式；在SELinux停止时（即disabled模式时），无法使用setenforce切换任何模式。
 
@@ -157,7 +157,7 @@ ls -l -Z
 ps aux -Z | grep httpd
 ```
 
-##### 修改安全上下文 chcon
+##### 修改chcon和恢复restorecon安全上下文
 
 chcon通过直接指定的方式来处理安全上下文的类型数据。
 
@@ -243,3 +243,4 @@ semanage fcontext -{a|d|m} {-frst} file_spec
 restorecon [-Rv] 文件或目录
 ```
 
+(待续...)

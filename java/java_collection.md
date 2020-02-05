@@ -1,4 +1,4 @@
-## 集合篇
+## Java集合篇
 
 #### 参考(based jdk1.8)：
 
@@ -38,8 +38,9 @@
 - List - 有序集合（有时称为序列）。列表可以包含重复的元素。
 
 - Set - 不能包含重复元素的集合。
-  - SortedSet(升序Set) - 按升序管理元素的Set。
-
+  
+- SortedSet(升序Set) - 按升序管理元素的Set。
+  
 - Queue - 用于在处理之前保存多个元素的集合。
 
   队列通常但不一定以FIFO（先进先出）的方式对元素进行排序。
@@ -80,10 +81,10 @@
 
 - List（元素有序）
 
-  - Arraylist: Object数组；
+  - Arraylist: 可增长的Object数组；（get和set块，插入和删除慢）
 
-  - LinkedList: 双向链表(jdk1.6之前为循环链表，jdk1.7取消了循环) ；
-  - Vector（**线程安全的**）: Object数组；
+  - LinkedList: 双向链表(jdk1.6之前为循环链表，jdk1.7取消了循环) ；（插入和删除快，但不容易作索引）
+  - Vector（**线程安全的**）: 可增长的Object数组；
 
 - [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)（元素为键值对，键唯一）
 
