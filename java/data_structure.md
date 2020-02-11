@@ -2,7 +2,9 @@
 
 [TOC]
 
-**参考：**Data Structures and Algorithm Analysis:[in Java (Third Edition)](https://users.cs.fiu.edu/~weiss/#dsaajava3)  (by [Mark Allen Weiss](https://users.cs.fiu.edu/~weiss/))
+**参考：**
+
+Data Structures and Algorithm Analysis:[in Java (Third Edition)](https://users.cs.fiu.edu/~weiss/#dsaajava3)  (by [Mark Allen Weiss](https://users.cs.fiu.edu/~weiss/))
 
 
 

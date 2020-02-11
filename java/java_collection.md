@@ -57,7 +57,11 @@
 
   
 
-#### 核心集合实现（Implements）
+要实现集合元素的排序和不可重复，元素对象必须正确实现 [equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) 。
+
+
+
+#### 核心集合的实现（Implements）
 
 通用实现
 
@@ -77,7 +81,7 @@
 | ConcurrentMap  (extends Map)   | `ConcurrentHashMap`                    |      |
 |                                |                                        |      |
 
-#### 集合综述
+#### 集合的综述
 
 - List（元素有序）
 
@@ -112,13 +116,14 @@
 
   - [`IdentityHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/IdentityHashMap.html) : IdentityHashMap 是基于哈希表的基于身份的Map实现。此类对于保留拓扑的对象图转换（例如序列化或深度复制）很有用。要执行这样的转换，您需要维护一个基于身份的“节点表”，以跟踪已经看到的对象。基于身份的映射还用于在动态调试器和类似系统中维护对象到元信息的映射。最后，基于身份的映射在阻止“欺骗攻击”中很有用，这是故意不正当的equals方法的结果，因为IdentityHashMap从未在其键上调用equals方法。此实现的另一个好处是它速度很快。
 
-- Set（元素唯一）
+- Set（元素不重复）
 
   - HashSet(无序，唯一)：基于 HashMap 实现的，底层采用HashMap来保存元素；
-
-  - LinkedHashSet：LinkedHashSet 继承于 HashSet，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap ，其内部是基于 HashMap 实现一样，不过还是有一点点区别的。
-
+- LinkedHashSet：LinkedHashSet 继承于 HashSet，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap ，其内部是基于 HashMap 实现一样，不过还是有一点点区别的。
   - TreeSet(有序，唯一)：红黑树(自平衡的排序二叉树)。
+
+- Queue
+- Deque
 
 #### 集合的遍历
 

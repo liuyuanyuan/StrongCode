@@ -1,4 +1,4 @@
-# Java并发编程 - 线程的创建
+# Java线程的创建
 
 [TOC]
 
@@ -12,21 +12,36 @@
 
 ![image-20200205193457003](images/thread-states.png)
 
-线程状态：wait()等待-notifyAll()唤醒，两者需要放到synchrinized块中使用。
+##### 线程的状态：
 
+1. 初始(NEW)：新创建了一个线程对象，但还没有调用start()方法。
+2. 运行(RUNNABLE)：Java线程中将就绪（ready）和运行中（running）两种状态笼统的称为“运行”。
+线程对象创建后，其他线程(比如main线程）调用了该对象的start()方法。该状态的线程位于可运行线程池中，等待被线程调度选中，获取CPU的使用权，此时处于就绪状态（ready）。就绪状态的线程在获得CPU时间片后变为运行中状态（running）。
+3. 阻塞(BLOCKED)：表示线程阻塞于锁。
+4. 等待(WAITING)：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）。
+5. 超时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。
+6. 终止(TERMINATED)：表示该线程已经执行完毕。
 
+##### 几个方法比较：
+
+- Thread.sleep(long millis)，一定是当前线程调用此方法，当前线程进入TIMED_WAITING状态，但不释放对象锁，millis后线程自动苏醒进入就绪状态。作用：给其它线程执行机会的最佳方式。
+- Thread.yield()，一定是当前线程调用此方法，当前线程放弃获取的CPU时间片，但不释放锁资源，由运行状态变为就绪状态，让OS再次选择线程。作用：让相同优先级的线程轮流执行，但并不保证一定会轮流执行。实际中无法保证yield()达到让步目的，因为让步的线程还有可能被线程调度程序再次选中。Thread.yield()不会导致阻塞。该方法与sleep()类似，只是不能由用户指定暂停多长时间。
+- thread.join()/thread.join(long millis)，当前线程里调用其它线程t的join方法，当前线程进入WAITING/TIMED_WAITING状态，当前线程不会释放已经持有的对象锁。线程t执行完毕或者millis时间到，当前线程一般情况下进入RUNNABLE状态，也有可能进入BLOCKED状态（因为join是基于wait实现的）。
+- obj.wait()，当前线程调用对象的wait()方法，当前线程释放对象锁，进入等待队列。依靠notify()/notifyAll()唤醒或者wait(long timeout) timeout时间到自动唤醒。
+- obj.notify()唤醒在此对象监视器上等待的单个线程，选择是任意性的。notifyAll()唤醒在此对象监视器上等待的所有线程。
+- LockSupport.park() / LockSupport.parkNanos(long nanos) ， LockSupport.parkUntil(long deadlines)，当前线程进入 WAITING/TIMED_WAITING 状态。对比 wait 方法,不需要获得锁就可以让线程进入 WAITING/TIMED_WAITING 状态，需要通过 LockSupport.unpark(Thread thread) 唤醒。
 
 # 线程的创建
 
 ### 创建线程的基本方法：
 
-#### 1 实现Runnnable接口：
-
-仅作为线程任务传给Thread执行。将任务与线程分离，以达到解耦；
-
-#### 2 继承Thread父类（作为Thread具体子类可直接执行）：
+#### 1 继承Thread父类（作为Thread具体子类可直接执行）：
 
 直接重写父类Thread的run方法。
+
+#### 2 实现Runnnable接口：
+
+仅作为线程任务传给Thread执行。将任务与线程分离，以达到解耦；
 
 #### 3 通过匿名内部类创建线程
 
@@ -207,13 +222,11 @@ public static void main(String[] args) {
 }
 ```
 
-- **Spring**
-
 - **Quartz**
 
+- **Spring**
 
-
-
+  
 
 ### 6 线程池创建多线程(以空间换时间)
 
@@ -256,8 +269,6 @@ public static void main(String[] args) {
 
 
 
-
-
 ### 7 Lambda表达式(since Java8)实现多线程
 
 Lambda 表达式，也可称为闭包，它是推动 Java 8 发布的最重要新特性。
@@ -271,7 +282,6 @@ public class LambdaThread {
 		List<Integer> values = Arrays.asList(10,20,30,40);
 		int res = new LambdaThread().add(values);
 		System.out.println("result=" + res);
-		
 	}
 
 	public int add(List<Integer> values){
@@ -329,8 +339,9 @@ public class DemoService {
 			}
 		}
 	}
-	
 }
 
 ```
+
+
 

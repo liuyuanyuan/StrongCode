@@ -1,10 +1,16 @@
 # Java
 
+- [概念基础](java_base_concept.md)
 - [集合](java_collection.md)
-- I/O(Java Input/Output)
-- [多线程]()
+- Java Input/Output
 - JVM（Java Virtual Machine)
-- [设计模式]()
+  - [Java对象的组成]()
+- 多线程并发编程
+  - [CPU 和 时间片、多线程、并行和并发](java_thread_cpu.md)
+  - [线程创建](java_thread_create.md)
+  - [多线程并发](java_thread_safe.md)
+  - 
+- [设计原则与设计模式](java_design_pattern.md)
 - 优化组件
 - [递归实现](java_recursion.md)
 - 
