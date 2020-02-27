@@ -4,8 +4,6 @@
 
 [Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/)
 
-[The Collections Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/index.html)
-
 
 
 #### 何为集合框架？
@@ -35,12 +33,13 @@
 ![image-20200131201445632](/Users/liuyuanyuan/github/StrongCode/java/images/collection-interfaces.png)
 
 - Collection - 集合层次架构的根；表示一组对象（称作元素）的集合。
+
 - List - 有序集合（有时称为序列）。列表可以包含重复的元素。
 
 - Set - 不能包含重复元素的集合。
-  
+
   - SortedSet(升序Set) - 按升序管理元素的Set。
-  
+
 - Queue - 用于在处理之前保存多个元素的集合。
 
   队列通常但不一定以FIFO（先进先出）的方式对元素进行排序。
@@ -96,9 +95,9 @@
 
   - [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html):  jdk1.8之前由**数组+链表**组成，数组是HashMap的主体，链表则主要为了解决哈希冲突而存在的(**“拉链法”**解决冲突)。jdk1.8以后在解决哈希冲突时有了较大的变化，当链表长度大于阈值(默认为8)时，将**链表转化为红黑树**，以减少搜索时间。**性能达到最大化。**
 
-  -  [`LinkedHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html):  继承自 HashMap，所以它的底层仍然是基于拉链式散列结构，即由数组和链表或红黑树组成。另外，LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。**近乎HashMap的性能和插入顺序迭代。**
+  - [`LinkedHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html):  继承自 HashMap，所以它的底层仍然是基于拉链式散列结构，即由数组和链表或红黑树组成。另外，LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。**近乎HashMap的性能和插入顺序迭代。**
 
-  -  [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) :  红黑树(自平衡的排序二叉树)。**实现了SortedMap接口方法，key按升序排列**
+  - [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) :  红黑树(自平衡的排序二叉树)。**实现了SortedMap接口方法，key按升序排列**
 
   - HashTable（**线程安全的**）:  和jdk1.8之前的 HashMap 的底层数据结构类似，都是采用**数组+链表**的形式，数组是主体，链表则主要为了解决哈希冲突而存在的。
 
@@ -119,10 +118,13 @@
 - Set（元素不重复）
 
   - HashSet(无序，唯一)：基于 HashMap 实现的，底层采用HashMap来保存元素；
+
 - LinkedHashSet：LinkedHashSet 继承于 HashSet，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap ，其内部是基于 HashMap 实现一样，不过还是有一点点区别的。
+
   - TreeSet(有序，唯一)：红黑树(自平衡的排序二叉树)。
 
 - Queue
+
 - Deque
 
 #### 集合的遍历

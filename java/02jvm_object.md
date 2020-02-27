@@ -1,47 +1,20 @@
-# JVM - Java对象
+# Java对象的内存布局
 
-> **Java知识点学习方法（评估接触代码的正确性）:**
->
-> 1 Javadoc/书/博客 2 使用的什么虚拟机？3 手动编码证明
+在HotSpot VM中，对象在堆内存中的存储布局可以划分为三个部分：
 
+1 对象头(Header）：占12bytes=96bits
 
+​	mark world（8bytes=64bit）：存储的内容不固定
 
-## JVM - HotSpot - openjdk
+​    klass pointer（4bytes=32bit） ：
 
-JVM -- 规范/标准 
+2 实例数据（Instance Data）
 
-HotSpot -- 产品/实现（HotSpot是sun公司开发的，所以广泛使用的是这个实现） 
-
-OpenJDK -- 项目 -- 代码（c++）（openjdk可以理解为HotSpot的的开源部分）
-
-http://openjdk.java.net/groups/hotspot/docs/HotSpotGlossary.html
+3 对齐数据（Padding）
 
 
 
-- Java内存模型
-- 类加载机制
-- 性能优化
-- Java对象的布局
-
-
-
-## Java对象的布局
-
-Java对象的组成：
-
-​	1 对象头(占12bytes=96bits)：
-
- 		mark world（8bytes=64bit）：存储的内容不固定
-
-​     	klass pointer（4bytes=32bit） ：
-
-​	2 实例数据
-
-​	3 对齐数据
-
-
-
-## 3 openjdk-HotSpot doc
+## openjdk-HotSpot doc
 
 http://openjdk.java.net/groups/hotspot/docs/HotSpotGlossary.html
 
@@ -123,6 +96,7 @@ public class TestObject {
 		System.out.println("countHash: 0x" + code);
 	}
 }
+
 输出：
 3764951d
 countHash: 0x3764951d
