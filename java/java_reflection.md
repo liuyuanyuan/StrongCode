@@ -32,6 +32,7 @@ Person p=new Student(); //其中编译时类型为 Person，运行时类型为 S
 
 ```
 Person p = new Student(1, "Lily", 80);
+//Person有两个属性：id和name， Student有三个属性：id，name和score。
 System.out.println(p.getName());
 System.out.println(((Student)p).getScore());
 
@@ -85,7 +86,7 @@ Lily
 #### 1 使用 Class 类中的 forName() 静态方法(最安全/性能最好)
 
 ```
- Class clazz = Class.forName("类的全路径"); //(最常用)
+ Class clazz = Class.forName("base.Person"); //(最常用)
 ```
 
 #### 2 调用某个类的 class 属性来获取该类对应的 Class 对象
@@ -105,7 +106,19 @@ Class clazz = p.getClass();
 
 ```java
  public static void main(String[] args) {
-             //方法1(forName():传入时只需要以字符串的方式传入即可)
+             //方法2：(对象.getClass())，获取person类中的字节码文件
+   					 Person p1 = new Person(1, "Lucy");
+             Person p2 = new Person(2, "Tom");
+             Class class1 = p1.getClass();
+             System. out.println(p1.getClass().getName());
+             Class class2 = p2.getClass();
+             System. out.println(class1 == class2 );    
+   
+   					 //方法2 (类.class:需要输入一个明确的类，任意一个类型都有一个静态的class属性)
+             Class class3 = Person.class;
+             System.out.println(class1 == class3);
+   
+   					 //方法1(forName():传入时只需要以字符串的方式传入即可)
              //通过Class类的一个forName（String className)静态方法返回一个Class对象，className必须是全路径名称；
              Class class4 = null;
              try {
@@ -114,19 +127,13 @@ Class clazz = p.getClass();
              } catch (ClassNotFoundException e) {
                 e.printStackTrace();
              }
-   
-   					 //方法2 (类.class:需要输入一个明确的类，任意一个类型都有一个静态的class属性)
-             Class class3 = Person.class;
-             System. out.println(class1 == class2);
-
-             //方法2：(对象.getClass())，获取person类中的字节码文件
-   					 Person p1 = new Person("小明" ,20,'男' );
-             Person p2 = new Person("小红" ,23,'女' );
-             Class class1 = p1.getClass();
-             System. out.println(p1.getClass().getName());
-             Class class2 = p2.getClass();
-             System. out.println(class1 == class2 );    
 }
+
+输出：
+base.Person
+true
+true
+true
 ```
 
 
@@ -142,6 +149,28 @@ Class clazz = p.getClass();
 先使用 Class 对象获取指定的 Constructor 对象，再调用 Constructor 对象的 newInstance()方法来创建 Class 对象对应类的实例，通过这种方法可以选定构造方法创建实例。
 
 **注意**：以上两种方法都要求对类的构造方法有访问权限，也就是构造方法不能是private。
+
+```
+public class Test {
+	public static void main(String[] args) {
+		try {
+			Class clas = Class.forName("base.Person");
+			//Person p = (Person) clas.newInstance();
+			Constructor c = clas.getDeclaredConstructor(int.class, String.class);
+			Person p = (Person) c.newInstance(1, "Lily");			
+			System.out.println(p.getId() + " | " + p.getName());
+		} catch (Exception  e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace(System.err);
+		} 	
+	}
+}
+
+output:
+1 | Lily
+```
+
+
 
 ```
 
@@ -168,23 +197,5 @@ public class Person {
 		this.name = name;
 	}
 }
-
-public class Test {
-	public static void main(String[] args) {
-		try {
-			Class clas = Class.forName("base.Person");
-			//Person p = (Person) clas.newInstance();
-			Constructor c = clas.getDeclaredConstructor(int.class, String.class);
-			Person p = (Person) c.newInstance(1, "Lily");			
-			System.out.println(p.getId() + " | " + p.getName());
-		} catch (Exception  e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace(System.err);
-		} 	
-	}
-}
-
-output:
-1 | Lily
 ```
 

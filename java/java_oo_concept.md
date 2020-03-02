@@ -1,5 +1,7 @@
 # 概念基础篇
 
+[TOC]
+
 #### 1 面向对象编程的三大特征：
 
 - 封装：把客观的事物封装成抽象的类，用封装来实现高内聚，低耦合。
@@ -603,15 +605,9 @@ public class Object {
 
 
 
-#### 7 java中的异常处理
-
-![image-20200122083904351](/Users/liuyuanyuan/github/StrongCode/java/images/java-error.png)
 
 
-
-#### 8 获取键盘输入的两种方法
-
-
+#### 7 获取键盘输入的两种方法
 
 ​		Scanner input = new Scanner(System.in);
 
