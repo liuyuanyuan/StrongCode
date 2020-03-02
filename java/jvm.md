@@ -7,9 +7,11 @@
 - [JVM标准规范](##JVM标准规范)
 
 - [JVM基本结构](JVM基本结构)
-  - [运行时数据区域（Runtime Data Area）]()
-
-
+  - [运行时数据区域（Runtime Data Area）](this)
+  - [IO & NIO](jvm_io_nio.md)
+  - [类加载机制](jvm_class_load.md)
+  - [垃圾收集和内存动态分配](jvm_gc.mds)
+  - [Java对象的内存布局](jvm_object.md)
 
 
 
@@ -240,8 +242,6 @@ java.lang.StackOverflowError
 ```
 
 #### 4 方法区内存溢出
-
-
 
 
 

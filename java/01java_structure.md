@@ -6,19 +6,20 @@
 
 - 《深入理解Java虚拟机（第三版）周志明》
 
-  
+
+[TOC]
 
 ### Java技术体系概念图
 
 ![java-conceptual-diagram](/Users/liuyuanyuan/github/StrongCode/java/images/java-conceptual-diagram.png)
 
-以上 **Java 体系概念图** 是基于[Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/) 的，并附有[每个概念的解释](https://docs.oracle.com/javase/8/docs/technotes/guides/desc_jdk_structure.html)。
+以上 Java 体系概念图是基于[Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/) 的，并附有[每个概念的解释](https://docs.oracle.com/javase/8/docs/technotes/guides/desc_jdk_structure.html)。
 
 
 
-### Java技术发展时间线
+### Java语言与JVM标准规范
 
-![](/Users/liuyuanyuan/github/StrongCode/java/images/java-road.png)
+[Java Language and Virtual Machine Specifications](https://docs.oracle.com/javase/specs/)
 
 
 
@@ -27,11 +28,14 @@
 按照Java技术关注的重点业务领域来划分，Java技术体系分为4个平台：
 
 - Java Card：支持一些java小程序（applet）运行在小内存设备（如智能卡）上的平台；
+
 - Java ME(Micro Edition)：支持Java程序运行在移动终端（手记、PDA）上的平台；对Java API所有简化，并加入了针对移动终端的支持，这个版本以前成为J2ME。
+
 - Java SE(Standard Edition)：支持面向桌面级的java平台，提供完成的Java核心API，这个版本以前称为J2SE。
+
 - Java EE(Enterprise Edition)：支持使用多层架构的企业应用（如ERP、CRM应用）的java平台，除了提供Java SE API之外，还对其做了大量的扩充并提供了相关的部署支持，这个版本以前称为J2EE。
 
-
+  
 
 ### Java SE & JDK、JRE
 
@@ -89,11 +93,17 @@ Oracle JDK 是闭源的，OpenJDK是开源的。我们可以查看OpenJDK的源�
 
 
 
-> **附：Java知识点学习技巧:**
->
-> 1 查阅读、相关Javadoc/书/博客 ;
->
-> 2 确认使用的什么虚拟机； 
->
-> 3 手动编码/通过监控参数来证明。
+### Java技术发展的时间线
+
+![](/Users/liuyuanyuan/github/StrongCode/java/images/java-road.png)
+
+
+
+### 附：Java知识点学习小技巧
+
+1 查阅读、相关Javadoc/书/博客 ;
+
+2 确认使用的什么虚拟机； 
+
+3 手动编码/通过监控参数来证明。
 
