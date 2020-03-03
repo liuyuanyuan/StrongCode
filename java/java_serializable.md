@@ -56,33 +56,10 @@ public final Object readObject() throws IOException,                            
 
 #### 显式地定义serialVersionUID的2种用途：
 
-1 在某些场合，希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有相同的serialVersionUID；
-2 在某些场合，不希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有不同的serialVersionUID。
+1 当希望类的不同版本对序列化兼容，因此需要确保类的不同版本，具有相同的serialVersionUID；
+2 当不希望类的不同版本对序列化兼容，因此需要确保类的不同版本，具有不同的serialVersionUID。
 
 ```
-public class TestSerial {
-	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
-		SerialPerson sp = new SerialPerson("Yolanda", 26);
-		serializeObj(sp);
-		SerialPerson desp = deserializeObj();
-		System.out.println(desp.toString());
-	}
-
-	private static void serializeObj(SerialPerson customer) throws FileNotFoundException, IOException {
-		// 对象输出流
-		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("SerialPerson.txt")));
-		oos.writeObject(customer);
-		System.out.println("对象序列化成功！");
-		oos.close();
-	}
-	private static SerialPerson deserializeObj() throws FileNotFoundException, IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("SerialPerson.txt")));
-		SerialPerson customer = (SerialPerson) ois.readObject();
-		System.out.println("对象反序列化成功！");
-		return customer;
-	}
-}
-
 public class TestSerial {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		SerialPerson sp = new SerialPerson("Yolanda", 26);
@@ -106,8 +83,8 @@ public class TestSerial {
 }
 
 public class SerialPerson implements Serializable {
-  private static final long serialVersionUID = -8726051873003188533L;
-	//private static final long serialVersionUID = 1L;	
+  private static final long serialVersionUID = -8726051873003188533L;//generated value
+	//private static final long serialVersionUID = 1L;	//default value
 	private String name;
 	private int age;
 	public SerialPerson(String name, int age)
