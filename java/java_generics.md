@@ -1,10 +1,10 @@
-# Java 泛型（generics）
+# Java 泛型（Generics）
 
 [TOC]
 
 **参考：**
 
-- [The Java™ Tutorials](https://docs.oracle.com/javase/tutorial/extra/generics/fineprint.html)
+- [The Java™ Tutorials - Generics](https://docs.oracle.com/javase/tutorial/extra/generics/index.html)
 
 - [Java 泛型详解博客](https://www.cnblogs.com/coprince/p/8603492.html)](https://www.cnblogs.com/coprince/p/8603492.html)
 

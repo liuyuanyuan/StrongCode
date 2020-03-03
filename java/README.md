@@ -25,6 +25,12 @@
   - [Java 序列化](java_serializable.md)
   - [Java 复制](java_clone.md)
 
+  
+
+[Java 网络编程]
+
+[Java 程序日志](java_log.md)
+
 **编程通识：**
 
 - [设计原则](design_rule.md)

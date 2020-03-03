@@ -1,12 +1,16 @@
 ## Java集合篇
 
-#### 参考(based jdk1.8)：
-
-[Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/)
+[TOC]
 
 
 
-#### 何为集合框架？
+#### 参考：[Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/)
+
+**Based**： JDK 1.8
+
+## 集合框架
+
+### 概念
 
 集合框架是用于表示和操作集合的统一体系结构。所有集合框架都包含以下内容：
 
@@ -14,7 +18,7 @@
 - **实现（Implementations）**：这些是collection接口的具体实现。本质上，它们是可重用的数据结构。
 - **算法（Algorithms）**：
 
-#### 集合框架的效益
+### 效益
 
 - 减少编程工作量：
 
@@ -28,7 +32,9 @@
 
 - 促进软件复用:
 
-#### 核心集合接口（interface）
+
+
+## 集合接口（interface）
 
 ![image-20200131201445632](/Users/liuyuanyuan/github/StrongCode/java/images/collection-interfaces.png)
 
@@ -54,13 +60,12 @@
 
   - SortedMap（升序Map） —一个按键升序维护其映射的Map。
 
-  
 
-要实现集合元素的排序和不可重复，元素对象必须正确实现 [equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) 。
-
+**要实现集合元素的排序和不可重复，元素对象必须正确实现 [equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) 。**
 
 
-#### 核心集合的实现（Implements）
+
+## 集合实现（Implements）
 
 通用实现
 
@@ -93,18 +98,26 @@
 
   **常规用途实现**
 
-  - [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html):  jdk1.8之前由**数组+链表**组成，数组是HashMap的主体，链表则主要为了解决哈希冲突而存在的(**“拉链法”**解决冲突)。jdk1.8以后在解决哈希冲突时有了较大的变化，当链表长度大于阈值(默认为8)时，将**链表转化为红黑树**，以减少搜索时间。**性能达到最大化。**
+  - [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html):  
 
-  - [`LinkedHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html):  继承自 HashMap，所以它的底层仍然是基于拉链式散列结构，即由数组和链表或红黑树组成。另外，LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。**近乎HashMap的性能和插入顺序迭代。**
+    jdk1.8之前由**数组+链表**组成，数组是HashMap的主体，链表则主要为了解决哈希冲突而存在的(**“拉链法”**解决冲突)。jdk1.8以后在解决哈希冲突时有了较大的变化，当链表长度大于阈值(默认为8)时，将**链表转化为红黑树**，以减少搜索时间。**性能达到最大化。**
 
-  - [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) :  红黑树(自平衡的排序二叉树)。**实现了SortedMap接口方法，key按升序排列**
+  - [`LinkedHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html):  
+
+    继承自 HashMap，所以它的底层仍然是基于拉链式散列结构，即由数组和链表或红黑树组成。另外，LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。**近乎HashMap的性能和插入顺序迭代。**
+
+  - [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) :  
+
+    红黑树(自平衡的排序二叉树)。**实现了SortedMap接口方法，key按升序排列**
 
   - HashTable（**线程安全的**）:  和jdk1.8之前的 HashMap 的底层数据结构类似，都是采用**数组+链表**的形式，数组是主体，链表则主要为了解决哈希冲突而存在的。
 
   **并发实现  **
 
-  - [`ConcurrentHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) 实现了 [`java.util.concurrent`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [`ConcurrentMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 `Map` 的原子方法 `putIfAbsent`, `remove` 和 `replace` ）。
+  - [`ConcurrentHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) 
 
+    实现了 [`java.util.concurrent`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [`ConcurrentMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 `Map` 的原子方法 `putIfAbsent`, `remove` 和 `replace` ）。
+    
     ConcurrentHashMap是基于哈希表的高度并发的高性能实现。此实现在执行检索时不会阻塞，并允许客户端选择用于更新的并发级别。它旨在替代Hashtable：除了实现ConcurrentMap外，它还支持Hashtable特有的所有传统方法。同样，如果您不需要旧版操作，请小心使用ConcurrentMap接口对其进行操作。
 
   **特殊用途实现**
@@ -117,11 +130,17 @@
 
 - Set（元素不重复）
 
-  - HashSet(无序，唯一)：基于 HashMap 实现的，底层采用HashMap来保存元素；
+  - HashSet(无序，唯一)：
 
-- LinkedHashSet：LinkedHashSet 继承于 HashSet，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap ，其内部是基于 HashMap 实现一样，不过还是有一点点区别的。
+    基于 HashMap 实现的，底层采用HashMap来保存元素；
 
-  - TreeSet(有序，唯一)：红黑树(自平衡的排序二叉树)。
+  - LinkedHashSet：
+
+    LinkedHashSet 继承于 HashSet，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap ，其内部是基于 HashMap 实现一样，不过还是有一点点区别的。
+
+  - TreeSet(有序，唯一)：
+
+    红黑树(自平衡的排序二叉树)。
 
 - Queue
 
