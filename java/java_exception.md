@@ -2,6 +2,8 @@
 
 [TOC]
 
+## 异常分类
+
 ### Throwable
 
 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception。
@@ -32,13 +34,11 @@
 
 <img src="images/java_exception.png" alt="image-20200303095645801" style="zoom:50%;" />
 
-### 异常的处理方式
+## 异常的处理方式
 
-遇到问题不进行具体处理，而是继续抛给调用者 ，抛出异常有三种形式：一是 throw，一是 throws，还有一种系统自动抛异常。
+遇到问题不进行具体处理，而是继续抛给调用者 ，抛出异常有三种形式：一是 throw，一是 throws，还有一种系统自动抛异常。捕获异常使用try catch。
 
-
-
-### throw 与 throws
+### throw 与 throws 的区别
 
 位置不同：
 

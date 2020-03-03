@@ -22,16 +22,16 @@
   - [Java异常分类及处理](java_exception.md)
 
   - [Java 反射机制](java_reflection.md)
-  - Java 注解
+  - [Java 注解](java_annotation.md)
   - [Java 泛型](java_generics.md)
   - [Java 序列化](java_serializable.md)
   - [Java 复制](java_clone.md)
 
 **编程通识：**
 
-- 设计原则
+- [设计原则](design_rule.md)
 - [设计模式](design_pattern.md)
 - [算法与数据结构](data_structure.md)
-- [递归实现](java_recursion.md)
+- [Java 递归实现](java_recursion.md)
 
 
