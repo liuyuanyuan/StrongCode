@@ -148,7 +148,9 @@ HotSpot VM里面关注吞吐量的**Parallel Scavenge收集器**是基于标记-
 
 
 
-## 现流行的垃圾收集器
+## 经典的垃圾收集器
+
+<img src="images/garbage_collectors.png" alt="image-20200303140038456" style="zoom:50%;" />
 
 ### Serial 收集器（单线程，标记-复制算法）：
 
@@ -182,25 +184,24 @@ ParNew是很多JVM运行在**Server模式**下**新生代**的默认垃圾收集
 
 ### Parallel Scavenge收集器（多线程，标记-复制算法）
 
-Parallel Scavenge是一个新生代垃圾收集器，使用标记-复制算法，多线程，它重点关注的是程序达到一个可控制的吞吐量。高吞吐量可以最高效率的利用CPU时间，尽快完成程序的运行任务，主要适用于在**后台运算**而不需要太多交互的任务；自适应调节策略也是Parallel Scavenge收集器与ParNew收集器的区别。
+Parallel Scavenge是一个**新生代**垃圾收集器，使用**标记-复制算法**，**多线程**，它重**点关注的是程序达到一个可控制的吞吐量**。高吞吐量可以最高效率的利用CPU时间，尽快完成程序的运行任务，主要适用于在**后台运算**而不需要太多交互的任务；自适应调节策略也是Parallel Scavenge收集器与ParNew收集器的区别。
 
 > 吞吐量(Thoughput)，是 CPU用于运行用户代码的时间CPU总消耗时间，即
 > $$
 > 吞吐量 = 运行用户代码时间/(运行用户代码时间+垃圾收集时间)
 > $$
-> 
 
 
 
-### Serial Old 收集器
+### Serial Old 收集器（单线程，标记-整理算法）
 
 Serial Old 是 Serial 收集器的老年代版本，是**单线程**的，使用**标记-整理算法**。
 
 该收集器的意义也是**Client模式**下的HotSpot VM的默认的**老年代**的垃圾收集器。
 
+<img src="images/gc_serial_serialold.png" alt="image-20200303141640971" style="zoom: 60%;" />
 
-
-### Parallel Old 收集器
+### Parallel Old 收集器（多线程，标记-整理算法）
 
 Parallel Old 是 Parallel Scavenfe 收集器的**老年代**版本，支持**多线程**并发收集，基于**标记-整理**算法实现。
 
@@ -208,9 +209,11 @@ Parallel Old 是 Parallel Scavenfe 收集器的**老年代**版本，支持**多
 
 > 对于对吞吐量要求高的系统，可以新生代Parallel Scavenge 和 老年代 Parallel Old收集器搭配使用。
 
-### CMS （Concurrent Mark Sweap）收集器
+<img src="images/gc_parallelscavenge_parallelold.png" alt="image-20200303142402379" style="zoom:60%;" />
 
-CMS （Concurrent Mark Sweap）收集器是老年代的垃圾收集器， 主要目标是获取最**短垃圾回收停顿时间**，使用**多线程**的**标记-清除算法**。
+### CMS （Concurrent Mark Sweap）收集器（多线程，标记-清除算法）
+
+CMS （Concurrent Mark Sweap）收集器是**老年代**的垃圾收集器， 主要目标是获取最**短垃圾回收停顿时间**，使用**多线程**的**标记-清除算法**。
 
 最短的垃圾回收停顿可以为交互比较高的程序提高用户体验。
 
@@ -223,12 +226,20 @@ CMS工作机制比其他垃圾收集器更复杂，整个过程分四个阶段�
 
 总体上看GC与用户线程是并发进行的。
 
+<img src="images/gc_cms.png" alt="image-20200303143108248" style="zoom:60%;" />
+
+
+
 ### Garbage First （G1）收集器
 
 是目前垃圾收集器理论发展的最前沿成果， 相比于CMS收集器，G1收集器两个突出的改进：
 
 - 基于标记-整理算法，不产生内存碎片；
 - 可以非常精确控制停顿时间，在不牺牲吞吐量的前提下，实现低停顿垃圾回收。
+
+可以用于新生代，也可以用于老年代
+
+
 
 
 

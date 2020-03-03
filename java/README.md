@@ -6,16 +6,14 @@
 
 - [JVM](jvm.md)
 
-  - 
-
 - [集合](java_collection.md)
 
 - 多线程并发编程
-  
+
   - [CPU 和 时间片、多线程、并行和并发](thread_cpu.md)
   - [线程创建](thread_create.md)
   - [多线程并发](thread_safe.md)
-  
+
 - Java 基础概念
 
   - [Java面向对象编程](java_oo_concept.md)
