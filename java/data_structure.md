@@ -4,38 +4,128 @@
 
 **参考：**
 
-Data Structures and Algorithm Analysis:[in Java (Third Edition)](https://users.cs.fiu.edu/~weiss/#dsaajava3)  (by [Mark Allen Weiss](https://users.cs.fiu.edu/~weiss/))
+- [Data Structures and Algorithm Analysis in Java (Third Edition)](https://users.cs.fiu.edu/~weiss/#dsaajava3)  (by [Mark Allen Weiss](https://users.cs.fiu.edu/~weiss/))
+- [Tech talk: data types & date structure](http://xybernetics.com/techtalk/tech-talk-data-types-data-structures/)
 
 
+
+## 汇总表
+
+| 数据结构                     | 特点 | Java实现类 | 特点 |
+| ---------------------------- | ---- | ---------- | ---- |
+| 顺序列表Array List           |      |            |      |
+| 链表Link list                |      |            |      |
+|                              |      |            |      |
+| 散列表/哈希表Hash Table      |      |            |      |
+|                              |      |            |      |
+| 二叉树 Binary Tree           |      |            |      |
+| 表达式树 Expression Tree     |      |            |      |
+| 二叉查找树Binary Search Tree |      |            |      |
+| AVL数                        |      |            |      |
+| 红黑树 Red Black Tree        |      |            |      |
+
+
+
+## 抽象数据类型(ADT)
+
+**抽象数据类型**（Abstract data type，ADT）是带有一组操作的一些对象的集合。
+
+**基本操作**：printList打印所有元素，makeEmpty置空，find返回某一项首次出现的位置，insert插入元素，remove删除元素，findKth返回某位置上的元素。
+
+
+
+## 表（list）
+
+大小为0的特殊表称为**空表（empty list）**。
+
+**除空表外，列表中的元素都是依次连续（顺序）存储的。**（有时列表称为序列）
+
+**表的实现：**数组列表 和 链表
+
+### 数组列表（Array List）
+
+数组可以实现列表上的所有操作，列表最简单的实现是通过数组。但是数组是定长的，列表是变长的，因此会涉及数组的扩展以保证可增长性。
+
+```java
+//数组扩展的实现
+int[] arr = new int[10];
+//...
+int[] newArr = new int[arr.length*2];
+for(int i=0; i<arr.lenght; i++){
+  newArr[i] = arr[i];
+}
+newArr = arr;
+```
+
+**操作消耗**：
+
+- printList消耗线性时间，findKth消耗常数时间；
+
+- **但插入和删除潜藏着昂贵开销**（为了保证连续存储，开销取决于操作元素的位置，平均需要移动一半元素，因此仍然需要线性时间）。
+
+  
+
+#### Java中ArrayList通过可增长的数组实现
+
+优点是get和set花费常数时间（快速访问和遍历速度快），缺点是添加和删除潜藏代价昂贵。
+
+
+
+### 链表（Linked List）
+
+为了避免插入和删除的线性开销，需要保证列表可以不连续存储。链表就用来解决这些问题。
+
+#### 简单链表/单向链表（single linked list）
+
+由一系列的节点组成，这些节点不必在内存中相连，每个节点含有该元素和包含该元素后继的节点的链（link），称作next链，最后一个节点的next链引用null。
+
+**操作消耗**：
+
+- 执行printList或find(x)是从第一个节点开始并通过后继next链来遍历点，这样消耗的时间是线性的，和数组实现时一样；
+
+- findKth操作不如数组实现时效率高，花费O(i)时间；
+
+- remove方法可以通过修改一个next引用来实现；insert方法需要用new操作从系统中取得一个节点，然后执行两次引用的调整，这两个操作只涉及常数个节点链的改变。
+
+#### 双向链表（double linked list）
+
+是在单向链表的基础上，每个节点含有：元素，后继节点的链以及前驱节点的链。
+
+<img src="images/datastructure_linkedlist.png" alt="image-20200304172428668" style="zoom:50%;" />
+
+#### Java中的LinkedList是双向链表
+
+**优点是（在变动位置已知时）**新项插入和现有项删除开销均很小**，缺点时不容易作索引，因此get调用昂贵，除非调用端点附件的。
+
+
+
+## 散列表/哈希表(hash table)
+
+哈希表/散列表（hash table）的实现常叫做哈希/散列（hashing）。哈希是一种用于以常数平均时间执行插入、删除和查找的技术。另外，哈希表是字典的一种替代方法。
+
+**哈希表(hash table)**是一个存储多个元素的数据结构。
+
+将key通过**哈希函数(hash function)**映射为元素在哈希表中的存放位置，这种方法叫**哈希（hashing）**。
+
+hashing 使得 hash table 处理插入、删除、查找的时间成本可以为O(1)。
+
+<img src="images/datastructure_hashing_example.png" alt="image-20200304133623576" style="zoom:50%;" />
+
+#### **哈希冲突**： 
+
+由于哈希表是根据哈希值存储的，当多个key的哈希值相同时，这些元素共享由于使用同一个地址产生冲突；
+
+解决办法是通过链表/红黑树，将冲突元素存储在同一个地址。如下图中的 John Smith  和 Sandra Dee 。
+
+<img src="images/datastructure_hashing_example_detail.png" alt="image-20200304134801051" style="zoom:50%;" />
 
 ## 树（tree）
 
-#### 二叉树（binary tree）
-
-二叉树（binary tree）是一棵树，且每个节点最多有2个子节点。
-
-一棵平均二叉树的深度要比节点个数N小得多，这个性质有时很重要。二叉树的平均深度为:
-$$
-O(\sqrt{N})
-$$
-二叉树有两个作用：一个是用于查找（二叉查找树），另一个是用于编译器的设计领域（表达式树）。
-
-```
-//二叉树节点类
-class BinaryNode {
-	Object     element;//data in the node
-	BinaryNode left;//left child
-	BinaryNode right;//right child
-}
-```
-
-
-
-#### 表达式树（expression tree）
+### 表达式树（expression tree）
 
 二元操作的表达式树：所有的树叶都是**操作数(operand)**，所有的父节点都是**操作符(operator)**。如：
 
-<img src="/Users/liuyuanyuan/github/StrongCode/java/images/expression-tree.png" style="zoom:33%;" />
+<img src="images/expression-tree.png" alt="image-20200304173305792" style="zoom:40%;" />
 $$
 (a+b*c) + ((d*e+f)*g)
 $$
@@ -49,11 +139,35 @@ $$
 
 
 
+### 二叉树（binary tree）
+
+二叉树（binary tree）是一棵树，每个节点最多有2个子节点。
+
+一棵平均二叉树的深度要比节点个数N小得多，这个性质有时很重要。二叉树的平均深度为:
+$$
+O(\sqrt{N})
+$$
+二叉树有两个作用：
+
+- 一个是用于查找（二叉查找树）；
+- 另一个是用于编译器的设计领域（表达式树）。
+
+```
+//二叉树节点类
+class BinaryNode {
+	Object     element;//data in the node
+	BinaryNode left;//left child
+	BinaryNode right;//right child
+}
+```
+
+
+
 #### 二叉查找树（binary search tree）
 
 二叉查找树中，任意结点中的项，大于左子树中任意节点中的项，小于右子树中任意节点中的项。
 
-二叉查找树要求所有节点中的项都能够排序（即可比较的，Java中二叉查找树的类需要实现Comparable接口，使用compareTo方法来进行两项间比较）。
+二叉查找树要求所有节点中的项都能够排序（即可比较的，Java中二叉查找树的类需要实现Comparable接口，使用compareTo方法来进行两项间比较，如：TreeMap和TreeSet）。
 
 [BinarySearchTree.java](https://users.cs.fiu.edu/~weiss/dsaajava3/code/BinarySearchTree.java)
 
@@ -81,7 +195,7 @@ $$
 
 历史上AVL树流行的一个变种是红黑树（red black tree）。红黑树的最大事件复杂度为O(log N)。
 
-红黑树是具有下列着色性质的二叉查找树：
+**红黑树是具有下列着色性质的二叉查找树：**
 
 - 每个节点要么着黑色，要么着红色；
 - 根节点是黑色；
@@ -90,67 +204,9 @@ $$
 
 着色法则的一个结论是，红黑树的高度最多是2log(N+1) 。
 
-
-
-向一个红黑树中插入一个新的节点项，是困难的，**需要颜色的改变和树的旋转**。
+**操作消耗**：向一个红黑树中插入一个新的节点项，是困难的，**需要颜色的改变和树的旋转**。
 
 [RedBlackTree.java](https://users.cs.fiu.edu/~weiss/dsaajava3/code/RedBlackTree.java)
-
-
-
-## 表（list）
-
-> **抽象数据类型**（Abstract data type，ADT）是带有一组操作的一些对象的集合。
-
-大小为0的特殊表称为**空表（empty list）**。
-
-**除空表外，列表中的元素都是依次连续（顺序）存储的。**（有时列表称为序列）
-
-**基本操作**：printList打印所有元素，makeEmpty置空，find返回某一项首次出现的位置，insert插入元素，remove删除元素，findKth返回某位置上的元素。
-
-**表的实现：**
-
-- 数组列表
-- 链表
-
-#### 数组列表
-
-数组可以实现列表上的所有操作，列表最简单的实现是通过数组。但是数组是定长的，列表是变长的，因此会涉及数组的扩展以保证可增长性。
-
-```java
-//数组扩展的实现
-int[] arr = new int[10];
-//...
-int[] newArr = new int[arr.length*2];
-for(int i=0; i<arr.lenght; i++){
-  newArr[i] = arr[i];
-}
-newArr = arr;
-```
-
-**操作消耗**：printList消耗线性时间，findKth消耗常数时间；但插入和删除潜藏着昂贵开销（为了保证连续存储，开销取决于操作元素的位置，平均需要移动一半元素，因此仍然需要线性时间）。
-
-**Java中的ArrayList就是可增长的数组实现的。**优点是get和set花费常数时间，缺点是新项删除和现有项删除代价昂贵，除非变动发生在ArrayList末端。
-
-#### 链表
-
-为了避免插入和删除的线性开销，需要保证列表可以不连续存储。
-
-**简单链表**由一系列的节点组成，这些节点不必在内存中相连，每个节点含有该元素和包含该元素后继的节点的链（link），称作next链，最后一个节点的next链引用null。
-
-**操作消耗**：
-
-执行printList或find(x)是从第一个节点开始并通过后继next链来遍历点，这样消耗的时间是线性的，和数组实现时一样；
-
-findKth操作不如数组实现时效率高，花费O(i)时间；
-
-remove方法可以通过修改一个next引用来实现；insert方法需要用new操作从系统中取得一个节点，然后执行两次引用的调整，这两个操作只涉及常数个节点链的改变。
-
-
-
-**双向链表（double linked list）**是在简单链表的基础上，每个节点含有：元素，后继节点的链以及前驱节点的链。
-
-**Java中的LinkedList是双向链表。**优点是（在变动位置已知时）新项插入和现有项删除开销均很小，缺点时不容易作索引，因此get调用昂贵，除非调用端点附件的。
 
 
 
@@ -162,13 +218,7 @@ remove方法可以通过修改一个next引用来实现；insert方法需要用n
 
 - 入队（enqueue）
 
-- 出队（）
-
-
-
-## 散列（hash）
-
-散列表（hash table）的实现常叫做散列（hashing）。散列是一种用于以常数平均时间执行插入、删除和查找的技术。
+- 出队（dequeue）
 
 
 
@@ -220,7 +270,9 @@ remove方法可以通过修改一个next引用来实现；insert方法需要用n
 - 支持堆排序
 - 快速找出一个集合中的最小值（或者最大值）
 
-### 二叉树节点与数组元素的位置关系
+
+
+## 二叉树节点与数组元素的位置关系
 
 树节点在数组中的位置及其父节点、子节点的索引之间有一个映射关系。
 
