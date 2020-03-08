@@ -2,6 +2,13 @@
 
 [TOC]
 
+**参考：**
+
+- Design pattern  GoF （鼻祖）
+- Head First Design Patterns （生动形象）
+
+
+
 设计结构对系统性能的影响要远高于代码优化。熟悉一些典型的设计模式和方法，有助于设计高性能软件。
 
 ## 概念和分类

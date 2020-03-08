@@ -11,24 +11,24 @@
 
 ## 汇总表
 
-| 数据结构                     | 特点 | Java实现类 | 特点 |
-| ---------------------------- | ---- | ---------- | ---- |
-| 顺序列表Array List           |      |            |      |
-| 链表Link list                |      |            |      |
-|                              |      |            |      |
-| 散列表/哈希表Hash Table      |      |            |      |
-|                              |      |            |      |
-| 二叉树 Binary Tree           |      |            |      |
-| 表达式树 Expression Tree     |      |            |      |
-| 二叉查找树Binary Search Tree |      |            |      |
-| AVL数                        |      |            |      |
-| 红黑树 Red Black Tree        |      |            |      |
+| 数据结构                     | 特点         | Java实现类 | 特点 |
+| ---------------------------- | ------------ | ---------- | ---- |
+| 顺序列表Array List           | 顺序连续存储 | ArrayList  |      |
+| 链表Link list                |              |            |      |
+|                              |              |            |      |
+| 散列表/哈希表Hash Table      |              |            |      |
+|                              |              |            |      |
+| 二叉树 Binary Tree           |              |            |      |
+| 表达式树 Expression Tree     |              |            |      |
+| 二叉查找树Binary Search Tree |              |            |      |
+| AVL数                        |              |            |      |
+| 红黑树 Red Black Tree        |              |            |      |
 
 
 
 ## 抽象数据类型(ADT)
 
-**抽象数据类型**（Abstract data type，ADT）是带有一组操作的一些对象的集合。
+**抽象数据类型**（Abstract data type，ADT）：是带有一组操作的一些对象的集合。
 
 **基本操作**：printList打印所有元素，makeEmpty置空，find返回某一项首次出现的位置，insert插入元素，remove删除元素，findKth返回某位置上的元素。
 
@@ -36,7 +36,7 @@
 
 ## 表（list）
 
-大小为0的特殊表称为**空表（empty list）**。
+**空表（empty list）**：大小为0的特殊表。
 
 **除空表外，列表中的元素都是依次连续（顺序）存储的。**（有时列表称为序列）
 
@@ -111,13 +111,15 @@ hashing 使得 hash table 处理插入、删除、查找的时间成本可以为
 
 <img src="images/datastructure_hashing_example.png" alt="image-20200304133623576" style="zoom:50%;" />
 
-#### **哈希冲突**： 
+### **哈希冲突**： 
 
 由于哈希表是根据哈希值存储的，当多个key的哈希值相同时，这些元素共享由于使用同一个地址产生冲突；
 
 解决办法是通过链表/红黑树，将冲突元素存储在同一个地址。如下图中的 John Smith  和 Sandra Dee 。
 
 <img src="images/datastructure_hashing_example_detail.png" alt="image-20200304134801051" style="zoom:50%;" />
+
+
 
 ## 树（tree）
 

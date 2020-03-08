@@ -2,19 +2,15 @@
 
 [TOC]
 
-#### 参考：[Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/)
+### 参考：
+
+- [Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/)
+
+- [Java 集合框架](https://www.runoob.com/java/java-collections.html)
 
 
 
 ## 集合框架
-
-### 概念
-
-集合框架是用于表示和操作集合的统一体系结构。所有集合框架都包含以下内容：
-
-- **接口（Interfaces）**：代表集合的抽象数据类型。接口允许独立于其表示的细节来操纵集合。在面向对象的语言中，接口通常形成层次结构。
-- **实现（Implementations）**：这些是集合接口的具体实现。本质上，它们是可重用的数据结构。
-- **算法（Algorithms）**：（个人理解为集合元素进行存储、操作的原理方法论。）
 
 ### 效益
 
@@ -30,13 +26,45 @@
 
 - 促进软件复用:
 
+### 位置
 
+Java 集合框架位于包 java.util 中。
 
-## 集合接口和实现类
+### 概念
+
+集合框架是用于表示和操作集合的统一体系结构。所有集合框架都包含以下内容：
+
+- **接口（Interfaces）**：代表集合的抽象数据类型 。接口允许独立于其表示的细节来操纵集合。在面向对象的语言中，接口通常形成层次结构。
+
+  接口类： Collection、List、Set、SortedSet(元素排序)、Map、SortedMap(元素的key排序)。
+
+- **实现（Implementations）**：这些是集合接口的具体实现（类）。本质上，它们是可重用的数据结构。
+
+  实现类：ArrayList、LinkedList；
+
+  ​			   HashSet、LinkedHashSet、TreeSet；
+
+  ​			   HashMap、HashMap、TreeMap。
+
+- **算法（Algorithms）**：（个人理解为集合元素进行存储、操作的原理方法论。）是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
+
+  算法类：Collections。
 
 ![image-20200304161815903](images/java_collection_diagram.png)
 
-### 集合接口（interface）
+
+
+## 集合接口（interface）
+
+>Java中数据存储方式分为两种数据结构：
+>
+>1 数组：连续空间，寻址迅速，但是在增、删元素的时候会有较大幅度的移动；
+>
+>​             特点：查询速度快，增、删较慢。
+>
+>2 链表：空间不连续，寻址困难，增、删元素只需修改指针；
+>
+>​              特点：查询速度慢，增、删快。
 
 #### **Collection** 
 
@@ -66,9 +94,7 @@
 
 **注意**：要实现集合元素的排序和不可重复，元素对象必须正确实现 [Object 的 equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) ，如：Set是通过元素的hashCode来比较，Map通过元素的Key的hashCode来比较。
 
-
-
-### 集合实现类（Implements）
+## 集合实现类（Implements）
 
 普通实现类
 
@@ -116,33 +142,47 @@
 
 - [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) （数组+链表/红黑树，按照key的hashCode()值顺序存储）:  
 
-  jdk1.8之前由**数组+链表**组成，数组是HashMap的主体，链表则主要为了解决哈希冲突而存在的(**“拉链法”**解决冲突)。jdk1.8以后在解决哈希冲突（key经过哈希函数后得到的地址值出现了重复）时有了较大的变化，**当链表长度大于阈值(默认为8)时，将链表转化为红黑树**，以减少搜索时间，性能达到最大化。
+  **key 和 value 都允许为 null 。**
 
-  按照key的顺序存储，可以快速定位元素。
+  jdk1.8之前，HashMap由**数组+链表**组成，数组是主体，链表则主要为了解决哈希冲突而存在的(（“拉链法”解决哈希冲突；key经过哈希函数后得到的地址值出现重复，即为哈希冲突)；jdk1.8以后，HashMap由**数组+链表/红黑树**组成，在解决哈希冲突时有了较大的变化，**当链表长度大于阈值(默认为8)时，将链表转化为红黑树，以减少搜索时间，性能达到最大化。**
+
+  按照key的哈希函数值顺序存储，可以快速定位元素。
 
   <img src="images/hashmap.png" alt="image-20200122140241123" style="zoom:30%;" />
 
 - [LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) （按元素插入顺序）:  
 
-  继承自 HashMap，所以它的底层仍然是基于拉链式散列结构，即由**数组和链表/红黑树**组成。另外，LinkedHashMap 在 HashMap结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。**近乎HashMap的性能和插入顺序迭代。**
+  继承自 HashMap，其底层仍然是由**数组和链表/红黑树**组成。另外，LinkedHashMap 在 HashMap结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。**近乎HashMap的性能和按插入顺序的迭代。**
 
 - [TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)（元素按key排序，默认升序） :  
 
-  红黑树(自平衡的排序二叉树)。**实现了SortedMap接口方法，默认按key的升序排列**。
+  使用红黑树(自平衡的排序二叉树)。**实现了SortedMap接口方法，默认按key的升序排列**。
 
   在使用 TreeMap 时，key 必须实现 Comparable 接口或者在构造 TreeMap 传入自定义的 Comparator，否则会在运行时抛出 java.lang.ClassCastException 类型的异常。
 
 - HashTable（线程安全的）:  
 
-  和jdk1.8之前的 HashMap 的底层数据结构类似，都是采用**数组+链表**，数组是主体，链表则主要为了解决哈希冲突而存在的。在并发实践中优先使用ConcurrentHashMap而不推荐使用Hashtable。
+  **key 和 value 都不允许为null。**
+
+  与jdk1.8之前的 HashMap 的底层数据结构类似，都是采用**数组+链表**，数组是主体，链表则主要为了解决哈希冲突而存在的。
+
+  **使用synchronzied关键字，对对象整体加锁**来实现线程安全，随着元素增多并发效率急剧下降，易产生阻塞，因此在并发实践中优先使用ConcurrentHashMap而不推荐Hashtable。
 
   **并发实现  **
 
 - [ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) 
 
-  实现了 [java.util.concurrent](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [ConcurrentMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 Map 的原子方法 `putIfAbsent`, `remove` 和 `replace` ）。
+  **key 和 value 都不允许为 null。**
   
-  ConcurrentHashMap是基于哈希表的高度并发的高性能实现。此实现在执行检索时不会阻塞，并允许客户端选择用于更新的并发级别。它旨在替代Hashtable：除了实现ConcurrentMap外，它还支持Hashtable特有的所有传统方法。同样，如果您不需要旧版操作，请小心使用ConcurrentMap接口对其进行操作。
+  实现了 [java.util.concurrent](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [ConcurrentMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 Map 的原子方法（CAS） `putIfAbsent`, `remove` 和 `replace` ）。
+  
+  ConcurrentHashMap是基于哈希表的高度并发的高性能实现，此实现在执行检索时不会阻塞，并允许客户端选择用于更新的并发级别（concurrencyLevel：估计的执行并发更新的线程素）。
+  
+  在jdk1.8之前，通过将数组主体划分为Segment（Segment size = capacity / concurrencyLevel ），来对Segment加lock，达到锁分离，来提高并发效率； jdk1.8之后，直接用**Node数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
+  
+  ConcurrentHashMap旨在替代Hashtable：除了实现ConcurrentMap外，它还支持Hashtable特有的所有传统方法。同样，如果您不需要旧版操作，请小心使用ConcurrentMap接口对其进行操作。
+  
+  参考：HashMap、Hashtable、ConcurrentHashMap
 
    **特殊用途实现**
 
