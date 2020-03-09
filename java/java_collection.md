@@ -46,9 +46,9 @@ Java 集合框架位于包 java.util 中。
 
   ​			   HashMap、HashMap、TreeMap。
 
-- **算法（Algorithms）**：（个人理解为集合元素进行存储、操作的原理方法论。）是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
+- **算法（Algorithms）**：是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
 
-  算法类：Collections。
+  算法类：Collections, Iterator（集合元素迭代器）。
 
 ![image-20200304161815903](images/java_collection_diagram.png)
 
@@ -164,9 +164,9 @@ Java 集合框架位于包 java.util 中。
 
   **key 和 value 都不允许为null。**
 
-  与jdk1.8之前的 HashMap 的底层数据结构类似，都是采用**数组+链表**，数组是主体，链表则主要为了解决哈希冲突而存在的。
+  底层数据结构 与jdk1.8之前的 HashMap 类似，都是采用 **数组+链表**，数组是主体，链表则主要为了解决哈希冲突而存在的。
 
-  **使用synchronzied关键字，对对象整体加锁**来实现线程安全，随着元素增多并发效率急剧下降，易产生阻塞，因此在并发实践中优先使用ConcurrentHashMap而不推荐Hashtable。
+  **使用synchronzied关键字，对数据对象整体加单锁**来实现线程安全，随着元素增多并发效率急剧下降，因此在并发实践中优先使用ConcurrentHashMap而不推荐Hashtable。
 
   **并发实现  **
 
@@ -176,15 +176,21 @@ Java 集合框架位于包 java.util 中。
   
   实现了 [java.util.concurrent](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [ConcurrentMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 Map 的原子方法（CAS） `putIfAbsent`, `remove` 和 `replace` ）。
   
-  ConcurrentHashMap是基于哈希表的高度并发的高性能实现，此实现在执行检索时不会阻塞，并允许客户端选择用于更新的并发级别（concurrencyLevel：估计的执行并发更新的线程素）。
+  ConcurrentHashMap 支持全并发的检索和高度并发的更新，其所有操作都是线程安全的（虽然在检索时没有加锁，在更新时也未对数据整体加锁）。 允许客户端选择用于更新的并发级别（concurrencyLevel：估计的执行并发更新的线程素）。
   
-  在jdk1.8之前，通过将数组主体划分为Segment（Segment size = capacity / concurrencyLevel ），来对Segment加lock，达到锁分离，来提高并发效率； jdk1.8之后，直接用**Node数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
+  ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法，只是实现线程安全的细节不同。
   
-  ConcurrentHashMap旨在替代Hashtable：除了实现ConcurrentMap外，它还支持Hashtable特有的所有传统方法。同样，如果您不需要旧版操作，请小心使用ConcurrentMap接口对其进行操作。
+  在jdk1.8之前，主体分为多个Segment（Segment size = capacity / concurrencyLevel ），来对每个 Segment 加一个 lock，达到锁分离，来提高并发效率； jdk1.8之后，直接用**Node数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
   
-  参考：HashMap、Hashtable、ConcurrentHashMap
+  ConcurrentHashMap旨在替代Hashtable：它支持Hashtable特有的所有方法，只是实现的同步的具体方式不同。
 
-   **特殊用途实现**
+**区分HashMap、Hashtable、ConcurrentHashMap，如下：**
+
+<img src="images/HashMap_ConcurrentHashMap.png" alt="image-20200309090806288" style="zoom: 67%;" />
+
+   
+
+**特殊用途实现**
 
 - [EnumMap](https://docs.oracle.com/javase/8/docs/api/java/util/EnumMap.html) : EnumMap 在内部实现为数组，是一种用于枚举键的高性能Map实现。此实现将Map接口的丰富性和安全性与接近数组的速度结合在一起。如果要将枚举映射到值，则应始终使用EnumMap优先于数组。
 
@@ -224,12 +230,47 @@ Java 集合框架位于包 java.util 中。
 
 
 
-#### 集合的遍历方法
+## Iterator - 集合统一迭代器
 
-##### 1 使用 for循环（适用于简单操作）：
+ Iterator 模式总是用同一种逻辑来遍历集合。使得客户端自身不需要来维护集合的内部结构，所有的内部状态都由 Iterator 来维护。客户端从不直接和集合类打交道，它总是控制 Iterator，向它发送”向前”，”向后”，”取当前元素”的命令，就可以间接遍历整个集合。
+
+在 Java 中 ，Iterator 是一个接口，它只提供了迭代了基本规则，在 JDK 中他是这样定义的：对 collection 进行迭代的迭代器。（通俗来说，对集合的所有实现，提供了一组元素迭代的统一方法，尽管每种集合实现类的具体迭代实现有所不同）
+
+在 Java Collections Framework 中，迭代器取代了原来的 Enumeration，迭代器与枚举有两点不同：
+
+- 1 迭代器允许调用者利用定义良好的语义在迭代期间从迭代器所指向的 collection 移除元素。
+
+- 2 方法名称得到了改进。
+
+```java
+/*接口定义*/
+public interface Iterator<E> {
+    boolean hasNext();
+    E next();　void remove();
+    default void remove() {
+        throw new UnsupportedOperationException("remove");
+    }
+}
+
+/*接口使用*/
+Iterator iter = collection.iterator();
+while (iter.hasNext())
+	System.out.print(iter.next() + " ");
+}
+System.out.println();
+```
+
+
+
+## 集合的遍历方法
+
+### 0 使用Iterator（ 适用于所有类型的集合）
+
+### 1 使用 for循环（适用于简单操作）：
 
 ```java
 //for循环在简单操作时，比以下等效的forEach代码更简洁
+//注意：list和set是直接遍历对象元素，map是遍历Entery元素：for(Entry<String, String> entry : yourMap.entrySet())
 for (Person p : roster) {
     System.out.println(p.getName());
 }
@@ -241,7 +282,7 @@ roster
 
 
 
-##### 2 使用聚合操作 forEach（适用于复杂操作）：
+### 2 使用聚合操作 forEach（适用于复杂操作）：
 
 ```
 //forEach比以下等效的for循环代码更简洁
@@ -257,7 +298,7 @@ for (Person p : roster) {
 }
 ```
 
-​       [聚合操作](https://docs.oracle.com/javase/tutorial/collections/streams/index.html)
+ [聚合操作](https://docs.oracle.com/javase/tutorial/collections/streams/index.html)
 
 Pipelines - A *pipeline* is a sequence of aggregate operations. The following example prints the male members contained in the collection `roster` with a pipeline that consists of the aggregate operations `filter` and `forEach`:
 
@@ -300,7 +341,9 @@ Aggregate operations, like `forEach`, appear to be like iterators. However, they
 
 
 
-#### 1 序列：ArrayList、LinkedList
+## 源码分析
+
+### 1 序列：ArrayList、LinkedList
 
 **元素的插入删除：**
 
@@ -413,7 +456,7 @@ public class Vector<E> extends AbstractList<E>
 
 
 
-#### 2 映射：HashMap、Hashtable、ConcurrentHashMap
+### 2 映射：HashMap、Hashtable、ConcurrentHashMap
 
 Java为数据结构中的映射定义了一个接口java.util.Map，此接口主要有四个常用的实现类，分别是HashMap、Hashtable、LinkedHashMap和TreeMap。
 
