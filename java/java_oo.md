@@ -23,7 +23,7 @@
 
 继承就是子类继承父类的特征和行为，使得子类对象（实例）具有父类的实例域和方法，或子类从父类继承方法，使得子类具有父类相同的行为。
 
-##### 类的继承格式：
+**类的继承格式：**
 
 在 Java 中通过 extends 关键字可以申明一个类是从另外一个类继承而来的，一般形式如下：
 
@@ -31,19 +31,9 @@
 class 父类 { }  class 子类 extends 父类 { }
 ```
 
-##### Java中，仅支持单继承（不支持多继承），但支持多重继承：
+### Java中，仅支持单继承（不支持多继承），但支持多重继承：
 
-![image-20200312105312257](/Users/liuyuanyuan/github/StrongCode/java/images/java_extends.png)
-
-##### final关键字
-
-final 关键字声明类可以把类定义为不能继承的，即最终类；或者用于修饰方法，该方法不能被子类重写。
-
-##### super 与 this 关键字
-
-- super关键字：我们可以通过super关键字来实现对父类成员的访问，用来引用当前对象的父类。
-
-- this关键字：指向自己的引用。
+![image-20200312105312257](images/java_extends.png)
 
 
 
@@ -94,9 +84,7 @@ public class Test {
 
 
 
-## 2 抽象类与抽象方法
-
-### 抽象类
+## 抽象类与抽象方法(abstract)
 
 在面向对象的概念中，所有的对象都是通过类来描绘的，但是反过来，并不是所有的类都是用来描绘对象的；**如果一个类中没有包含足够的信息来描绘一个具体的对象，这样的类就是抽象类。**
 
@@ -119,7 +107,7 @@ Abstract 关键字同样可以用来声明抽象方法，抽象方法只包含�
 
 
 
-## 3 接口(interface）：接口不是类，不具有类的功能
+## 接口(interface）：接口不是类，不具有类的功能
 
 接口（Interface），在JAVA编程语言中是一个抽象类型，是抽象方法的集合，接口通常以interface来声明。一个类通过继承接口的方式，从而来继承接口的抽象方法。
 
@@ -186,7 +174,7 @@ Abstract 关键字同样可以用来声明抽象方法，抽象方法只包含�
 
   
 
-## 4 Java包(package)
+## Java包(package)
 
 为了更好地组织类，Java 提供了包机制，用于区别类名的命名空间。
 
@@ -206,7 +194,7 @@ package pkg1[．pkg2[．pkg3…]];
 
 
 
-## 5 重载与重写
+## 方法的重载(override)、重写(overload) 
 
 ### 方法(非构造函数)的重写(override)
 
@@ -228,22 +216,9 @@ package pkg1[．pkg2[．pkg3…]];
 - 构造方法不能被重写。
 - 如果不能继承一个方法，则不能重写这个方法。
 
-#### Super 关键字的使用
-
-当需要在子类中调用父类的被重写方法时，要使用 super 关键字。如：
-
-```java
-class Dog extends Animal{
-   public void move(){
-      super.move(); // 应用super类的方法
-      System.out.println("狗可以跑和走");
-   }
-}
-```
 
 
-
-### 方法(常为构造函数)的重载(overloading) 
+### 方法(常为构造函数)的重载(overload) 
 
 重载(overloading) 是在一个类里面，方法名字相同，而参数不同，返回类型可以相同也可以不同。
 
@@ -264,6 +239,55 @@ class Dog extends Animal{
 - 方法能够在同一个类中或者在一个子类中被重载。
 
 - 无法以返回值类型作为重载函数的区分标准。
+
+  
+
+## final 关键字
+
+final 关键字声明类可以把类定义为不能继承的，即最终类；或者用于修饰方法，该方法不能被子类重写。
+
+- 声明类：
+
+  ```
+  final class 类名 {//类体}
+  ```
+
+- 声明方法：
+
+  ```
+  修饰符(public/private/default/protected) final 返回值类型 方法名(){//方法体}
+  ```
+
+
+
+## super 与 this 关键字
+
+- super关键字：我们可以通过super关键字来实现对父类成员的访问，用来引用当前对象的父类。
+
+  使用：当需要在子类中调用父类的被重写方法时，要使用 super 关键字，如：
+
+  ```java
+  class Dog extends Animal{
+     public void move(){
+        super.move(); // 应用super类的方法
+        System.out.println("狗可以跑和走");
+     }
+  }
+  ```
+
+
+- this关键字：指向自己的引用。
+
+  使用：常用于（构造）方法中，区别类的引用(this.x)与方法参数列表中的引用(x)。
+
+  ```java
+  public class Person {
+   	private String name;
+  	public Person(String name){
+  		this.name = name;
+    }
+  }
+  ```
 
   
 

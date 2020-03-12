@@ -8,6 +8,8 @@ slf4j （ Simple Loging Facade For Java），它仅仅是一个为 Java 程序�
 
 所以单独的 slf4j 是不能工作的，必须搭配其具体的日志实现方案使用，比如： apache 的 org.apache.log4j.Logger，JDK 自带的 java.util.logging.Logger 等。
 
+
+
 ## Log4j 
 
 Log4j 是 Apache 的一个开源项目，通过使用 Log4j，我们可以控制日志信息输送的目的地是控制台、 文件、GUI 组件，甚至是套接口服务器、NT 的事件记录器、UNIX Syslog 守护进程等;我们也可以控制每一条日志的输出格式；通过定义每一条日志信息的级别，我们能够更加细致地控制日志的生成过程。Log4j 由三个重要的组成构成：日志记录器(Loggers)，输出端(Appenders)、日志格式化器(Layout)。
@@ -18,6 +20,8 @@ Log4j 是 Apache 的一个开源项目，通过使用 Log4j，我们可以控制
 - Layout：控制日志信息的显示格式
 
 Log4j 中将要输出的 Log 信息定义了 5 种级别，依次为：DEBUG、INFO、WARN、ERROR 和 FATAL， 通过设置级别可以控制日志的打印（设为DEBUG打印所有日志），而不需要更改代码。
+
+
 
 ## LogBack
 
