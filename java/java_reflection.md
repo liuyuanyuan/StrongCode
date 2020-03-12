@@ -118,7 +118,7 @@ Class clazz = p.getClass();
              Class class3 = Person.class;
              System.out.println(class1 == class3);
    
-   					 //方法1(forName():传入时只需要以字符串的方式传入即可)
+   					 //方法1(Class.forName(...):类名传入时只需要以字符串的方式传入即可)
              //通过Class类的一个forName（String className)静态方法返回一个Class对象，className必须是全路径名称；
              Class class4 = null;
              try {
@@ -148,9 +148,32 @@ true
 
 先使用 Class 对象获取指定的 Constructor 对象，再调用 Constructor 对象的 newInstance()方法来创建 Class 对象对应类的实例，通过这种方法可以选定构造方法创建实例。
 
-**注意**：以上两种方法都要求对类的构造方法有访问权限，也就是构造方法不能是private。
+**注意**：以上两种方法都要求对类的构造方法有访问权限，也就是构造方法不能是 private。
 
-```
+```java
+public class Person {
+	private int id;
+	private String name;
+	pulic Person(int id, String name)
+	{
+		this.id = id;
+		this.name = name;
+	}
+
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+}
+
 public class Test {
 	public static void main(String[] args) {
 		try {
@@ -172,30 +195,5 @@ output:
 
 
 
-```
 
-public class Person {
-	private int id;
-	private String name;
-	pulic Person(int id, String name)
-	{
-		this.id = id;
-		this.name = name;
-	}
-
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-}
-```
 

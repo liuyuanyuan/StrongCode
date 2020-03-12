@@ -2,6 +2,10 @@
 
 [TOC]
 
+并发编程主要涉及多进程、多线程、多任务以及资源共享的问题。这里着重介绍多线程、多任务及其资源共享。
+
+**参考**：[Java并发原理与实战](https://www.bilibili.com/video/av43697557?p=5)
+
 > JDK API学习方法提示：先看API doc，再看源码实现，在编码实验并使用jconsole监控效果。:)
 
 ## 背景：多线程的风险
@@ -78,7 +82,7 @@
 
 #### 原子性 
 
-即一个操作或者多个操作，要么全部执行并且执行过程不会被任何因素打断，要么就都不执行。
+即一个或多个操作，要么全部执行并且执行过程不会被任何因素打断，要么就都不执行。
 
 经典例子就是银行账户转账问题：从账户A向账户B转1000元，那么必然包括2个操作：从账户A减去1000元，往账户B加上1000元。这2个操作必须要具备原子性才能保证不出现意外。
 
@@ -166,13 +170,31 @@ synchronized，**在JavaSE1.6之前**，synchronized属于重量级锁，效率�
 
 用于静态方法：对**当前类对象**加锁，进入同步代码前要获得当前类对象的锁；
 
-用于代码块：对**synchronized括号里指定的对象**加锁，进入同步代码块前要获得给定对象的锁。
+用于代码块：对**synchronized(指定的对象)**加锁，进入同步代码块前要获得给定对象的锁。
+
+```
+//this 是当前类的实例
+synchronized(this){
+}
+
+
+```
+
+
 
 ## 2 volatile 保证变量可见性
 
-volatile是Java的同步机制的轻量级实现（仅实现synchronized的可见性）。仅可修饰变量，仅可保证变量在多线程中的可见性（确保变量在一个线程的更新操作通知到其他线程），但不能保证操作的原子性；
+volatile 仅可修饰变量；
+
+volatile 变量具有可见性、有序性（确保变量在一个线程的更新操作通知到其他所有线程），但不具备原子性。
+
+> **注意**：volatile不具备原子性，这是volatile与java中的synchronized、java.util.concurrent.locks.Lock最大的功能差异，这一点在面试中也是非常容易问到的点。
 
 volatile还有一个作用是防止指令重排序；
+
+> 指令重排序：对于没有依赖关系的指令进行重排序，来优化提升性能。
+>
+>  例如： int a=1; int b=2; int c=a+b; 三个语句中，可以重排序 int a=1; 和 int b=2; 来进行优化，但 int c=a+b;需要依赖前两个语句所以他的位置不能变。
 
 在访问volatile变量时**不会执行加锁**操作，因此也就不会执行线程阻塞；
 
@@ -182,7 +204,7 @@ volatile还有一个作用是防止指令重排序；
 
 **synchronized与volatile比较**
 
-- volatile是synchronized的轻量级实现，所以性能上：volatile优于synchronized。
+- volatile是synchronized的轻量级实现，性能上：volatile优于synchronized。
 - volatile只能用于变量，而synchronized可以修饰方法和代码块。
 - volatile只能保证数据的可见性，但不能保证数据的原子性。synchronized关键字两者都能保证。
 - 多线程访问，volatile不会发生阻塞（不加锁），而synchronized可能会发生阻塞（加锁）。
@@ -399,7 +421,7 @@ public abstract class AbstractQueuedSynchronizer
 
 ### CAS操作
 
-是Conmpare And Swap的缩写，意为比较并交换。是用于实现多线程同步的**原子指令**。 Java1.5开始引入了CAS，主要代码都放在java.util.concurrent.atomic包下，通过sun包下Unsafe类实现，而Unsafe类中的方法都是native方法，由JVM本地实现。
+CAS 是 Conmpare And Swap 的缩写，意为比较并交换。是用于实现多线程同步的**原子指令**。 Java1.5 开始引入了 CAS，主要代码都放在 java.util.concurrent.atomic 包下，通过 sun 包下Unsafe类实现，而Unsafe类中的方法都是native方法，由JVM本地实现。
 
 CAS机制中使用了3个基本操作数：内存地址V，旧的预期值A，要修改的新值B。原理是：当更新一个变量的时候：只有当变量的预期值A和内存地址V当中的实际值相同时，才会将内存地址V对应的值修改为B。这是作为单个原子操作完成的。
 
@@ -497,9 +519,27 @@ public class Sequence {
 
 
 
-## 6 并发工具类
+## 6 并发集合
 
-#### **Semaphore(信号量): **
+The `java.util.concurrent` package includes a number of additions to the Java Collections Framework. These are most easily categorized by the collection interfaces provided:
+
+### BlockingQueue (FIFO)
+
+[`BlockingQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html) defines a first-in-first-out data structure that blocks or times out when you attempt to add to a full queue, or retrieve from an empty queue.
+
+### ConcurrentMap/ConcurrentHashMap
+
+[`ConcurrentMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) is a subinterface of [`java.util.Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html) that defines useful atomic operations. These operations remove or replace a key-value pair only if the key is present, or add a key-value pair only if the key is absent. Making these operations atomic helps avoid synchronization. The standard general-purpose implementation of `ConcurrentMap` is [`ConcurrentHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html), which is a concurrent analog of [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html).
+
+### ConcurrentNavigableMap
+
+[`ConcurrentNavigableMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentNavigableMap.html) is a subinterface of `ConcurrentMap` that supports approximate matches. The standard general-purpose implementation of `ConcurrentNavigableMap` is [`ConcurrentSkipListMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentSkipListMap.html), which is a concurrent analog of [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html).
+
+
+
+## 7 并发工具类
+
+### Semaphore(信号量): 
 
 允许多个线程同时访问，synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。
 
@@ -552,7 +592,7 @@ public class SemaphoreTest {
 
 
 
-#### **CountDownLatch (倒计时器):** 
+### CountDownLatch (倒计时器): 
 
 是一个同步工具类，用来协调多个线程之间的同步。这个工具通常用来控制线程等待，它可以让某一个线程等待直到倒计时结束，再开始执行。 
 
@@ -560,7 +600,7 @@ public class SemaphoreTest {
 
 **1 某一线程在开始运行前等待n个线程执行完毕。**将 CountDownLatch 的计数器初始化为n ：`new CountDownLatch(n)`，每当一个任务线程执行完毕，就将计数器减1 `countdownlatch.countDown()`，当计数器的值变为0时，在`CountDownLatch上 await()` 的线程就会被唤醒。一个典型应用场景就是启动一个服务时，主线程需要等待多个组件加载完毕，之后再继续执行。
 
-**2 实现多个线程开始执行任务的最大并行性。**注意是并行性，不是并发，强调的是多个线程在某一时刻同时开始执行。类似于赛跑，将多个线程放到起点，等待发令枪响，然后同时开跑。做法是初始化一个共享的 `CountDownLatch` 对象，将其计数器初始化为 1 ：`new CountDownLatch(1)`，多个线程在开始执行任务前首先 `coundownlatch.await()`，当主线程调用 countDown() 时，计数器变为0，多个线程同时被唤醒。
+**2 实现多个线程开始执行任务的最大并行性。**注意是并行不是并发，强调的是多个线程在某一时刻同时开始执行。类似于赛跑，将多个线程放到起点，等待发令枪响，然后同时开跑。做法是初始化一个共享的 `CountDownLatch` 对象，将其计数器初始化为 1 ：`new CountDownLatch(1)`，多个线程在开始执行任务前首先 `coundownlatch.await()`，当主线程调用 countDown() 时，计数器变为0，多个线程同时被唤醒。
 
 **不足：**CountDownLatch是一次性的，计数器的值只能在构造方法中初始化一次，之后没有任何机制再次对其设置值，当CountDownLatch使用完毕后，它不能再次被使用。
 
@@ -598,7 +638,7 @@ public class CountDownLatchTest {
 
 
 
-#### **CyclicBarrier(循环栅栏): **
+### CyclicBarrier(循环栅栏): 
 
 CyclicBarrier 和 CountDownLatch 非常类似，它也可以实现线程间的计数等待，但是它的功能比 CountDownLatch 更加复杂和强大。主要应用场景和 CountDownLatch 类似。
 
@@ -665,6 +705,88 @@ public class CyclicBarrierExample {
 	}
 }
 
+```
+
+
+
+
+
+## Exectors
+
+### Executor Interfaces
+
+The `java.util.concurrent` package defines three executor interfaces:
+
+- `Executor`, a simple interface that supports launching new tasks.
+- `ExecutorService`, a subinterface of `Executor`, which adds features that help manage the lifecycle, both of the individual tasks and of the executor itself.
+- `ScheduledExecutorService`, a subinterface of `ExecutorService`, supports future and/or periodic execution of tasks.
+
+Typically, variables that refer to executor objects are declared as one of these three interface types, not with an executor class type.
+
+### Thread Pool
+
+factory method in [`java.util.concurrent.Executors`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html)  or  [`java.util.concurrent.ThreadPoolExecutor`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html) or [`java.util.concurrent.ScheduledThreadPoolExecutor`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html) :
+
+- The simple way to create an executor that uses a fixed thread pool is to invoke the [`newFixedThreadPool`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html#newFixedThreadPool-int-) 
+- The [`newCachedThreadPool`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html#newCachedThreadPool-int-) method creates an executor with an expandable thread pool. This executor is suitable for applications that launch many short-lived tasks.
+- The [`newSingleThreadExecutor`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html#newSingleThreadExecutor-int-) method creates an executor that executes a single task at a time.
+- Several factory methods are `ScheduledExecutorService` versions of the above executors.
+
+# Fork/Join
+
+The fork-join framework allows to break a certain task on several workers and then wait for the result to combine them. It leverages multi-processor machine's capacity to great extent. Following are the core concepts and objects used in fork-join framework.
+
+### Fork
+
+Fork is a process in which a task splits itself into smaller and independent sub-tasks which can be executed concurrently. Syxntax:
+
+```
+Sum left  = new Sum(array, low, mid);
+left.fork();
+```
+
+Here Sum is a subclass of RecursiveTask and left.fork() spilts the task into sub-tasks.
+
+### Join
+
+Join is a process in which a task join all the results of sub-tasks once the subtasks have finished executing, otherwise it keeps waiting. Syntax:
+
+```
+left.join();
+```
+
+Here left is an object of Sum class.
+
+### ForkJoinPool
+
+it is a special thread pool designed to work with fork-and-join task splitting. Syntax:
+
+```
+ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+```
+
+Here a new ForkJoinPool with a parallelism level of 4 CPUs.
+
+### RecursiveAction
+
+RecursiveAction represents a task which does not return any value. Syntax:
+
+```
+class Writer extends RecursiveAction {
+   @Override
+   protected void compute() { }
+}
+```
+
+### RecursiveTask
+
+RecursiveTask represents a task which returns a value. Syntax:
+
+```
+class Sum extends RecursiveTask<Long> {
+   @Override
+   protected Long compute() { return null; }
+}
 ```
 
 

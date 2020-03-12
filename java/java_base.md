@@ -1,27 +1,10 @@
-# 概念基础篇
+# Java基础知识点
 
 [TOC]
 
-## 1 面向对象编程的三大特征：
-
-- 封装：把客观的事物封装成抽象的类，用封装来实现高内聚，低耦合。
-      - 内聚：是指一个模块内部各个部分之间的关联程度
-      - 耦合：指各个模块之间的关联程度
-
-- 继承：
-
-- 多态：
-
-  
-
-#### 2  重载与重写
-
-- 重载：
-- 重写：
 
 
-
-#### 3 String、StringBuilder、StringBuffer
+## 3 String、StringBuilder、StringBuffer
 
 - String：String 类中使用 final 关键字字符数组保存字符串，`private final char value[]` ，所以 String 对象是不可变的。
 - StringBuilder：父类AbstractStringBuilder，线程不安全
@@ -49,14 +32,14 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
 
 
 
-#### 4 == 和 equals()
+## 4 == 和 equals()
 
 - == ：判断两个对象的地址是否相等，即判断两个对象是否是同一个对象(基本数据类型==比较的是值，引用数据类型==比较的是内存地址)。
-- equals() :  判断两个对象是否相等。
+- equals() :  判断两个对象是否相等(一般是判读属性值)。
 
 
 
-#### 5 final关键字
+## 5 final关键字
 
 - 用于变量：对于基本数据类型的变量，其数值初始化后便不能更改；对于引用类型的变量，其初始化后便不能指向另一个对象。
 
@@ -68,9 +51,9 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
 
 
 
-#### 6 Object类
+## 6 Object类
 
-是所有类的父类。
+Object类 是所有类的父类。
 
 ```java
 /**
@@ -141,25 +124,22 @@ public class Object {
 
 
 
-#### 7 获取键盘输入的两种方法
+## 7 获取键盘输入的两种方法
 
-​		Scanner input = new Scanner(System.in);
+```java
+Scanner input = new Scanner(System.in);
+String s = input.nextLine();
+System.out.println("receive: " + s);
+input.close();
 
-​		 String s = input.nextLine();
+BufferedReader input2 = new BufferedReader(new InputStreamReader(System.in));
+String s2 = input2.readLine();
+System.out.println("2receive: " + s2);
+```
 
-​		 System.out.println("receive: " + s);
 
-​		 input.close();
 
-​		 
 
-​		 BufferedReader input2 = **new** BufferedReader(**new** InputStreamReader(System.***in\***));
-
-​		 String s2 = input2.readLine();
-
-​		 System.***out\***.println("2receive: " + s2);
-
-9 接口和抽象类
 
 
 
