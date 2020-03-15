@@ -33,29 +33,14 @@
      *         the thread group. If {@code null} and there is a security
      *         manager, the group is determined by {@linkplain
      *         SecurityManager#getThreadGroup SecurityManager.getThreadGroup()}.
-     *         If there is not a security manager or {@code
-     *         SecurityManager.getThreadGroup()} returns {@code null}, the group
-     *         is set to the current thread's thread group.
+     *         If there is not a security manager or {@code SecurityManager.getThreadGroup()} returns {@code null}, the group is set to the current thread's thread group.
      *
-     * @param  target
-     *         the object whose {@code run} method is invoked when this thread
-     *         is started. If {@code null}, this thread's run method is invoked.
+     * @param  target: the object whose {@code run} method is invoked when this thread is started. If {@code null}, this thread's run method is invoked.
+     * @param  name: the name of the new thread
+     * @param  stackSize: the desired stack size for the new thread, or zero to indicate that this parameter is to be ignored
+     * @param  inheritThreadLocals: if {@code true}, inherit initial values for inheritable thread-locals from the constructing thread, otherwise no initial values are inherited
      *
-     * @param  name
-     *         the name of the new thread
-     *
-     * @param  stackSize
-     *         the desired stack size for the new thread, or zero to indicate
-     *         that this parameter is to be ignored
-     *
-     * @param  inheritThreadLocals
-     *         if {@code true}, inherit initial values for inheritable
-     *         thread-locals from the constructing thread, otherwise no initial
-     *         values are inherited
-     *
-     * @throws  SecurityException
-     *          if the current thread cannot create a thread in the specified
-     *          thread group
+     * @throws  SecurityException: if the current thread cannot create a thread in the specified thread group
      *
      * @since 9
      */
@@ -72,7 +57,9 @@
     }
 ```
 
-### 1 start() 启动线程 & run() 运行线程体
+
+
+## thread.start() 启动线程、 thread.run() /runnable.run()运行线程体
 
 - start() 是启动线程
 - run()  是运行线程体中的具体代码
@@ -97,7 +84,9 @@
   t.start();
 ```
 
-### 2 setDaemon() 守护线程
+
+
+## setDaemon() 将线程设置为守护线程
 
 将线程设置为守护线程setDaemon(true)后，当主线程结束后守护线程也会结束。
 
@@ -123,18 +112,59 @@ public static void main(String[] args) {
 }
 ```
 
-### 3 interpreted()  终止线程
 
-线程的终止使用interpreted（stop()已弃用，因为它只是让线程无限等待并未真正释放所有资源）。
+
+## 终止线程的4种方法
+
+### 1 线程体run()运行完毕，线程正常结束
+
+### 2 使用退出标志，退出线程
+
+一般 run()方法执行完，线程就会正常结束；然而，常常有些线程是伺服线程，它们需要长时间的运行，只有在外部某些条件满足的情况下，才能关闭这些线程。使用一个变量来控制循环，例如：最直接的方法就是设一个 boolean 类型的标志，并通过设置这个标志为 true 或 false 来控制 while循环是否退出，代码示例:
+
+```java
+public class ThreadSafe extends Thread { 
+	public volatile boolean exit = false;
+	public void run() { 
+		while (!exit){
+			//do something
+		} 
+	}
+}
+```
+
+定义了一个退出标志 exit，当 exit 为 true 时，while 循环退出，exit 的默认值为 false。在定义 exit 时，使用 volatile 目的是使 exit 同步，也就是说在同一时刻只能由一个线程来修改 exit 的值。
+
+### 3 thread.interpreted()  终止线程
+
+线程的终止使用interpreted（stop() 已弃用）。使用 interpreted()  终止线程有两种情况：
+
+- 线程处于阻塞状态：
+
+  如使用了 sleep(timeout)，同步锁的 wait，socket 中的 receiver、accept 等方法时，会使线程处于阻塞状态。
+
+  当调用线程的 interrupt()方法时，会抛出 InterruptException 异常。
+
+  阻塞中的那个方法抛出这个异常，通过代码捕获该异常，然后 break 跳出循环状态，从而让我们有机会结束这个线程的执行。通常很多人认为只要调用 interrupt 方法线程就会结束，实际上是错的， 一定要先捕获 InterruptedException 异常之后通过 break 来跳出循环，才能正常结束 run 方法。
+
+- 线程未处于阻塞状态：
+
+  使用 isInterrupted()判断线程的中断标志来退出循环。当使用 interrupt() 方法时，中断标志就会置 true，和使用自定义的标志来控制循环是一样的道理。
 
 ```java
 public class MyThread extends Thread{
 	@Override
-	public void run() {
-    //通过线程终止状态拍决定是否执行
-		while(!interrupted()){
-			System.out.println(getName()+ " is running");
-		}
+	public void run(){
+    while (!isInterrupted()) //非阻塞过程中通过判断中断标志来退出
+    {
+      try
+      {
+					Thread.sleep(5*1000);//阻塞过程捕获中断异常来退出 
+      }catch(InterruptedException e)
+      {
+				e.printStackTrace();
+				break;//捕获到异常之后，执行 break 跳出循环 
+      }
 	}
 
 	public static void main(String[] args) {
@@ -144,22 +174,38 @@ public class MyThread extends Thread{
 		th1.start();
 		th2.start();
 		
-		//th1.stop();//Deprecated, 只是无限期等待并未释放所有资源，不是真正的停止
 		th1.interrupt();//停止当前线程，并将终止状态interrupted置为true
+    //th1.stop();//Deprecated, 只是无限期等待并未释放所有资源，不是真正的停止	
 	}
 ```
 
+### 4 thread.stop() 终止线程(线程不安全，自jdk1.2弃用)
+
+程序中使用 thread.stop() 可以强行终止线程，但是 stop 方法是不安全的，主要是: thread.stop()调用之后，创建子线程的线程就会抛出 ThreadDeatherror 的错误，并且会释放子线程所持有的所有锁。一般任何进行加锁的代码块，都是为了保护数据的一致性，如果在调用 thread.stop()后导致了该线程所持有的所有锁的突然释放(不可控制)，那么被保护数据就有可能呈现不一致性，其他线程在使用这些被破坏的数据时，有可能导致一些很奇怪的应用程序错误。
+
+因此，并不推荐使用 stop 方法来终止线程。
 
 
-## 常见线程方法：
 
-### Thread.sleep(long millis)
+## 线程常见方法解析：
 
-一定是当前线程调用此方法，当前线程进入TIMED_WAITING状态，但不释放对象锁，millis后线程自动苏醒进入就绪状态。
+### Thread.yield() 线程让步
+
+一定是当前线程调用此方法，当前线程放弃获取的CPU时间片，但不释放锁资源，由运行状态变为就绪状态，让OS再次选择线程（与其他线程一起重新竞争 CPU 时间片）。
+
+作用：让相同优先级的线程轮流执行，但并不保证一定会轮流执行。
+
+实际中无法保证 Thread.yield() 达到让步目的，因为让步的线程还有可能被线程调度程序再次选中。Thread.yield() 不会导致阻塞。该方法与 sleep() 类似，只是不能由用户指定暂停多长时间。
+
+
+
+### Thread.sleep(long millis) 线程休眠
+
+一定是当前线程调用此方法，导致当前线程进入TIMED_WAITING状态，但不释放对象锁，millis后线程自动苏醒进入就绪状态。
 
 作用：给其它线程执行机会的最佳方式。
 
->区分 Thread.sleep(interval) 与 Object .wait()
+>区分 Thread.sleep(interval) 与 Object .wait(interval)
 >
 >- sleep()属于Thread类，wait()属于Object类；
 >
@@ -171,19 +217,13 @@ public class MyThread extends Thread{
 >
 >  进入该<对象的等待锁定池>，只有针对此对象调用notify()方法后，本线程才进入<对象的锁定池>，准备获取对象锁进入运行状态。
 
-### Thread.yield()
 
-一定是当前线程调用此方法，当前线程放弃获取的CPU时间片，但不释放锁资源，由运行状态变为就绪状态，让OS再次选择线程。
 
-作用：让相同优先级的线程轮流执行，但并不保证一定会轮流执行。
-
-实际中无法保证yield()达到让步目的，因为让步的线程还有可能被线程调度程序再次选中。Thread.yield()不会导致阻塞。该方法与sleep()类似，只是不能由用户指定暂停多长时间。
-
-### object wait - notify / notifyAll 机制
+### object wait - notify / notifyAll 线程等待-唤醒
 
 在Object.java中，定义了wait(), notify()和notifyAll()等接口。
 
-wait()的作用是让当前线程释放它所持有的对象锁，让当前线程进入等待队列/等待状态。需要依靠notify()/notifyAll() 唤醒，或者使用 wait(long timeout)时 timeout时间到自动唤醒。
+wait()的作用是让当前线程释放它所持有的对象锁，让当前线程进入 WATING 等待队列/等待状态。需要依靠notify()/notifyAll() 唤醒；或者使用 wait(long timeout)时，timeout时间到自动唤醒。
 
 notify()和notifyAll()的作用则是唤醒当前对象上的等待的线程；notify()是唤醒单个线程，选择是随机的；而notifyAll()是唤醒在此对象监视器上等待的所有的线程。
 
@@ -191,15 +231,13 @@ Object类中关于等待/唤醒的API详细信息如下：
 
 - **notify()**：唤醒在此对象监视器上等待的单个线程。
 - **notifyAll()**：唤醒在此对象监视器上等待的所有线程。
-- **wait()**：让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法”，当前线程被唤醒(进入“就绪状态”)。
+- **wait()**：让当前线程处于 “等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法”，当前线程被唤醒(进入“就绪状态”)。
 - **wait(long timeout)**：让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者超过指定的时间量”，当前线程被唤醒(进入“就绪状态”)。
 - **wait(long timeout, int nanos)**：让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者其他某个线程中断当前线程，或者已超过某个实际时间量”，当前线程被唤醒(进入“就绪状态”)。
 
-### LockSupport.park() / LockSupport.parkNanos(long nanos) 
 
- LockSupport.parkUntil(long deadlines)，当前线程进入 WAITING/TIMED_WAITING 状态。对比 wait 方法，不需要获得锁就可以让线程进入 WAITING/TIMED_WAITING 状态，需要通过 LockSupport.unpark(Thread thread) 唤醒。
 
-### thread.join() / thread.join(long millis)
+### thread.join() / thread.join(long millis) 
 
 让父线程等待子线程结束之后才能继续运行。
 
@@ -208,6 +246,8 @@ Object类中关于等待/唤醒的API详细信息如下：
 join()方法定义在Thread.java中:
 
 ```java
+ Thread.java 源码段
+   
  //join()等效于join(0),  永久等待直到该子线程结束
  public final void join() throws InterruptedException{
 		join(0);
@@ -270,7 +310,11 @@ public static void main(String[] args) throws InterruptedException {
 
 
 
+### LockSupport.park() / LockSupport.parkNanos(long nanos) 
 
+LockSupport.parkUntil(long deadlines)，使得当前线程进入 WAITING/TIMED_WAITING 状态。对比 wait 方法，它不需要获得锁就可以让线程进入 WAITING/TIMED_WAITING 状态；
+
+需要通过 LockSupport.unpark(Thread thread) 唤醒。
 
 
 

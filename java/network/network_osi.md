@@ -18,7 +18,7 @@ OSI模型是构建IT所有部分的基础模型。它把[网络通信](https://b
 
 ### 1 TCP/IP模型 与 OSI 模型的关系
 
-![image-20200313102405741](../images/tcp:ip_osi.png)
+![image-20200313102405741](../images/tcpip_osi.png)
 
 
 
@@ -29,15 +29,15 @@ OSI模型是构建IT所有部分的基础模型。它把[网络通信](https://b
 - **Media Layers 媒体层（123层）** 这些层通常构成OSI模型的通信的物理和网络功能。
 - **Host Layers主机层（4567层）** 这些层通常构成OSI模型的软件和应用程序端。
 
-| Layer OSI 7层模型                       | Data 数据       | 描述                                                         |      |
-| --------------------------------------- | --------------- | ------------------------------------------------------------ | ---- |
-| **7** **Application**  **应用层**       | data            | **End user layers:**  HTTP, FTP, SSH, DNS                    |      |
-| **6** **Presentation**  **表现层**      | data            | **Syntax layer:**  SSL, SSH, IMAP, FTP, MPEG, JPEG           |      |
-| **5** **Session**  **会话层**           | data            | **Synch & send to ports:**  APIs, Sockets, WinSock           |      |
-| **4** **Transport**  **传输层**         | Segments  段    | **End-to-end connections:**  TCP, UDP                        |      |
-| **3** **Network**  **网络层**           | Packets  数据包 | **Packets:**  IP, ICMP, IPSec, IGMP                          |      |
-| **2** **Data** **Link**  **数据链路层** | Frames  帧流    | **Frames**:  Ethernet以太网, PPP, Switch交换机, Bridge网桥   |      |
-| **1** **Physical**  **物理层**          | Bits  比特流    | **Physical Structure:**  Coax电缆, fiber光纤, wireless无线, hubs集线器, repeaters中继器 |      |
+| Layer OSI 7层模型                       | Data 数据       | 描述                                                         | Protocol 协议                         |
+| --------------------------------------- | --------------- | ------------------------------------------------------------ | ------------------------------------- |
+| **7** **Application**  **应用层**       | data            | 为用户提供各种网络服务；                                     | HTTP/HTTPS、FTP、SSH、DNS、POP3、SMTP |
+| **6** **Presentation**  **表现层**      | data            | **Syntax layer:**  数据各式转化、数据加密；                  | SSL, SSH, IMAP,  FTP, MPEG, JPEG      |
+| **5** **Session**  **会话层**           | data            | **建立、管理、维护会话；**                                   | APIs, Sockets, WinSock                |
+| **4** **Transport**  **传输层**         | Segments  段    | **建立、管理、维护主机端到端的连接**，为上层协议提供端到端的可靠和透明的数据传输服务，包括处理差错控制和流量控制等问题。 | TCP, UDP                              |
+| **3** **Network**  **网络层**           | Packets  数据包 | IP选址及路由选择；                                           | IP, ICMP, RIP, IPSec, IGMP            |
+| **2** **Data** **Link**  **数据链路层** | Frames  帧流    | 将比特组合成字节，再将字节组合成帧，使用链路层地址 (以太网使用MAC地址)来访问介质，并进行差错检测。 | ARP RARP IEEE802.3 PPP CSMA/CD        |
+| **1** **Physical**  **物理层**          | Bits  比特流    | **Physical Structure:**  通过物理介质传输比特流。常用物理设备有：同轴电缆、fiber光纤、hubs集线器, repeaters中继器、调制解调器、wireless无线、网线、双绞线等； | FE自协商 Manchester   MLT-3 4A PAM5   |
 
 
 
@@ -63,6 +63,8 @@ UDP（User Datagram Protocol，用户数据报协议），**是一种无连接�
 在传送数据之前，不需要先建立连接，远程主机在收到UDP报文后，不需要给出任何确认。虽然UDP不提供任何可靠交付，但在某些情况下UDP却是一种最有效的工作方式。
 
 UDP一般用于即时通信、多媒体数据流，不产生任何额外的数据，即使知道有破坏的包也不进行重发，如：QQ语音、QQ视频、QQ直播等。许多应用只支持UDP。**当强调传输性能而不是传输的完整性时，UDP是最好的选择**，如：音频、视频、多媒体应用。**在数据传输时间很短，以至于此前的连接过程成为整个流量主体的情况下，UDP也是一个好的选择。**
+
+
 
 ### TCP
 

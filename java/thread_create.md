@@ -16,7 +16,7 @@ Thread 的构造方法如下：
 
 仅作为线程任务传给Thread执行。将任务与线程分离，以达到解耦；
 
-### 3 通过匿名内部类创建线程
+### 3 通过Thread/Runnable匿名内部类创建线程
 
 通过Runnable或Thread都可以创建匿名内部类；
 
@@ -97,7 +97,7 @@ public static void main(String[] args) {
 
   
 
-### 6 线程池创建多线程(以空间换时间)
+### 6 线程池(以空间换时间)创建多线程
 
 #### 创建线程池
 
@@ -117,6 +117,16 @@ public static void main(String[] args) {
 (绿框中的方法)内部是通过ThreadPoolExecutor实现的。
 
 ![image-20200122172101493](images/Executors-thead.png)
+
+- newFixedThreadPool(int)
+
+- newCachedThreadPool()
+
+- newSingleThreadPool()
+
+- newScheduledThreadPool()
+
+  
 
 	public static void main(String[] args) {
 			//ExecutorService threadPool = Executors.newFixedThreadPool(3);//固定线程数

@@ -4,9 +4,18 @@
 
 并发编程主要涉及多进程、多线程、多任务以及资源共享的问题。这里着重介绍多线程、多任务及其资源共享。
 
-**参考**：[Java并发原理与实战](https://www.bilibili.com/video/av43697557?p=5)
+**参考**：
+
+- [JC author - Doug Lea's home page](http://gee.cs.oswego.edu/)
+- Java Concurrency in Practice (Brian Goetz , ... , Doug Lea)
+- Concurrent Programming in Java (Doug Lea) 
+- [Java 并发编程网站](http://ifeve.com/doug-lea/)
+
+- [Java并发原理与实战视频](https://www.bilibili.com/video/av43697557?p=5)
 
 > JDK API学习方法提示：先看API doc，再看源码实现，在编码实验并使用jconsole监控效果。:)
+
+
 
 ## 背景：多线程的风险
 
@@ -76,7 +85,7 @@
 
   
 
-## 并发编程理论基础
+## 0 并发编程理论基础
 
 ### 几种特性
 
@@ -142,25 +151,22 @@
 
 
 
-## 1 synchronized（内置锁） 同步方法/代码块
+## 1 synchronized(内置锁)：同步方法/代码块
 
 >**锁的概念**
 >
 >- 锁有两种主要特性：***互斥（mutual exclusion）* 和*可见性（visibility）***。
 >
->  **互斥**即一次只允许一个线程持有某个特定的锁，因此可使用该特性实现对共享数据的协调访问协议，这样，一次就只有一个线程能够使用该共享数据。
+> **互斥**即一次只允许一个线程持有某个特定的锁，因此可使用该特性实现对共享数据的协调访问协议，这样，一次就只有一个线程能够使用该共享数据。
 >
->  **可见性**要更加复杂一些，它必须确保释放锁之前对共享数据做出的更改对于随后获得该锁的另一个线程是可见的 —— 如果没有同步机制提供的这种可见性保证，线程看到的共享变量可能是修改前的值或不一致的值，这将引发许多严重问题。
+> **可见性**要更加复杂一些，它必须确保释放锁之前对共享数据做出的更改对于随后获得该锁的另一个线程是可见的 —— 如果没有同步机制提供的这种可见性保证，线程看到的共享变量可能是修改前的值或不一致的值，这将引发许多严重问题。
 >
 >- **内置锁**：在Java中，每个对象都可以用作内置锁。synchronized给修饰的对象（方法或代码块）加内置锁。
+>-  **显式锁**：在Java中，是Lock接口的实现，作用于代码块，需要手动加、解锁。
 >
->  **显式锁**：在Java中，是Lock接口的实现，作用于代码块，需要手动加、解锁。
->
->- 加锁机制即可以确保**可见性**，又可以确保**原子性**。
->
->  
+>加锁机制即可以确保**可见性**，又可以确保**原子性**。
 
-synchronized是Java提供的重量级同步机制；修饰方法和代码块，给修饰的对象加内置锁，使线程间互斥从而保证线程安全，既可保证操作的原子性，又可以保证共享资源的可见性。
+synchronized是Java提供的重量级同步机制（该关键字的底层是hotspot JVM中通过C++来实现）；修饰方法和代码块，给修饰的对象加内置锁，使线程间互斥从而保证线程安全，既可保证操作的原子性，又可以保证共享资源的可见性。
 
 synchronized，**在JavaSE1.6之前**，synchronized属于重量级锁，效率低下，因为监视器锁(monitor)是依赖于底层的操作系统的互斥锁（Mutex Lock）来实现的，Java 的线程是映射到操作系统的原生线程之上的。如果要挂起或者唤醒一个线程， 都需要操作系统帮忙完成，而操作系统实现线程之间的切换时需要从用户态转换到内核态，这个状态之间的转换需要相对比较长的时间，时间成本相对较高，这也是为什么早期的 synchronized 效率低的原因。**在 JavaSE1.6 之后**，为了减少获得锁和释放锁带来的性能消耗，而引入的偏向锁和轻量级锁，优化之后变得更轻量，且性能也更好；实际开发中使用 synchronized 关键字的场景比volatile多些。 
 
@@ -182,7 +188,7 @@ synchronized(this){
 
 
 
-## 2 volatile 保证变量可见性
+## 2 volatile关键字：保证变量可见性
 
 volatile 仅可修饰变量；
 
@@ -233,191 +239,9 @@ public void doWork() {
 
 volatile变量来控制状态的可见性，通常比使用锁的代码更脆弱也更难以理解，要谨慎使用：因为volatile的语义不足以确保操作（如i++）的原子性，除非能够保证只有一个线程执行变量的写操作（Atomic原子变量提供了变量的 ‘读-改-写’ 的原子操作，常用作 ‘更好的volatile变量’。）。
 
-## 3 Lock接口实现（显示锁）对代码块加、解锁
-
-Lock接口是自 jdk1.5 添加的，Lock作用于代码块， 需要手动加锁 lock() 和解锁 unlock() 。Lock接口和实现类（ReentrantLock）都在包 java.util.concurrent.locks 中。
-
-### Lock 接口（since 1.5）
-
-<img src="images/lock-outline.png" alt="image-20200206122504133" style="zoom:50%; " align=left />
-
-### ReentrantLock（重入锁）
-
-```
-public class Sequence {
-	private ReentrantLock lock = new ReentrantLock();
-	
-	private int value = 0;
-	public int getNext() {
-		lock.lock();
-		value++;
-		lock.unlock();
-		return value;
-	}
-}
-```
 
 
-
-### 自定义可重入锁（implements Lock）
-
-```java
-//可重入锁的实现
-public class MyLock implements Lock {
-	private boolean isLocked = false;
-	private Thread lockedBy = null;
-	private int lockCount = 0;
-
-	@Override
-	public synchronized void lock() {
-		Thread currentLock = Thread.currentThread();
-		while(isLocked && currentLock != lockedBy)//自旋
-		{
-			try {
-				this.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		isLocked = true;
-		lockedBy = currentLock;
-		lockCount ++;
-	}
-	
-	@Override
-	public synchronized void unlock() {
-		if(lockedBy != Thread.currentThread())
-		{
-			lockCount--;
-			if(lockCount == 0)
-			{
-				this.notify();
-				isLocked = false;
-			}
-		}
-	}
-	//...
-}
-
-public class Sequence {
-	private MyLock lock = new MyLock();
-	public void a() {
-		lock.lock();
-		System.out.println("a.....");
-		b();// 重入
-		lock.unlock();
-	}
-	public void b() {
-		lock.lock();
-		System.out.println("b.....");
-		lock.unlock();
-	}
-
-	public static void main(String[] args) {
-		Sequence seq = new Sequence();
-
-		Thread t1 = new Thread() {
-			@Override
-			public void run() {
-				while (true)
-					seq.a();
-			}
-		};
-		Thread t2 = new Thread() {
-			@Override
-			public void run() {
-				while (true)
-					seq.a();
-			}
-		};
-		t1.start();
-		t2.start();
-	}
-}
-//运行结果就是a()和b()方法中代码均可正常打印。
-```
-
-
-
-## 4 AQS接口实现
-
-单个线程/交替执行，其实和队列无关，jdk级别解决同步问题即可；
-
-### AbstractQueuedSynchronizer
-
-java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）。
-
-AQS核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设 置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS是用CLH队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
-
-> CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结 点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁 的分配。
-
-ReentrantLock， AQS {
-
-- 自旋锁
-
-- park/unpark
-
-- CAS
-
-}
-
-源码分析：
-
-```java
-/*
- * @since 1.5
- * @author Doug Lea
- */
-public abstract class AbstractQueuedSynchronizer
-    extends AbstractOwnableSynchronizer
-    implements java.io.Serializable {
-{
-    /**
-     * Head of the wait queue, lazily initialized.  Except for initialization, it is modified only via method setHead.  Note: If head exists, its waitStatus is guaranteed not to be CANCELLED.
-     */
-    private transient volatile Node head;
-    // Tail of the wait queue, lazily initialized.  Modified only via method enq to add new wait node.
-    private transient volatile Node tail;
-    //The synchronization state.
-    private volatile int state;
-
-		static final class Node {
-        volatile Node prev;
-        volatile Node next;
-        volatile Thread thread;
-        ...
-		}
-    
-    /* @return {@code true} if there is a queued thread preceding the current thread, and {@code false} if the current thread is at the head of the queue or the queue is empty
-     * @since 1.7
-     */
-    public final boolean hasQueuedPredecessors() {
-        Node h, s;
-        if ((h = head) != null) {
-            if ((s = h.next) == null || s.waitStatus > 0) {
-                s = null; // traverse in case of concurrent cancellation
-                for (Node p = tail; p != h && p != null; p = p.prev) {
-                    if (p.waitStatus <= 0)
-                        s = p;
-                }
-            }
-            if (s != null && s.thread != Thread.currentThread())
-                return true;
-        }
-        return false;
-    }
-}
-```
-
-
-
-### 自定义锁（implements AQS）
-
-
-
-
-
-## 5 Atomic 原子类
+## 3 Atomic 原子类
 
 ### CAS操作
 
@@ -519,7 +343,7 @@ public class Sequence {
 
 
 
-## 6 并发集合
+## 4 并发集合
 
 The `java.util.concurrent` package includes a number of additions to the Java Collections Framework. These are most easily categorized by the collection interfaces provided:
 
@@ -537,26 +361,425 @@ The `java.util.concurrent` package includes a number of additions to the Java Co
 
 
 
+
+
+## 5 Lock 接口的实现（显式锁）对代码块加、解锁
+
+Lock接口是自 jdk1.5 添加的，Lock作用于代码块， 需要手动加锁 lock() 和解锁 unlock() 。Lock接口和实现类（ReentrantLock）都在包 java.util.concurrent.locks 中。
+
+### Lock 接口
+
+outline
+
+<img src="images/lock-outline.png" alt="image-20200206122504133" style="zoom:50%; " align=left />
+
+```java
+ /**
+ * {@code Lock} implementations provide more extensive locking
+ * operations than can be obtained using {@code synchronized} methods
+ * and statements.  They allow more flexible structuring, may have
+ * quite different properties, and may support multiple associated
+ * {@link Condition} objects.
+ *
+ * <p>A lock is a tool for controlling access to a shared resource by
+ * multiple threads. Commonly, a lock provides exclusive access to a
+ * shared resource: only one thread at a time can acquire the lock and
+ * all access to the shared resource requires that the lock be
+ * acquired first. However, some locks may allow concurrent access to
+ * a shared resource, such as the read lock of a {@link ReadWriteLock}.
+ *
+ * <p>The use of {@code synchronized} methods or statements provides
+ * access to the implicit monitor lock associated with every object, but
+ * forces all lock acquisition and release to occur in a block-structured way:
+ * when multiple locks are acquired they must be released in the opposite
+ * order, and all locks must be released in the same lexical scope in which
+ * they were acquired.
+ *
+ * <p>While the scoping mechanism for {@code synchronized} methods
+ * and statements makes it much easier to program with monitor locks,
+ * and helps avoid many common programming errors involving locks,
+ * there are occasions where you need to work with locks in a more
+ * flexible way. For example, some algorithms for traversing
+ * concurrently accessed data structures require the use of
+ * &quot;hand-over-hand&quot; or &quot;chain locking&quot;: you
+ * acquire the lock of node A, then node B, then release A and acquire
+ * C, then release B and acquire D and so on.  Implementations of the
+ * {@code Lock} interface enable the use of such techniques by
+ * allowing a lock to be acquired and released in different scopes,
+ * and allowing multiple locks to be acquired and released in any
+ * order.
+ *
+ * <p>With this increased flexibility comes additional
+ * responsibility. The absence of block-structured locking removes the
+ * automatic release of locks that occurs with {@code synchronized}
+ * methods and statements. In most cases, the following idiom
+ * should be used:
+ *
+ * <pre> {@code
+ * Lock l = ...;
+ * l.lock();
+ * try {
+ *   // access the resource protected by this lock
+ * } finally {
+ *   l.unlock();
+ * }}</pre>
+ * @see ReentrantLock
+ * @see Condition
+ * @see ReadWriteLock
+ *
+ * @since 1.5
+ * @author Doug Lea
+ */
+public interface Lock {
+ /**
+     * Acquires the lock.
+     * <p>If the lock is not available then the current thread becomes
+     * disabled for thread scheduling purposes and lies dormant until the
+     * lock has been acquired.
+     *
+     * <p><b>Implementation Considerations</b>
+     * <p>A {@code Lock} implementation may be able to detect erroneous use
+     * of the lock, such as an invocation that would cause deadlock, and
+     * may throw an (unchecked) exception in such circumstances.  The
+     * circumstances and the exception type must be documented by that
+     * {@code Lock} implementation.
+     */
+    void lock();
+    
+    /**
+     * Releases the lock.
+     *
+     * <p><b>Implementation Considerations</b>
+     * <p>A {@code Lock} implementation will usually impose
+     * restrictions on which thread can release a lock (typically only the
+     * holder of the lock can release it) and may throw
+     * an (unchecked) exception if the restriction is violated.
+     * Any restrictions and the exception
+     * type must be documented by that {@code Lock} implementation.
+     */
+    void unlock();
+```
+
+
+
+### ReentrantLock 可重入锁
+
+源码解析：
+
+```java
+ReentrantLock.java 代码片段 
+/**
+ * A reentrant mutual exclusion {@link Lock} with the same basic
+ * behavior and semantics as the implicit monitor lock accessed using
+ * {@code synchronized} methods and statements, but with extended
+ * capabilities.
+ *
+ * <p>A {@code ReentrantLock} is <em>owned</em> by the thread last
+ * successfully locking, but not yet unlocking it. A thread invoking
+ * {@code lock} will return, successfully acquiring the lock, when
+ * the lock is not owned by another thread. The method will return
+ * immediately if the current thread already owns the lock. This can
+ * be checked using methods {@link #isHeldByCurrentThread}, and {@link
+ * #getHoldCount}.
+ *
+ * @since 1.5
+ * @author Doug Lea
+ */
+public class ReentrantLock implements Lock, java.io.Serializable {
+    private static final long serialVersionUID = 7373984872572414699L;
+    /** Synchronizer providing all implementation mechanics */
+    private final Sync sync;
+  
+    /**
+     * Creates an instance of {@code ReentrantLock}.
+     * This is equivalent to using {@code ReentrantLock(false)}.
+     */
+    public ReentrantLock() {
+        sync = new NonfairSync();
+    }
+
+    /**
+     * Creates an instance of {@code ReentrantLock} with the given fairness policy.
+     * @param fair {@code true} if this lock should use a fair ordering policy
+     */
+    public ReentrantLock(boolean fair) {
+        sync = fair ? new FairSync() : new NonfairSync();
+    }
+ }
+```
+
+使用方法：
+
+```java
+public class Sequence {
+	private ReentrantLock lock;
+  private int value;
+  public Sequence(){
+    lock = new ReentrantLock();
+    value = 0;
+  }
+	public int getNext() {
+		lock.lock();
+		value++;
+		lock.unlock();
+		return value;
+	}
+}
+```
+
+
+
+### 自定义可重入锁（implements Lock）
+
+```java
+//可重入锁的实现
+public class MyLock implements Lock {
+	private boolean isLocked = false;
+	private Thread lockedBy = null;
+	private int lockCount = 0;
+
+	@Override
+	public synchronized void lock() {
+		Thread currentLock = Thread.currentThread();
+		while(isLocked && currentLock != lockedBy)//自旋
+		{
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		isLocked = true;
+		lockedBy = currentLock;
+		lockCount ++;
+	}
+	
+	@Override
+	public synchronized void unlock() {
+		if(lockedBy != Thread.currentThread())
+		{
+			lockCount--;
+			if(lockCount == 0)
+			{
+				this.notify();
+				isLocked = false;
+			}
+		}
+	}
+	//...
+}
+
+public class Sequence {
+	private MyLock lock = new MyLock();
+	public void a() {
+		lock.lock();
+		System.out.println("a.....");
+		b();// 重入
+		lock.unlock();
+	}
+	public void b() {
+		lock.lock();
+		System.out.println("b.....");
+		lock.unlock();
+	}
+
+	public static void main(String[] args) {
+		Sequence seq = new Sequence();
+
+		Thread t1 = new Thread() {
+			@Override
+			public void run() {
+				while (true)
+					seq.a();
+			}
+		};
+		Thread t2 = new Thread() {
+			@Override
+			public void run() {
+				while (true)
+					seq.a();
+			}
+		};
+		t1.start();
+		t2.start();
+	}
+}
+//运行结果就是a()和b()方法中代码均可正常打印。
+```
+
+
+
+## 6 AQS接口实现
+
+单个线程/交替执行，其实和队列无关，jdk级别解决同步问题即可；
+
+### AbstractQueuedSynchronizer
+
+java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）。
+
+AQS核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设 置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS是用CLH队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
+
+> CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结 点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁 的分配。
+
+ReentrantLock， AQS {
+
+- 自旋锁
+
+- park/unpark
+
+- CAS
+
+}
+
+源码分析：
+
+```java
+/*
+ * @since 1.5
+ * @author Doug Lea
+ */
+public abstract class AbstractQueuedSynchronizer
+    extends AbstractOwnableSynchronizer
+    implements java.io.Serializable {
+{
+    /**
+     * Head of the wait queue, lazily initialized.  Except for initialization, it is modified only via method setHead.  Note: If head exists, its waitStatus is guaranteed not to be CANCELLED.
+     */
+    private transient volatile Node head;
+    // Tail of the wait queue, lazily initialized.  Modified only via method enq to add new wait node.
+    private transient volatile Node tail;
+    //The synchronization state.
+    private volatile int state;
+
+		static final class Node {
+        volatile Node prev;
+        volatile Node next;
+        volatile Thread thread;
+        ...
+		}
+    
+    /* @return {@code true} if there is a queued thread preceding the current thread, and {@code false} if the current thread is at the head of the queue or the queue is empty
+     * @since 1.7
+     */
+    public final boolean hasQueuedPredecessors() {
+        Node h, s;
+        if ((h = head) != null) {
+            if ((s = h.next) == null || s.waitStatus > 0) {
+                s = null; // traverse in case of concurrent cancellation
+                for (Node p = tail; p != h && p != null; p = p.prev) {
+                    if (p.waitStatus <= 0)
+                        s = p;
+                }
+            }
+            if (s != null && s.thread != Thread.currentThread())
+                return true;
+        }
+        return false;
+    }
+}
+```
+
+
+
+### 自定义锁（implements AQS）
+
+
+
+
+
+
+
 ## 7 并发工具类
 
 ### Semaphore(信号量): 
 
 允许多个线程同时访问，synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。
 
-**Semaphore 的两种模式:**
+**主要应用场景：**控制同时访问资源的线程数。如：多人抢占n个厕所坑位的的情景（这个例子有味道）。
 
-- **公平模式：** 调用acquire的顺序就是获取许可证的顺序，遵循FIFO；
+#### acquire 、release、drainPermits()
+
+默认情况下：
+
+- int availablePermits()：当前可获得的所有 permits 的总数；
+- 一次 acquire() 消耗一个 perimit，availablePermits() 减 1 ；
+
+- 一次 release() 生产一个 permit，availablePermits() 加 1 ；
+- int drainPermits()：获当前可获得的所有 permits 数，并返回数量；如果当前 permits 数为负值，则全部 release ，返回 0 ； 
+
+#### 初始perimits值 的几种情况：
+
+- **为负值：**一开始所有线程acquire不到permit；多次release后直到availablePermits>=1，才可以得到permit。
+- **为零：**一开始所有线程都acquire不到permit；一次release后直到availablePermits为1，才可以得到一个permit。
+- **为正值：**一开始限制数量内的线程acquire可以到perimit；
+
+#### Semaphore 的两种模式:
+
+- **公平模式：** 调用acquire的顺序就是获取许可证(permit)的顺序，遵循FIFO；
 - **非公平模式：** 抢占式的。
 
+源码解析：
+
 ```java
-  //公平模式构造方法
+ /*Semaphore.java 代码摘要*/
+  //非公平模式构造方法
   public Semaphore(int permits) {
     sync = new NonfairSync(permits);
   }
-  //非公平模式构造方法
+  //自定义公平模式构造方法
   public Semaphore(int permits, boolean fair) {
     sync = fair ? new FairSync(permits) : new NonfairSync(permits);
   }
+
+  /**  Acquires a permit from this semaphore, blocking until one is available, or the thread is {@linkplain Thread#interrupt interrupted}.
+     * <p>Acquires a permit, if one is available and returns immediately, reducing the number of available permits by one.
+     * <p>If no permit is available then the current thread becomes disabled for thread scheduling purposes and lies dormant until one of two things happens:
+     * <ul>
+     * <li>Some other thread invokes the {@link #release} method for this semaphore and the current thread is next to be assigned a permit; or
+     * <li>Some other thread {@linkplain Thread#interrupt interrupts} the current thread.
+     * </ul>
+     * 
+     * <p>If the current thread:
+     * <ul>
+     * <li>has its interrupted status set on entry to this method; or
+     * <li>is {@linkplain Thread#interrupt interrupted} while waiting for a permit,
+     * </ul>
+     * then {@link InterruptedException} is thrown and the current thread's
+     * interrupted status is cleared.
+     * @throws InterruptedException if the current thread is interrupted
+     */
+    public void acquire() throws InterruptedException {
+        sync.acquireSharedInterruptibly(1);
+    }
+```
+
+API测试：
+
+```
+  	Semaphore sneg1 = new Semaphore(-1);
+		System.out.println("original perimits= "+ sneg1.availablePermits());
+		sneg1.release();
+		System.out.println("after 1st release= "+ sneg1.availablePermits());
+		sneg1.release();
+		System.out.println("after 2nd release= "+ sneg1.availablePermits());
+		sneg1.release();
+		System.out.println("after 3nd release= "+ sneg1.availablePermits());
+		sneg1.acquire();
+		System.out.println("after 1st acquire= "+ sneg1.availablePermits());
+	    
+		Semaphore s2 = new Semaphore(2);
+		System.out.println(s2.drainPermits() + " = " + s2.availablePermits());
+		Semaphore sNeg2 = new Semaphore(-2);
+		System.out.println(sNeg2.drainPermits() + " = " + sNeg2.availablePermits());
+
+输出：
+original perimits= -1
+after 1st release= 0
+after 2nd release= 1
+after 3nd release= 2
+after first acquire= 1
+2 permit semaphore:2 = 0
+-2 permit semaphore:-2 = 0
 ```
 
 **使用例子：**
@@ -596,11 +819,11 @@ public class SemaphoreTest {
 
 是一个同步工具类，用来协调多个线程之间的同步。这个工具通常用来控制线程等待，它可以让某一个线程等待直到倒计时结束，再开始执行。 
 
-**两种典型用法：**
+**两种典型应用场景：**
 
-**1 某一线程在开始运行前等待n个线程执行完毕。**将 CountDownLatch 的计数器初始化为n ：`new CountDownLatch(n)`，每当一个任务线程执行完毕，就将计数器减1 `countdownlatch.countDown()`，当计数器的值变为0时，在`CountDownLatch上 await()` 的线程就会被唤醒。一个典型应用场景就是启动一个服务时，主线程需要等待多个组件加载完毕，之后再继续执行。
+**1 某一线程在开始运行前 等待n个线程执行完毕。**将 CountDownLatch 的计数器初始化为n ：`new CountDownLatch(n)`，每当一个任务线程执行完毕，就将计数器减1 `countdownlatch.countDown()`，当计数器的值变为0时，在`CountDownLatch上 await()` 的线程就会被唤醒。一个典型应用场景就是启动一个服务时，主线程需要等待多个组件加载完毕，之后再继续执行。
 
-**2 实现多个线程开始执行任务的最大并行性。**注意是并行不是并发，强调的是多个线程在某一时刻同时开始执行。类似于赛跑，将多个线程放到起点，等待发令枪响，然后同时开跑。做法是初始化一个共享的 `CountDownLatch` 对象，将其计数器初始化为 1 ：`new CountDownLatch(1)`，多个线程在开始执行任务前首先 `coundownlatch.await()`，当主线程调用 countDown() 时，计数器变为0，多个线程同时被唤醒。
+**2 实现多个线程开始执行任务的 最大并行性 。**注意是并行不是并发，强调的是多个线程在某一时刻同时开始执行。类似于赛跑，将多个线程放到起点，等待发令枪响，然后同时开跑。做法是初始化一个共享的 `CountDownLatch` 对象，将其计数器初始化为 1 ：`new CountDownLatch(1)`，多个线程在开始执行任务前首先 `coundownlatch.await()`，当主线程调用 countDown() 时，计数器变为0，多个线程同时被唤醒。
 
 **不足：**CountDownLatch是一次性的，计数器的值只能在构造方法中初始化一次，之后没有任何机制再次对其设置值，当CountDownLatch使用完毕后，它不能再次被使用。
 
@@ -640,15 +863,17 @@ public class CountDownLatchTest {
 
 ### CyclicBarrier(循环栅栏): 
 
-CyclicBarrier 和 CountDownLatch 非常类似，它也可以实现线程间的计数等待，但是它的功能比 CountDownLatch 更加复杂和强大。主要应用场景和 CountDownLatch 类似。
+CyclicBarrier 和 CountDownLatch 非常类似，它也可以实现线程间的计数等待，但是它的功能比 CountDownLatch 更加复杂和强大。
+
+主要应用场景和 CountDownLatch 类似。
 
 CyclicBarrier 的字面意思是可循环使用(Cyclic)的屏障(Barrier)。它要做的事情是，让一组线程到达一个屏障(也可以叫同步点)时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。 
 
-CyclicBarrier默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。
+CyclicBarrier默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞，直到这个CyclicBarrier对象await拦截的线程数达到，才会继续往下执行。
 
 **两种构造方法：**
 
-```
+```java
     /** 
      * @param parties the number of threads that must invoke {@link #await} before the barrier is tripped
      * @param barrierAction the command to execute when the barrier is tripped, or {@code null} if there is no action
@@ -668,11 +893,35 @@ CyclicBarrier默认的构造方法是 CyclicBarrier(int parties)，其参数表�
     public CyclicBarrier(int parties) {
         this(parties, null);
     }
+    
+     /**
+     * Waits until all {@linkplain #getParties parties} have invoked
+     * {@code await} on this barrier.
+     */
+     public int await() throws InterruptedException, BrokenBarrierException {
+        try {
+            return dowait(false, 0L);
+        } catch (TimeoutException toe) {
+            throw new Error(toe); // cannot happen
+        }
+    }
+    
+    /**
+     * Waits until all {@linkplain #getParties parties} have invoked {@code await} on this barrier, or the specified waiting time elapses.
+     * <p>If the specified waiting time elapses then {@link TimeoutException} is thrown. If the time is less than or equal to zero, the method will not wait at all.
+     * <p>If the barrier is {@link #reset} while any thread is waiting, or if the barrier {@linkplain #isBroken is broken} when {@code await} is invoked, or while any threa
+     */
+     public int await(long timeout, TimeUnit unit)
+        throws InterruptedException,
+               BrokenBarrierException,
+               TimeoutException {
+        return dowait(true, unit.toNanos(timeout));
+     }
 ```
 
 **使用方法**
 
-```
+```java
 public class CyclicBarrierExample {
 	private static final CyclicBarrier cyclicBarrier = new CyclicBarrier(5);
 	public static void main(String[] args) throws InterruptedException {
@@ -709,8 +958,6 @@ public class CyclicBarrierExample {
 
 
 
-
-
 ## Exectors
 
 ### Executor Interfaces
@@ -732,7 +979,7 @@ factory method in [`java.util.concurrent.Executors`](https://docs.oracle.com/jav
 - The [`newSingleThreadExecutor`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html#newSingleThreadExecutor-int-) method creates an executor that executes a single task at a time.
 - Several factory methods are `ScheduledExecutorService` versions of the above executors.
 
-# Fork/Join
+## Fork/Join
 
 The fork-join framework allows to break a certain task on several workers and then wait for the result to combine them. It leverages multi-processor machine's capacity to great extent. Following are the core concepts and objects used in fork-join framework.
 
