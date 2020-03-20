@@ -2,23 +2,93 @@
 
 [TOC]
 
+## 线程
+
+线程是一个独立执行的调用序列；同一个进程的线程在同一时刻共享一些系统资源（比如文件句柄等），也能访问同一个进程所创建的对象资源（内存资源）。java.lang.Thread对象负责统计和控制这种行为。
+
+每个程序都至少拥有一个线程 - 即作为Java虚拟机(JVM)启动参数运行在主类main方法的线程。在Java虚拟机初始化过程中，也可能启动其他的后台线程。这种线程的数目和种类因 JVM 的实现而异。然而所有用户级线程都是显式被构造并在主线程或者是其他用户线程中被启动。
+
+这里对 Thread 类中的主要方法和属性以及一些使用注意事项作出总结。这些内容会在《Java Concurrency Constructs》这本书中进一步的讨论阐述。Java语言规范以及已发布的API文档中都会有更详细权威的描述。
+
+
+
 ## 线程的状态
 
-![image-20200205193457003](/Users/liuyuanyuan/github/StrongCode/java/images/thread-states.png)
+![img](images/thread_states.png)
 
-
+Java 线程的生命周期中存在几种状态。在Thread类里有一个枚举类型State，定义了[线程的几种状态](http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485596&idx=2&sn=05530f1d33c7e1d03ef1d884456cbfe1&chksm=fe795944c90ed052aabcc0d665d65a0d5a7767df0333666055f11417981037b65acb1e525758&scene=21#wechat_redirect)，分别有：
 
 1. 初始(NEW)：新创建了一个线程对象，但还没有调用start()方法。
+
 2. 运行(RUNNABLE)：Java线程中将就绪（ready）和运行中（running）两种状态笼统的称为“运行”。
-   线程对象创建后，其他线程(比如main线程）调用了该对象的start()方法。该状态的线程位于可运行线程池中，等待被线程调度选中，获取CPU的使用权，此时处于就绪状态（ready）。就绪状态的线程在获得CPU时间片后变为运行中状态（running）。
+
+   - 线程对象创建后，其他线程(比如main线程）调用了该对象的start()方法；该状态的线程位于可运行线程池中，等待被线程调度选中，获取CPU的使用权，此时处于就绪状态（ready）。
+
+   - 就绪状态的线程在获得CPU时间片后变为运行中状态（running）。
+
+   在RUNNABLE状态下的线程可能会处于等待状态， 因为它正在等待一些系统资源的释放，比如IO。
+
 3. 阻塞(BLOCKED)：表示线程阻塞于锁。
-4. 等待(WAITING)：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）。
-5. 超时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。
+
+   阻塞状态是线程阻塞在进入[synchronized](http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247484598&idx=3&sn=f37dbbfa704fb465c8b1ef9fefc24398&chksm=fe79556ec90edc78f06934fd24f73a584a6e32ce542e3790cb3aa62a6a9f35cb32b06cfa56fa&scene=21#wechat_redirect)关键字修饰的方法或代码块(获取锁)时的状态。
+
+   一旦得到锁就从阻塞状态进入运行状态。
+
+4. 等待(WAITING)：处于这种状态的线程不会被分配CPU执行时间，它们要等待被显式地唤醒或终止(通知唤醒 Object notify()/notifyAll() 或中断Thread interpreted()）)，否则会处于无限期等待的状态。
+
+   - Object wait()
+
+   - Thread join()
+
+   - LockSupport.park()
+
+   比如：一个线程调用了一个对象的wait方法，那么这个线程就会处于waiting状态直到另外一个线程调用这个对象的notify或者notifyAll方法后，才会解除这个状态。
+
+5. 超时等待(TIMED_WAITING)：处于这种状态的线程不会被分配CPU执行时间，不过无须无限期等待被其他线程显示地唤醒，在达到一定时间后它们会自动唤醒。
+
+   - Thread.sleep(**long** millis)
+
+   - Object wait(**long** timeoutMillis)
+
+   - Thread join(final **long** millis) , join(**long** millis, **int** nanos)
+
+   - LockSupport.parkNanos(**long** nanos) 
+
+   - LockSupport.parkUntil(**long** deadline)  
+
 6. 终止(TERMINATED)：表示该线程已经执行完毕。
 
+```java
+public class ThreadSateTest {
+	public static void main(String[] args) throws InterruptedException {
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println(Thread.currentThread().getState());//RUNNABLE
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					System.err.println(e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		});
+		System.out.println(t.getState());//NEW
+		
+		t.start();
+		//then print RUNNABLE from run()
+		
+		System.out.println(t.getState());//TIMED_WAITING
+		
+		t.join();
+		System.out.println(t.getState());//TERMINATED
+	}
+}
+```
 
 
-## Thread.java类详解：
+
+## Thread.java 类代码段
 
 几种构造方法：
 
@@ -61,8 +131,9 @@
 
 ## thread.start() 启动线程、 thread.run() /runnable.run()运行线程体
 
-- start() 是启动线程
-- run()  是运行线程体中的具体代码
+- start() ：启动线程，初始化Thread类的实例的run()方法。
+- run()  ：运行线程体，即run()方法中的具体代码；
+- isAlive()：在线程start()之后终止之前，返回true；
 
 当一个线程类同时实现Runnable和继承Thread时，只有重写的Thread的run方法会被执行。
 
@@ -86,15 +157,39 @@
 
 
 
-## setDaemon() 将线程设置为守护线程
+## thread.setPriority()设置线程优先级
 
-将线程设置为守护线程setDaemon(true)后，当主线程结束后守护线程也会结束。
+JVM为了实现跨平台(不同的硬件平台和各种操作系统)的特性，Java语言在线程调度与调度公平性上未作出任何的承诺，甚至都不会严格保证线程会被执行。但是Java线程却支持优先级的方法，这些方法会影响线程的调度：每个线程都有一个优先级，分布在 Thread.MIN_PRIORITY 和 Thread.MAX_PRIORITY之间（分别为1和10）。
+
+- 默认情况下，新创建的线程都和创建它的线程拥有相同的优先级。main方法所关联的初始化线程拥有一个默认的优先级，这个优先级是Thread.NORM_PRIORITY (5)。
+- 线程的当前优先级可以通过getPriority方法获得。
+- 线程的优先级可以通过setPriority方法来动态的修改，一个线程的最高优先级由其所在的线程组限定。
+- 当可运行的线程数超过了可用的CPU数目的时候，线程调度器更偏向于去执行那些拥有更高优先级的线程。
+- 线程优先级对语义和正确性没有任何的影响。特别是，优先级管理不能用来代替锁机制。优先级仅仅是用来表明哪些线程是重要紧急的，当存在很多线程在激励进行CPU资源竞争的情况下，线程的优先级标识将会显得非常有用。
+
+下表列出了不同类型任务在线程优先级设定上的通常约定。在很多并发应用中，在任一指定的时间点上，只有相对较少的线程处于可执行的状态（另外的线程可能由于各种原因处于阻塞状态），在这种情况下，没有什么理由需要去管理线程的优先级。另一些情况下，在线程优先级上的调整可能会对并发系统的调优起到一些作用。
+
+| 范围 | 用途                                                         |
+| ---- | ------------------------------------------------------------ |
+| 10   | Crisis management（应急处理）                                |
+| 7-9  | Interactive, event-driven（交互相关，事件驱动）              |
+| 4-6  | IO-bound（IO限制类）                                         |
+| 2-3  | Background computation（后台计算）                           |
+| 1    | Run only if nothing else can（仅在没有任何线程运行时运行的） |
+
+
+
+## thread.setDaemon() 将线程设置为守护线程
+
+在thread.start()之前，可以通过thread.setDaemon(true)将线程设置为守护线程后，当主线程结束后守护线程也会结束。在守护线程中产生的新线程也是守护线程。守护线程的
 
 > 守护线程：也称服务线程，是后台线程，为用户线程提供公共服务，在没有用户线程可服务时会自动离开。
 >
 > 优先级：守护线程的优先级比较低，用于为系统中的其它对象和线程提供服务。
 >
 > 设置方法：在线程对象启动之前，用 setDaemon(true) 设置。在 Daemon 线程中产生的新线程也是 Daemon 的。
+>
+> 状态方法：isDaemon()能够返回该线程是否会守护线程的值。
 
 ```
 public static void main(String[] args) {
@@ -113,6 +208,18 @@ public static void main(String[] args) {
 ```
 
 
+
+## 线程及其线程组
+
+每个线程都属于一个线程组（是一个线程组中的成员）。默认，新建线程与创建它的线程属于同一个线程组。线程组以树状分布。当创建一个新的线程组，该线程组称为当前线程组的子组。
+
+Thread 类的 getThreadGroup() 方法会返回当前线程所属的线程组；对应地，ThreadGroup 类也有方法可以得到目前属于这个线程组的所有线程，比如enumerate()方法。
+
+ThreadGroup 类存在的一个目的是支持安全策略来动态的限制对该组的线程操作。比如对不属于同一组的线程调用interrupt是不合法的。这是为避免某些问题(比如，一个applet线程尝试杀掉主屏幕的刷新线程)所采取的措施。ThreadGroup也可以为该组所有线程设置一个最大的线程优先级。
+
+线程组往往不会直接在程序中被使用。在大多数的应用中，如果仅仅是为在程序中跟踪线程对象的分组，那么普通的集合类（比如java.util.Vector）应是更好的选择。
+
+在ThreadGroup类为数不多的几个方法中，uncaughtException() 方法却是非常有用的，当线程组中的某个线程因抛出未检测的异常（比如空指针异常NullPointerException）而中断的时候，调用这个方法可以打印出线程的调用栈信息。
 
 ## 终止线程的4种方法
 
@@ -179,7 +286,7 @@ public class MyThread extends Thread{
 	}
 ```
 
-### 4 thread.stop() 终止线程(线程不安全，自jdk1.2弃用)
+### 4 thread.stop() 终止线程(不安全，自jdk1.2弃用)
 
 程序中使用 thread.stop() 可以强行终止线程，但是 stop 方法是不安全的，主要是: thread.stop()调用之后，创建子线程的线程就会抛出 ThreadDeatherror 的错误，并且会释放子线程所持有的所有锁。一般任何进行加锁的代码块，都是为了保护数据的一致性，如果在调用 thread.stop()后导致了该线程所持有的所有锁的突然释放(不可控制)，那么被保护数据就有可能呈现不一致性，其他线程在使用这些被破坏的数据时，有可能导致一些很奇怪的应用程序错误。
 
@@ -187,7 +294,7 @@ public class MyThread extends Thread{
 
 
 
-## 线程常见方法解析：
+## 线程控制方法：
 
 ### Thread.yield() 线程让步
 
@@ -221,18 +328,21 @@ public class MyThread extends Thread{
 
 ### object wait - notify / notifyAll 线程等待-唤醒
 
-在Object.java中，定义了wait(), notify()和notifyAll()等接口。
+在Object.java中，定义了wait(), notify()和notifyAll()接口。
 
 wait()的作用是让当前线程释放它所持有的对象锁，让当前线程进入 WATING 等待队列/等待状态。需要依靠notify()/notifyAll() 唤醒；或者使用 wait(long timeout)时，timeout时间到自动唤醒。
 
 notify()和notifyAll()的作用则是唤醒当前对象上的等待的线程；notify()是唤醒单个线程，选择是随机的；而notifyAll()是唤醒在此对象监视器上等待的所有的线程。
 
+- 对于使用synchronized修饰的同步方法，因为该类的默认实例是(this)就是同步监视器，所以可以直接调用这3方法：this.wait() , this.notify(), this.notifyAll() 。
+- 对于synchronized修饰的同步代码块，同步监视器是synchronized(obj)括号里的对象，所以必须使用该对象调用这3方法: obj.wait() , obj.notify(), obj.notifyAll() 。
+
 Object类中关于等待/唤醒的API详细信息如下：
 
 - **notify()**：唤醒在此对象监视器上等待的单个线程。
 - **notifyAll()**：唤醒在此对象监视器上等待的所有线程。
-- **wait()**：让当前线程处于 “等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法”，当前线程被唤醒(进入“就绪状态”)。
-- **wait(long timeout)**：让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者超过指定的时间量”，当前线程被唤醒(进入“就绪状态”)。
+- **wait()**：等待，让当前线程处于 “等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法”，当前线程被唤醒(进入“就绪状态”)。
+- **wait(long timeout)**：定时等待，让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者超过指定的时间量”，当前线程被唤醒(进入“就绪状态”)。
 - **wait(long timeout, int nanos)**：让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者其他某个线程中断当前线程，或者已超过某个实际时间量”，当前线程被唤醒(进入“就绪状态”)。
 
 

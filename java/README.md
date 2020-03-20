@@ -10,9 +10,12 @@
 
 - 多线程并发编程
 
+  - [线程概念](thread_concept.md)
+  - [线程、进程的调度] (thread_progress_schedule.md)
   - [CPU 和 时间片、多线程、并行和并发](thread_cpu.md)
   - [线程创建](thread_create.md)
   - [多线程并发](thread_safe.md)
+  - [多线程间通信](thread_communication.md)
 
 - Java 基础概念
 
@@ -27,7 +30,6 @@
 - [Java 序列化](java_serializable.md)
   - [Java 复制](java_clone.md)
   
-  
 
 [Java 程序日志](java_log.md)
 
@@ -38,6 +40,7 @@
 - [设计原则](design_rule.md)
 - [设计模式](design_pattern.md)
 - [算法与数据结构](data_structure.md)
-- [Java 递归实现](java_recursion.md)
+- [Java递归实现](java_recursion.md)
+- 加密算法
 
 

@@ -47,7 +47,7 @@
 
 ## 线程安全：问题与解决方法
 
-#### 线程安全（thread-safe）:
+#### 什么是线程安全（thread-safe）:
 
 在多线程环境和单线程环境，都能保证正确性（复合预期，行为与其规范完全一致），就是线程安全的。
 
@@ -59,31 +59,9 @@
 
 无状态对象（无共享资源）一定是线程安全的。尽可能使用现有的线程安全对象（如AtomicLong）来管理类的状态。要保持状态的一致性，就需要在单个原子操作中更新所有相关的状态变量。(x++不是复合操作，不具有原子性，它包含读取-写入-修改三个操作)
 
-#### 解决线程安全问题的方法：
+#### 线程安全的解决方法：本章内容
 
-- synchronized 同步方法/代码块，自动加、解锁
 
-- volatile 轻量，保证变量可见性
-
-- Lock 显示锁，为代码块手动加、解锁
-
-  - wait/notify 主要用于线程通信，不是用于阻塞线程
-  - yeild()
-  - LockSuport.lock() /unlock(t)
-
-  - 自旋锁(while循环)、死锁、可重入锁
-
-  - 公平锁、非公平锁：
-
-    是否判断自己排队（等待队列），是的话就公平锁，否的话就不公平锁；
-
-- 使用AQS(AbstractQueueSynchronizer)重写自己的锁
-
-- Atomic 原子类
-
-- 并发工具类
-
-  
 
 ## 0 并发编程理论基础
 
@@ -95,11 +73,11 @@
 
 经典例子就是银行账户转账问题：从账户A向账户B转1000元，那么必然包括2个操作：从账户A减去1000元，往账户B加上1000元。这2个操作必须要具备原子性才能保证不出现意外。
 
-#### **可见性** 
+#### 可见性 
 
 是指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看到修改后的值。
 
-#### **有序性** 
+#### 有序性 
 
 即程序执行的顺序按照代码的先后顺序执行。
 
@@ -118,34 +96,24 @@
 
 
 
-#### 自旋锁
-
-
+#### 自旋锁(pinlock)
 
 #### 可重入锁
 
-
-
-#### 阻塞和死锁（Dead lock）
-
-阻塞：
+#### 阻塞（block）
 
 由于资源不足而引起的排队等待现象。
 
-死锁:
+#### 死锁（Dead lock）
 
-死锁的含义：
+死锁的含义：当线程T1持有锁L1并想获得锁L2的同时，线程T2持有锁L2并尝试所得锁L1，那么这两个线程将永远的等待下去，这种情况就是最简单的死锁。
 
-当线程T1持有锁L1并想获得锁L2的同时，线程T2持有锁L2并尝试所得锁L1，那么这两个线程将永远的等待下去，这种情况就是最简单的死锁。
-
-死锁产生的四个必要条件**：**
+死锁产生的四个必要条件：
 
 1）互斥条件：指进程对所分配到的资源进行排它性使用，即在一段时间内某资源只由一个进程占用。如果此时还有其它进程请求资源，则请求者只能等待，直至占有资源的进程用毕释放。
 2）请求和保持条件：指进程已经保持至少一个资源，但又提出了新的资源请求，而该资源已被其它进程占有，此时请求进程阻塞，但又对自己已获得的其它资源保持不放。
 3）不剥夺条件：指进程已获得的资源，在未使用完之前，不能被剥夺，只能在使用完时由自己释放。
 4）环路等待条件：指在发生死锁时，必然存在一个进程——资源的环形链，即进程集合{P0，P1，P2，···，Pn}中的P0正在等待一个P1占用的资源；P1正在等待P2占用的资源，……，Pn正在等待已被P0占用的资源。
-
-
 
 #### happens-before
 
@@ -178,23 +146,25 @@ synchronized，**在JavaSE1.6之前**，synchronized属于重量级锁，效率�
 
 用于代码块：对**synchronized(指定的对象)**加锁，进入同步代码块前要获得给定对象的锁。
 
-```
-//this 是当前类的实例
-synchronized(this){
+```java
+//对当前类的实例加锁
+synchronized void method(){
 }
-
-
+//对当前类对象加锁
+synchronized static void staticMethod(){
+}
+//this 是当前类的实例, obj 
+synchronized(this/obj){
+}
 ```
 
 
 
 ## 2 volatile关键字：保证变量可见性
 
-volatile 仅可修饰变量；
+volatile 仅可修饰变量；volatile 变量可以确保可见性、有序性（确保变量在一个线程的更新操作通知到其他所有线程），但不具备原子性。
 
-volatile 变量具有可见性、有序性（确保变量在一个线程的更新操作通知到其他所有线程），但不具备原子性。
-
-> **注意**：volatile不具备原子性，这是volatile与java中的synchronized、java.util.concurrent.locks.Lock最大的功能差异，这一点在面试中也是非常容易问到的点。
+> **注意**：volatile 不具备原子性，这是 volatile 与 synchronized、java.util.concurrent.locks.Lock 最大的功能差异。
 
 volatile还有一个作用是防止指令重排序；
 
@@ -204,7 +174,7 @@ volatile还有一个作用是防止指令重排序；
 
 在访问volatile变量时**不会执行加锁**操作，因此也就不会执行线程阻塞；
 
-将变量声明为 volatile，这就指示 JVM这个变量是不稳定的，每次使用它都到主存中进行读取。
+Java 的 volatile 关键字用于标记一个变量是“应当存储在主存”。更确切地说，每次读取volatile变量，都应该从主存读取，而不是从CPU缓存读取。每次写入一个volatile变量，应该写到主存中，而不是仅仅写到CPU缓存。
 
 <img src="images/threads-volatile.png" alt="image-20200122170241969" style="zoom:50%;" />
 
@@ -243,17 +213,19 @@ volatile变量来控制状态的可见性，通常比使用锁的代码更脆弱
 
 ## 3 Atomic 原子类
 
-### CAS操作
+### CAS 操作
 
-CAS 是 Conmpare And Swap 的缩写，意为比较并交换。是用于实现多线程同步的**原子指令**。 Java1.5 开始引入了 CAS，主要代码都放在 java.util.concurrent.atomic 包下，通过 sun 包下Unsafe类实现，而Unsafe类中的方法都是native方法，由JVM本地实现。
+**CAS(CompareAndSwap/CompareAndSet）比较并交换**。是用于实现多线程同步的**原子指令**。 Java1.5 开始引入了 CAS，主要代码都放在 java.util.concurrent.atomic 包下，通过 sun 包下的 Unsafe 类实现，而Unsafe类中的方法都是 native 方法，由 JVM 本地实现。
+
+**CAS实现原理：**
 
 CAS机制中使用了3个基本操作数：内存地址V，旧的预期值A，要修改的新值B。原理是：当更新一个变量的时候：只有当变量的预期值A和内存地址V当中的实际值相同时，才会将内存地址V对应的值修改为B。这是作为单个原子操作完成的。
 
-CAS的缺点：
+**CAS的缺点：**
 
-1.CPU开销较大：在并发量比较高的情况下，如果许多线程反复尝试更新某一个变量，却又一直更新不成功，循环往复，会给CPU带来很大的压力。
+1 CPU开销较大：在并发量比较高的情况下，如果许多线程反复尝试更新某一个变量，却又一直更新不成功，循环往复，会给CPU带来很大的压力。
 
-2.不能保证代码块的原子性：CAS机制所保证的只是一个变量的原子性操作，而不能保证整个代码块的原子性。比如需要保证3个变量共同进行原子性的更新，就不得不使用Synchronized了。
+2 不能保证代码块的原子性：CAS机制所保证的只是一个变量的原子性操作，而不能保证整个代码块的原子性。比如需要保证3个变量共同进行原子性的更新，就不得不使用Synchronized了。
 
 ### Atomic 原子类
 
@@ -279,14 +251,14 @@ AtomicMarkableReference :原子更新带有标记位的引用类型
 对象的属性修改类型 
 AtomicIntegerFieldUpdater:原子更新整形字段的更新器
 AtomicLongFieldUpdater:原子更新长整形字段的更新器
-AtomicStampedReference :原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原 子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+AtomicStampedReference:原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原 子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
 ```
 
 例子：AtomicLong
 
 常用方法：
 
-```
+```java
 public final long get() //获取当前的值
 public final long getAndSet(long newValue)//获取当前的值，并设置新的值
 public final long getAndIncrement()//获取当前的值，并自增
@@ -314,7 +286,7 @@ CAS 的原理是拿期望的值和原本的一个值作比较，如果相同则�
     private volatile long value;
 ```
 
-使用方式
+使用：
 
 ```java
 public class Sequence {
@@ -332,7 +304,7 @@ public class Sequence {
 			Thread t = new Thread() {
 				@Override
 				public void run() {
-			  System.out.println(Thread.currentThread().getName() + "---" + seq.getNext());
+			  	System.out.println(Thread.currentThread().getName() + "---" + seq.getNext());
 				}
 			};
 			t.start();
@@ -609,9 +581,9 @@ public class Sequence {
 
 
 
-## 6 AQS接口实现
+## 6 AQS 队列同步器接口
 
-单个线程/交替执行，其实和队列无关，jdk级别解决同步问题即可；
+AbstractQueuedSynchronizer（AQS）队列同步器：是用来构建锁或者其他同步组件的基础框架。
 
 ### AbstractQueuedSynchronizer
 
@@ -630,6 +602,30 @@ ReentrantLock， AQS {
 - CAS
 
 }
+
+#### AQS 使用一个int成员变量表示同步状态
+
+![img](https://pic4.zhimg.com/80/v2-c4145940634f4c25332977dee1730b57_1440w.jpg)
+
+#### AQS 通过内置的FIFO双向队列来完成获取锁线程的排队工作
+
+- 同步器包含两个节点类型的应用，一个指向头节点，一个指向尾节点，未获取到锁的线程会创建节点线程安全（compareAndSetTail）的加入队列尾部。同步队列遵循FIFO，首节点是获取同步状态成功的节点。
+
+![img](https://pic1.zhimg.com/80/v2-449d04fa7e26cf1ba8f0ce5a423ac8ec_1440w.jpg)
+
+- 未获取到锁的线程将创建一个节点，设置到尾节点。如下图所示：
+
+![img](https://pic4.zhimg.com/80/v2-4a3a7b72cd05252da3b5fe63fe018e0b_1440w.jpg)
+
+- 首节点的线程在释放锁时，将会唤醒后继节点。而后继节点将会在获取锁成功时将自己设置为首节点。如下图所示：
+
+![img](https://pic4.zhimg.com/80/v2-dd78e3444a0bf1d0cfc717851e55e7b3_1440w.jpg)
+
+
+
+
+
+
 
 源码分析：
 
