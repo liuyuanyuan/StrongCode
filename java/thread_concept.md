@@ -16,47 +16,71 @@
 
 ![img](images/thread_states.png)
 
-Java 线程的生命周期中存在几种状态。在Thread类里有一个枚举类型State，定义了[线程的几种状态](http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485596&idx=2&sn=05530f1d33c7e1d03ef1d884456cbfe1&chksm=fe795944c90ed052aabcc0d665d65a0d5a7767df0333666055f11417981037b65acb1e525758&scene=21#wechat_redirect)，分别有：
+Java 线程的生命周期中存在几种状态。在 Thread 类里有一个枚举类型public enum State，定义了[线程的几种状态](http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485596&idx=2&sn=05530f1d33c7e1d03ef1d884456cbfe1&chksm=fe795944c90ed052aabcc0d665d65a0d5a7767df0333666055f11417981037b65acb1e525758&scene=21#wechat_redirect)，如下。通过thread.getState()可以获取该线程的当前状态。
 
 1. 初始(NEW)：新创建了一个线程对象，但还没有调用start()方法。
 
-2. 运行(RUNNABLE)：Java线程中将就绪（ready）和运行中（running）两种状态笼统的称为“运行”。
+2. 运行(RUNNABLE)：Java线程中将就绪（ready）和运行中（running）两种状态笼统的称为运行(RUNNABLE)。
 
-   - 线程对象创建后，其他线程(比如main线程）调用了该对象的start()方法；该状态的线程位于可运行线程池中，等待被线程调度选中，获取CPU的使用权，此时处于就绪状态（ready）。
+   在RUNNABLE状态下的线程，是正在JVM中执行的，但也可能需要等待从操作系统获取其他资源，比如处理器、比如IO。
+
+   - 线程对象创建后，其他线程(比如main线程）调用了该线程对象的start()方法；该状态的线程位于可运行线程池中，等待被线程调度选中从而获取CPU的使用权，此时处于就绪状态（ready）。
 
    - 就绪状态的线程在获得CPU时间片后变为运行中状态（running）。
 
-   在RUNNABLE状态下的线程可能会处于等待状态， 因为它正在等待一些系统资源的释放，比如IO。
+   Thread.yield()：向调度程序提示当前线程愿意放弃当前使用的处理器。调度程序可以随意忽略此提示。可以使线程由running状态转为ready状态。
 
-3. 阻塞(BLOCKED)：表示线程阻塞于锁。
+   实际很少适用此方法，但它对调试或者测试可能很有用，因为它可能有助于重现由于竞争条件而产生的错误。
 
-   阻塞状态是线程阻塞在进入[synchronized](http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247484598&idx=3&sn=f37dbbfa704fb465c8b1ef9fefc24398&chksm=fe79556ec90edc78f06934fd24f73a584a6e32ce542e3790cb3aa62a6a9f35cb32b06cfa56fa&scene=21#wechat_redirect)关键字修饰的方法或代码块(获取锁)时的状态。
+3. 阻塞(BLOCKED)：表示线程阻塞于锁。阻塞状态的线程，等待获取一个监视器锁，从而进入同步代码块/方法，或者在调用Object wait() 后重新进入同步代码块/方法。
 
-   一旦得到锁就从阻塞状态进入运行状态。
+   - 阻塞状态是线程阻塞在进入[synchronized](http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247484598&idx=3&sn=f37dbbfa704fb465c8b1ef9fefc24398&chksm=fe79556ec90edc78f06934fd24f73a584a6e32ce542e3790cb3aa62a6a9f35cb32b06cfa56fa&scene=21#wechat_redirect)关键字修饰的方法或代码块(获取锁)时的状态。
 
-4. 等待(WAITING)：处于这种状态的线程不会被分配CPU执行时间，它们要等待被显式地唤醒或终止(通知唤醒 Object notify()/notifyAll() 或中断Thread interpreted()）)，否则会处于无限期等待的状态。
+   - 一旦得到锁就从阻塞状态进入运行状态。
 
-   - Object wait()
+4. 等待(WAITING)：处于这种状态的线程不会被分配CPU执行时间，它们要等待被显式地唤醒或终止(通知唤醒 Object notify()/notifyAll() 或中断Thread interpreted())，否则会处于无限期等待的状态。
 
-   - Thread join()
+   调用以下方法会进入WAITING状态：
 
-   - LockSupport.park()
+   - Object wait() 线程等待，释放锁( 让出cpu执行权)
 
-   比如：一个线程调用了一个对象的wait方法，那么这个线程就会处于waiting状态直到另外一个线程调用这个对象的notify或者notifyAll方法后，才会解除这个状态。
+     线程调用一对象的wait方法后，该线程进入WAITING状态，直到其他线程调用该对象的notify/notifyAll方法后，才会唤醒这个线程进入RUNNABLE状态，重新获取CPU执行权从而继续执行。
+
+   - Thread join() 等待该线程程结束才会到父线程
+
+   - LockSupport.park() 线程挂起，直到调用LockSupport.park() 获得许可
 
 5. 超时等待(TIMED_WAITING)：处于这种状态的线程不会被分配CPU执行时间，不过无须无限期等待被其他线程显示地唤醒，在达到一定时间后它们会自动唤醒。
 
-   - Thread.sleep(**long** millis)
+   调用以下方法会进入TIMED_WAITING状态（指定时间必须>0，因为=0表示永久等待）：
 
-   - Object wait(**long** timeoutMillis)
+   - Thread.sleep(**long** millis) 
 
-   - Thread join(final **long** millis) , join(**long** millis, **int** nanos)
+     线程定时休眠：休眠时不释放锁(不释放cpu执行权)。
 
-   - LockSupport.parkNanos(**long** nanos) 
+   - Object wait(**long** timeoutMillis) / wait(**long** timeoutMillis, **int** nanos) 
 
-   - LockSupport.parkUntil(**long** deadline)  
+     线程定时等待：等待时释放锁(让出cpu执行权)
 
-6. 终止(TERMINATED)：表示该线程已经执行完毕。
+   - Thread join(final **long** millis) , join(**long** millis, **int** nanos)  定时等待该线程结束才回到父线程：
+
+     join(final **long** millis)：=0 表示永久等待， >0  表示定时等待；
+
+     join(**long** millis, **int** nanos)：定时等待，等待时长为millis(微秒) + nanos(毫秒)
+
+     等待直到子线程结束才会到父线程，或者达到指定的时间。
+
+   - LockSupport.parkNanos(**long** nanos)  线程定时挂起：
+
+   - LockSupport.parkUntil(**long** deadline)  线程有期限挂起：
+
+     线程挂起直到：获得permit，被其他线程invoke，或被interpreted，或到达期限deadline或无故调用return。
+
+6. 终止(TERMINATED)：终止的线程的状态，表示该线程已经执行完毕。
+
+   - 正常运行结束
+   - 使用退出标志，检查符合条件时退出。
+   - thread.interpreted() 线程被终止（thread.stop()  不安全，已禁用）
 
 ```java
 public class ThreadSateTest {
@@ -211,7 +235,7 @@ public static void main(String[] args) {
 
 ## 线程及其线程组
 
-每个线程都属于一个线程组（是一个线程组中的成员）。默认，新建线程与创建它的线程属于同一个线程组。线程组以树状分布。当创建一个新的线程组，该线程组称为当前线程组的子组。
+每个线程都属于一个线程组（是一个线程组中的成员）。默认，新建线程与创建它的线程属于同一个线程组。线程组以**树状分布**。当创建一个新的线程组，该线程组称为当前线程组的子组。
 
 Thread 类的 getThreadGroup() 方法会返回当前线程所属的线程组；对应地，ThreadGroup 类也有方法可以得到目前属于这个线程组的所有线程，比如enumerate()方法。
 
@@ -298,17 +322,15 @@ public class MyThread extends Thread{
 
 ### Thread.yield() 线程让步
 
-一定是当前线程调用此方法，当前线程放弃获取的CPU时间片，但不释放锁资源，由运行状态变为就绪状态，让OS再次选择线程（与其他线程一起重新竞争 CPU 时间片）。
+一定是当前线程调用此方法，当前线程放弃获取的CPU时间片，但不释放锁资源，由运行状态变为就绪状态(running>ready)，让OS再次选择线程（与其他线程一起重新竞争 CPU 时间片）。
 
 作用：让相同优先级的线程轮流执行，但并不保证一定会轮流执行。
 
 实际中无法保证 Thread.yield() 达到让步目的，因为让步的线程还有可能被线程调度程序再次选中。Thread.yield() 不会导致阻塞。该方法与 sleep() 类似，只是不能由用户指定暂停多长时间。
 
+### Thread.sleep(long millis) 线程定时休眠
 
-
-### Thread.sleep(long millis) 线程休眠
-
-一定是当前线程调用此方法，导致当前线程进入TIMED_WAITING状态，但不释放对象锁，millis后线程自动苏醒进入就绪状态。
+一定是当前线程调用此方法，导致当前线程进入TIMED_WAITING状态，但不释放对象锁，到指定时间后线程自动苏醒进入就绪状态。
 
 作用：给其它线程执行机会的最佳方式。
 
@@ -343,7 +365,7 @@ Object类中关于等待/唤醒的API详细信息如下：
 - **notifyAll()**：唤醒在此对象监视器上等待的所有线程。
 - **wait()**：等待，让当前线程处于 “等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法”，当前线程被唤醒(进入“就绪状态”)。
 - **wait(long timeout)**：定时等待，让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者超过指定的时间量”，当前线程被唤醒(进入“就绪状态”)。
-- **wait(long timeout, int nanos)**：让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者其他某个线程中断当前线程，或者已超过某个实际时间量”，当前线程被唤醒(进入“就绪状态”)。
+- **wait(long timeout, int nanos)**：定时等待，让当前线程处于“等待(阻塞)状态”，“直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或者其他某个线程中断当前线程，或者已超过某个实际时间量”，当前线程被唤醒(进入“就绪状态”)。
 
 
 
@@ -420,11 +442,13 @@ public static void main(String[] args) throws InterruptedException {
 
 
 
-### LockSupport.park() / LockSupport.parkNanos(long nanos) 
+### LockSupport.park() / LockSupport.parkNanos(long nanos) - LockSupport.unpark(Thread)
 
 LockSupport.parkUntil(long deadlines)，使得当前线程进入 WAITING/TIMED_WAITING 状态。对比 wait 方法，它不需要获得锁就可以让线程进入 WAITING/TIMED_WAITING 状态；
 
 需要通过 LockSupport.unpark(Thread thread) 唤醒。
+
+LockSupport.unpark(Thread)：使得给定线程获得许可。如果给定线程的许可尚不可用，则使它可用。如果线程被park()阻塞，则它将解锁。否则，将保证其对park()的下一次调用不会阻塞。如果给定线程尚未启动，则不能保证unpark操作完全无效。
 
 
 
