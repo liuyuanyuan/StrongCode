@@ -94,8 +94,6 @@
   - Java中的乐观锁基本都是通过CAS操作实现的
   - AQS框架下的锁则是先尝试CAS乐观锁去获取锁，获取不到，才转换为悲观锁如ReetranLock。
 
-
-
 #### 自旋锁(pinlock)
 
 #### 可重入锁
@@ -115,7 +113,75 @@
 3）不剥夺条件：指进程已获得的资源，在未使用完之前，不能被剥夺，只能在使用完时由自己释放。
 4）环路等待条件：指在发生死锁时，必然存在一个进程——资源的环形链，即进程集合{P0，P1，P2，···，Pn}中的P0正在等待一个P1占用的资源；P1正在等待P2占用的资源，……，Pn正在等待已被P0占用的资源。
 
-#### happens-before
+
+
+### 先行发生原则（Happens-Before）
+
+如果Java内存模型的有序性都只依靠volatile和synchronized来完成，那么有一些操作就会变得很啰嗦，但是我们在编写Java并发代码时并没有感受到，这是因为Java语言天然定义了一个“先行发生”原则，这个原则非常重要，依靠这个原则我们可以很容易地判断在并发环境下两个操作是否可能存在竞争冲突问题。
+
+先行发生，是指操作A先行发生于操作B，那么操作A产生的影响能够被操作B感知到，这种影响包括修改了共享内存中变量的值、发送了消息、调用了方法等。
+
+下面我们看看Java内存模型定义的先行发生原则有哪些：
+
+（1）程序次序原则：按代码编写先后顺序
+
+在一个线程内，按照程序书写的顺序执行，书写在前面的操作先行发生于书写在后面的操作，准确地讲是控制流顺序而不是代码顺序，因为要考虑分支、循环等情况。
+
+（2）监视器锁定原则：锁的unlock>lock
+
+一个unlock操作先行发生于后面对同一个锁的lock操作。
+
+（3）volatile原则：变量的写>读
+
+对一个volatile变量的写操作先行发生于后面对该变量的读操作。
+
+（4）线程启动原则：线程的start()>线程体
+
+对线程的start()操作先行发生于线程内的任何操作。
+
+（5）线程终止原则：线程的其他操作>Thread.join()、Thread.isAlive()
+
+线程中的所有操作先行发生于检测到线程终止，可以通过Thread.join()、Thread.isAlive()的返回值检测线程是否已经终止。
+
+（6）线程中断原则：线程的
+
+对线程的interrupt()的调用先行发生于线程的代码中检测到中断事件的发生，可以通过Thread.interrupted()方法检测是否发生中断。
+
+（7）对象终结原则：对象的初始化完成>它的finalize()
+
+一个对象的初始化完成（构造方法执行结束）先行发生于它的finalize()方法的开始。
+
+（8）传递性原则：
+
+如果操作A先行发生于操作B，操作B先行发生于操作C，那么操作A先行发生于操作C。
+
+这里说的“先行发生”与“时间上的先发生”没有必然的关系。
+
+比如，下面的代码：
+
+```
+int a = 0;
+// 操作A：线程1对进行赋值操作a = 1;
+// 操作B：线程2获取a的值
+int b = a;
+```
+
+如果线程1在时间顺序上先对a进行赋值，然后线程2再获取a的值，这能说明操作A先行发生于操作B吗？
+
+显然不能，因为线程2可能读取的还是其工作内存中的值，或者说线程1并没有把a的值刷新回主内存呢，这时候线程2读取到的值可能还是0。
+
+所以，“时间上的先发生”不一定“先行发生”。
+
+再看一个例子：
+
+```
+// 同一个线程中int i = 1;
+int j = 2;
+```
+
+根据第一条程序次序原则， `inti=1;`先行发生于 `intj=2;`，但是由于处理器优化，可能导致 `intj=2;`先执行，但是这并不影响先行发生原则的正确性，因为我们在这个线程中并不会感知到这点。
+
+所以，“先行发生”不一定“时间上先发生”。
 
 
 
@@ -157,6 +223,10 @@ synchronized static void staticMethod(){
 synchronized(this/obj){
 }
 ```
+
+
+
+![image-20200321161729350](images/ReentrantLock_Synchronized.png)
 
 
 
@@ -211,21 +281,23 @@ volatile变量来控制状态的可见性，通常比使用锁的代码更脆弱
 
 
 
-## 3 Atomic 原子类
-
-### CAS 操作
+## CAS 操作
 
 **CAS(CompareAndSwap/CompareAndSet）比较并交换**。是用于实现多线程同步的**原子指令**。 Java1.5 开始引入了 CAS，主要代码都放在 java.util.concurrent.atomic 包下，通过 sun 包下的 Unsafe 类实现，而Unsafe类中的方法都是 native 方法，由 JVM 本地实现。
 
 **CAS实现原理：**
 
-CAS机制中使用了3个基本操作数：内存地址V，旧的预期值A，要修改的新值B。原理是：当更新一个变量的时候：只有当变量的预期值A和内存地址V当中的实际值相同时，才会将内存地址V对应的值修改为B。这是作为单个原子操作完成的。
+CAS机制中使用了3个基本操作数：内存地址V，旧的预期值A，要修改的新值B。原理是：**当更新一个变量的时候：只有当变量的预期值A和内存地址V当中的实际值相同时，才会将内存地址V对应的值修改为B。这是作为单个原子操作完成的。**
 
 **CAS的缺点：**
 
 1 CPU开销较大：在并发量比较高的情况下，如果许多线程反复尝试更新某一个变量，却又一直更新不成功，循环往复，会给CPU带来很大的压力。
 
 2 不能保证代码块的原子性：CAS机制所保证的只是一个变量的原子性操作，而不能保证整个代码块的原子性。比如需要保证3个变量共同进行原子性的更新，就不得不使用Synchronized了。
+
+
+
+## 3 Atomic 原子类
 
 ### Atomic 原子类
 
@@ -581,33 +653,44 @@ public class Sequence {
 
 
 
-## 6 AQS 队列同步器接口
+## 6 AQS 抽象队列式同步器 - 构建锁及其他同步组件的基础框架
 
-AbstractQueuedSynchronizer（AQS）队列同步器：是用来构建锁或者其他同步组件的基础框架。
+java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）队列同步器：是用来构建锁或者其他同步组件的基础框架。
 
-### AbstractQueuedSynchronizer
+参考：https://www.zhihu.com/people/an-shi-yan-50
 
-java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）。
+### AQS核心思想
 
 AQS核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设 置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS是用CLH队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
 
-> CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结 点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁 的分配。
+> CLH(Craig,Landin,and Hagersten)队列(FIFO)：是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁 的分配。
 
-ReentrantLock， AQS {
+### AQS源码核心点：
 
-- 自旋锁
+- **state 同步状态**：这是`AbstractQueuedSynchronizer`里一个万能的属性，具体是什么含义，全看你的使用方式，比如在`CountDownLatch`里，它代表了当前到达后正在等待的线程数，在`Semaphore`里，它则表示当前进去后正在运行的线程数；
 
-- park/unpark
+  ```java
+  private volatile int state;
+  protected final int getState() {
+       return state;
+  }
+  protected final void setState(int newState) {
+       state = newState;
+  }
+  protected final boolean compareAndSetState(int expect, int update) {
+       return STATE.compareAndSet(this, expect, update);
+  }
+  ```
 
-- CAS
+- **CAS**: AQS里大量用了CAS（Compare and Swap）操作来修改state的值
 
-}
+- **LockSupport**: AQS里用了大量的LockSupport的park()和unpark()方法，来挂起和唤醒线程
 
-#### AQS 使用一个int成员变量表示同步状态
+- **同步队列和条件队列**：sync queue and condition queue，弄清楚这两个队列的关系，AQS也就弄懂大半
 
-![img](https://pic4.zhimg.com/80/v2-c4145940634f4c25332977dee1730b57_1440w.jpg)
+- **公平和非公平**：有线程竞争，就有公平和非公平的问题。锁释放的时候，刚好有个线程过来获取锁，但这时候线程等待队列里也有线程在等待，到底是给排队时间最久的线程呢(公平)，还是允许新来的线程参与竞争（不公平）？
 
-#### AQS 通过内置的FIFO双向队列来完成获取锁线程的排队工作
+​       AQS 通过内置的FIFO双向队列：来完成获取锁线程的排队工作
 
 - 同步器包含两个节点类型的应用，一个指向头节点，一个指向尾节点，未获取到锁的线程会创建节点线程安全（compareAndSetTail）的加入队列尾部。同步队列遵循FIFO，首节点是获取同步状态成功的节点。
 
@@ -623,11 +706,7 @@ ReentrantLock， AQS {
 
 
 
-
-
-
-
-源码分析：
+### 源码摘要：
 
 ```java
 /*
@@ -674,14 +753,6 @@ public abstract class AbstractQueuedSynchronizer
     }
 }
 ```
-
-
-
-### 自定义锁（implements AQS）
-
-
-
-
 
 
 

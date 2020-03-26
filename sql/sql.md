@@ -47,3 +47,44 @@ HAVING条件 与 WHERE条件的声明形式是一样的；HAVING条件中的字�
 
 WHERE 过滤的是使用 GROUP BY 之前的独立行，而 HAVING 过滤的是  GROUP BY 创建的组行；
 
+
+
+## 练习
+
+### SQL求集合的中位数
+
+已知数字的集合，求中位数：
+
+```sql
+/*利用HAVING子句求中位数*/
+create table graduates(id int, income int);
+insert into graduates values(1,1),(2,3),(3,5),(4,7),(5, 9);
+
+select T1.income from graduates T1,graduates T2
+group by T1.income
+having sum(case when T2.income >= T1.income then 1 else 0 end) >= count(*)/2
+and sum(case when T2.income <= T1.income then 1 else 0 end) >= count(*)/2
+```
+
+当数据条数是奇数时
+当数据条数是偶数时
+
+已知集合中的所有数字及其出现的次数，求中位数
+
+```sql
+/*使用窗口函数求累加值*/
+create table m1(num int, fre int);
+insert into m1 values(1, 3),(4, 2), (3,5), (6,8);
+
+select a.num, a.cal_fre, a.sum_fre
+from (
+select num, fre
+ , sum(fre) over( order by num) as cal_fre
+ , (select sum(fre) from m1) as sum_fre
+from m1 t) as a
+where a.cal_fre>=a.sum_fre/2 
+limit 1
+```
+
+
+
