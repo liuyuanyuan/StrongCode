@@ -12,7 +12,7 @@
 
 ## 集合框架
 
-### 效益
+**效益**
 
 - 减少编程工作量：
 
@@ -26,29 +26,31 @@
 
 - 促进软件复用:
 
-### 位置
+**位置：**Java 集合框架位于包 java.util 中。
 
-Java 集合框架位于包 java.util 中。
+**概念**：集合框架是用于表示和操作集合的统一体系结构。所有集合框架都包含以下内容：
 
-### 概念
+##### 1 接口（Interfaces）
 
-集合框架是用于表示和操作集合的统一体系结构。所有集合框架都包含以下内容：
+代表集合的抽象数据类型 。接口允许独立于其表示的细节来操纵集合。在面向对象的语言中，接口通常形成层次结构。
 
-- **接口（Interfaces）**：代表集合的抽象数据类型 。接口允许独立于其表示的细节来操纵集合。在面向对象的语言中，接口通常形成层次结构。
+接口类： Collection、List、Set、SortedSet(元素排序)、Map、SortedMap(元素的key排序)。
 
-  接口类： Collection、List、Set、SortedSet(元素排序)、Map、SortedMap(元素的key排序)。
+##### 2 实现（Implementations）
 
-- **实现（Implementations）**：这些是集合接口的具体实现（类）。本质上，它们是可重用的数据结构。
+这些是集合接口的具体实现（类）。本质上，它们是可重用的数据结构。
 
-  实现类：ArrayList、LinkedList；
+实现类：ArrayList、LinkedList；
 
-  ​			   HashSet、LinkedHashSet、TreeSet；
+​			   HashSet、LinkedHashSet、TreeSet；
 
-  ​			   HashMap、HashMap、TreeMap。
+​			   HashMap、HashMap、TreeMap。
 
-- **算法（Algorithms）**：是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
+##### 3 算法（Algorithms）
 
-  算法类：Collections, Iterator（集合元素迭代器）。
+是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
+
+算法类：Collections, Iterator（集合元素迭代器）。
 
 ![image-20200304161815903](images/java_collection_diagram.png)
 
@@ -66,7 +68,7 @@ Java 集合框架位于包 java.util 中。
 >
 >​              特点：查询速度慢，增、删快。
 
-#### **Collection** 
+### **Collection** 
 
 集合层次架构的根；表示一组对象（称作元素）的集合。
 
@@ -84,7 +86,7 @@ Java 集合框架位于包 java.util 中。
 
   Deque可同时用作FIFO（先进先出）和LIFO（先进先出）。
 
-#### **Map** 
+### **Map** 
 
 映射集合层次架构的根，键值对（key-value entry）映射的集合。
 
@@ -96,7 +98,7 @@ Java 集合框架位于包 java.util 中。
 
 ## 集合实现类（Implements）
 
-普通实现类
+普通实现类：
 
 | Interfaces | Hash table Implementations | Resizable array Implementations | Tree Implementations  | Linked list Implementations | Hash table + Linked list Implementations | thread-safe implementations |
 | ---------- | -------------------------- | ------------------------------- | --------------------- | --------------------------- | ---------------------------------------- | --------------------------- |
@@ -106,7 +108,7 @@ Java 集合框架位于包 java.util 中。
 | Deque      |                            | `ArrayDeque`                    |                       | `LinkedList`                |                                          |                             |
 | Map        | `HashMap`                  |                                 | `TreeMap` (SortedMap) |                             | `LinkedHashMap`                          | Hashtable                   |
 
-并发实现类
+并发实现类：
 
 | Concurrent Interfaces          | Concurrent Implementation(thread-safe) |      |
 | ------------------------------ | -------------------------------------- | ---- |
@@ -114,9 +116,9 @@ Java 集合框架位于包 java.util 中。
 | ConcurrentMap  (extends Map)   | ConcurrentHashMap                      |      |
 |                                |                                        |      |
 
-#### 集合核心实现类
+集合核心实现类介绍：
 
-##### List（按元素插入顺序存储，元素允许重复）
+### List列表（按元素插入顺序存储，元素允许重复，允许null）
 
 - Arraylist（数组实现）: 
 
@@ -124,7 +126,7 @@ Java 集合框架位于包 java.util 中。
 
   因为顺序存储便于建立索引，所以随机查找和便利速度快；插入（需要扩容时会新建更大数组并将原有元素复制进去）和删除（删除非末端元素时需移动后续元素）存在潜在的巨大开销。
 
-- LinkedList（链表实现）: 
+- LinkedList（双向链表实现）: 
 
   基于双向链表(jdk1.6之前为循环链表，jdk1.7取消了循环) ，存储不一定连续；
 
@@ -136,7 +138,7 @@ Java 集合框架位于包 java.util 中。
 
   线程同步的开销导致它比ArrayList慢。
 
-##### [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)（key不重复）
+### [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)映射（key不重复）
 
    **常规用途实现**
 
@@ -198,7 +200,7 @@ Java 集合框架位于包 java.util 中。
 
 - [IdentityHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/IdentityHashMap.html) : IdentityHashMap 是基于哈希表的基于身份的Map实现。此类对于保留拓扑的对象图转换（例如序列化或深度复制）很有用。要执行这样的转换，您需要维护一个基于身份的“节点表”，以跟踪已经看到的对象。基于身份的映射还用于在动态调试器和类似系统中维护对象到元信息的映射。最后，基于身份的映射在阻止“欺骗攻击”中很有用，这是故意不正当的equals方法的结果，因为IdentityHashMap从未在其键上调用equals方法。此实现的另一个好处是它速度很快。
 
-##### Set（元素不重复）
+### Set集合（元素无序，不重复）
 
 - HashSet (用HashMap存元素)：
 
@@ -222,13 +224,149 @@ Java 集合框架位于包 java.util 中。
 
   比较此对象与指定对象的顺序。如果该对象小于、等于或大于指定对象，则分别返回负整数、零或正整数。
 
-##### Queue
+### Queue队列（FIFO）
 
-队列。
+**概念**
 
-- Deque：队列
+队列是数据结构中比较重要的一种类型，它支持 FIFO，尾部添加、头部删除(先进队列的元素先出队列)，跟生活中的排队类似。
+
+**种类**
+
+- 单队列：单队列就是常见的队列, 每次添加元素时，都是添加到队尾，存在“假溢出”的问题也就是明明有位置却不能添加的情况。
+- 循环队列：避免了“假溢出”的问题。
+
+**Java 集合框架中的队列** 
+
+队列接口java.util.Queue 继承自 Collection 接口 ，其实现有： Deque, LinkedList, PriorityQueue, BlockingQueue 等。
+
+#### 接口java.util.Queue FIFO队列
+
+Queue 用来存放等待处理元素的集合，这种场景一般用于缓冲、并发访问。 除了继承 Collection 接口的一些方法，Queue 还添加了额外的添加、删除、查询操作。
+
+**1 在尾部添加:**
+
+```
+boolean add(E e);
+boolean offer(E e);
+```
+
+相同：两者的实现类禁止添加 null 元素，否则会报空指针 NullPointerException；
+
+不同： add() 方法在添加失败（比如队列已满）时，会报 一些运行时错误错；而 offer() 方法在添加失败时，不会崩溃只会返回 false。
+
+> **注意：**
+>
+> Queue 是个接口，它提供的 add, offer 方法初衷是希望子类能够禁止添加元素为 null，这样可以避免在查询时返回 null 究竟是正确还是错误。大多数 Queue 的实现类遵循了 Queue 接口的这个规定，如 ArrayBlockingQueue，PriorityBlockingQueue 等；但还是有一些实现类没有遵循这个规定，如 LinkedList ，允许添加null值。
+
+**2 删除并返回头部**：
+
+```
+E remove();
+E poll();
+```
+
+当队列为空时： remove() 方法会报 NoSuchElementException 错; 而 poll() 不会报错，只会返回 null。
+
+当队列为空时 remove() 方法会报 NoSuchElementException 错; 而 poll() 不会奔溃，只会返回 null。
+
+**3 获取但不删除：**
+
+```
+E element();
+E peek();
+```
+
+当队列为空时： element() 抛出异常；peek() 不会崩溃，只会返回 null。
 
 
+
+#### 接口Deque 双端队列
+
+Deque（double ended queue），发音为“ deck”。 
+
+支持在队头/队尾两端进行插入/删除元素的线性集合。支持固定容量大小和无固定容量大小的双端队列。
+
+该接口定义了访问双端队列两端的元素的方法。提供了用于插入，删除和检查元素的方法。这些方法均以两种形式存在：如果操作失败，一个将引发异常，另一个将返回一个特殊值 null 或 false ，具体取决于操作。插入操作的后一种形式专门设计用于容量受限的Deque实现；在大多数实现中，插入操作不会失败。
+
+
+
+#### 接口BlockingQueue  阻塞队列
+
+BlockingQueue除继承的Queue的操作方法外，还额外支持以下操作：**在检索元素时等待队列变为非空，并在存储元素时等待队列中的空间变为可用。**
+
+**BlockingQueue的方法有四种形式**，它们以不同的方式处理操作，这些操作无法立即满足，但将来可能会满足：一种抛出异常；第二种返回特殊值（null或false，具体取决于操作）；第三种将无限期地阻塞当前线程，直到操作成功为止；第四种仅在给定的最大时间限制内放弃。下表总结了这些方法：
+
+|         | Throws exception | Special value | Blocks   | Times out              |
+| :------ | ---------------- | ------------- | -------- | ---------------------- |
+| Insert  | `add(e)`         | `offer(e)`    | `put(e)` | `offer(e, time, unit)` |
+| Remove  | `remove()`       | `poll()`      | `take()` | `poll(time, unit)`     |
+| Examine | `element()`      | `peek()`      | N/A      | N/A                    |
+
+**BlockingQueue不接受null元素。**实现类在尝试add、put、offer处理null时抛出NullPointerException。null用作指示值来指示 poll 操作失败。
+
+**BlockingQueue可能受容量限制。**在任何给定时间，它可能具有剩余容量，超过该容量就不能放置其他元素而不会阻塞。没有任何内部容量约束的BlockingQueue始终报告Integer.MAX_VALUE的剩余容量。
+
+**BlockingQueue实现被设计为主要用于生产者-消费者队列，但另外还支持Collection接口。**因此，例如：可以使用remove（x）从队列中删除任意元素。但是，这样的操作通常不能非常有效地执行，并且仅用于偶尔的使用，例如在取消排队的消息时。
+
+**BlockingQueue实现是线程安全的**。所有排队方法都可以使用内部锁或其他形式的并发控制来原子地实现其效果。但是，除非在实现中另行指定，否则批量Collection操作addAll，containsAll，retainAll和removeAll不一定是原子执行的。因此，例如，仅在c中添加一些元素之后，addAll（c）可能会失败（引发异常）。
+
+BlockingQueue本质上不支持任何类型的“close”或“shutdown”操作，以指示将不再添加任何项目。这些功能的需求和使用往往取决于实现。例如，一种常见的策略是让生产者插入特殊的流尾对象或有毒对象，这些特殊对象在被消费者拿走时会被相应地解释。
+
+以下是基于典型生产者-使用者方案的使用示例。请注意，BlockingQueue 可以安全地与多个生产者和多个使用者一起使用。
+
+```java
+class Producer implements Runnable {
+   private final BlockingQueue queue;
+   Producer(BlockingQueue q) { queue = q; }
+   public void run() {
+     try {
+       while (true) { queue.put(produce()); }
+     } catch (InterruptedException ex) { ... handle ...}
+   }
+   Object produce() { ... }
+ }
+
+ class Consumer implements Runnable {
+   private final BlockingQueue queue;
+   Consumer(BlockingQueue q) { queue = q; }
+   public void run() {
+     try {
+       while (true) { consume(queue.take()); }
+     } catch (InterruptedException ex) { ... handle ...}
+   }
+   void consume(Object x) { ... }
+ }
+
+ class Setup {
+   void main() {
+     BlockingQueue q = new SomeQueueImplementation();
+     Producer p = new Producer(q);
+     Consumer c1 = new Consumer(q);
+     Consumer c2 = new Consumer(q);
+     new Thread(p).start();
+     new Thread(c1).start();
+     new Thread(c2).start();
+   }
+ }}
+```
+
+内存一致性效果：与其他并发集合一样，先在一个线程中将对象放入 BlockingQueue 的操作 [*happen-before*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/concurrent/package-summary.html#MemoryVisibility) 随后在另一线程从 BlockingQueue 中访问或移除该元素的操作。（并发集合的happens-before原则：插入先于访问和删除）
+
+#### 实现类PriorityQueue 优先队列
+
+基于优先级堆的无界限优先级队列。根据使用的构造函数：在Comparator不提供或者为null时，优先级队列的元素根据其**自然顺序进行排序**；提供则通过**在队列构建时提供的Comparator进行排序**。**优先级队列不允许null元素**。依赖自然顺序的优先级队列也不允许插入不可比较的对象（这样做可能会导致ClassCastException）。
+
+根据指定的顺序，队头是最小的元素。如果值最小的元素有多个，那么队头是其中任意元素之。**队列检索操作poll，remove，peek 和 element 访问在队头的元素。**
+
+优先级队列是无界的，但是具有内部容量来控制用于在队列上存储元素的数组的大小。它总是至少与队列大小一样大。**将元素添加到优先级队列时，其容量会自动增长。**未指定增长政策的详细信息。
+
+此类及其迭代器实现了 Collection 和 Iterator 接口的所有可选方法。方法iterator()中提供的Iterator和方法spliterator()中提供的Spliterator不能保证以任何特定顺序遍历优先级队列的元素。**如果需要有序遍历，请考虑使用Arrays.sort(pq.toArray())**。
+
+**注意，此实现类是未同步。**如果任何线程修改了队列，则多个线程不应同时访问PriorityQueue实例。而是**使用线程安全的  java.util.concurrent.PriorityBlockingQueue 类**。
+
+实现类注意事项：此实现类为入队和出队方法（`offer`, `poll`, `remove()` 和 `add`) 提供的时间复杂度为 **O(log(n))** ； remove(Object)和contains(Object) 方法是**线性时间**；检索方法(`peek`, `element`, 和 `size`)是**常量时间**。
+
+#### 
 
 ## Iterator - 集合统一迭代器
 

@@ -66,8 +66,7 @@ having sum(case when T2.income >= T1.income then 1 else 0 end) >= count(*)/2
 and sum(case when T2.income <= T1.income then 1 else 0 end) >= count(*)/2
 ```
 
-当数据条数是奇数时
-当数据条数是偶数时
+
 
 已知集合中的所有数字及其出现的次数，求中位数
 
@@ -88,3 +87,5 @@ limit 1
 
 
 
+当数据条数是奇数时
+当数据条数是偶数时

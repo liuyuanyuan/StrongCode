@@ -772,7 +772,7 @@ public abstract class AbstractQueuedSynchronizer
 - 一次 acquire() 消耗一个 perimit，availablePermits() 减 1 ；
 
 - 一次 release() 生产一个 permit，availablePermits() 加 1 ；
-- int drainPermits()：获当前可获得的所有 permits 数，并返回数量；如果当前 permits 数为负值，则全部 release ，返回 0 ； 
+- int drainPermits()：获取当前可获得的所有 permits 数，并返回数量；如果当前 permits 数为负值，则全部 release ，返回 0 ； 
 
 #### 初始perimits值 的几种情况：
 
