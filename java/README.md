@@ -2,6 +2,11 @@
 
 **Java知识**
 
+- Java & JDK 官方文档
+
+  - [The Java™ Tutorials for jdk8](https://docs.oracle.com/javase/tutorial/essential/TOC.html)
+  - [Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/)
+
 - [Java技术体系架构](01java_structure.md)
 
 - [JVM](jvm.md)

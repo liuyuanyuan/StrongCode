@@ -80,7 +80,7 @@ public static final int v = 8080;
 
 
 
-JVM 通过双亲委派模型（逐层向上委派）进行类的加载：
+JVM 通过双亲委派模型（逐层向上委派）进行类的加载，保证类的对象的一致性：
 
 <img src="images/java_class_loaders.png" alt="image-20200228134333989" style="zoom: 50%;" />
 

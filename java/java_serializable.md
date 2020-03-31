@@ -4,14 +4,30 @@
 
 ### 序列化与反序列化的概念
 
-Java 提供了对象序列化的机制：一个对象可以转换为一个字节序列（包括该对象的类型、数据及数据的类型等信息）；反序列化的机制：就是将字节序列（对象的类型、数据及数据类型等信息）恢复为对象的过程。
+- 序列化：把内存中的对象 变成可传输（如网络传输）、可存储（如存储到硬盘）的字节序列的过程；
+- 反序列化：把字节序列 恢复到 内存中的对象的过程；
+
+字节序列：包括该对象的类型信息、数据及数据的类型信息。
 
 整个过程都是 JVM独立的，也就是说，在一个平台上序列化的对象可以在另一个完全不同的平台上反序列化该对象。
 
+
+
 ### 对象序列化的2种用途：
 
-1 把对象的字节序列永久地保存到硬盘上，通常存放在一个文件中；
-2 在网络上传送对象的字节序列。
+- 把对象的字节序列永久地保存到硬盘上，通常存放在一个文件中；（用于磁盘File IO）
+- 在网络上传送对象的字节序列；（用于网络IO）
+
+
+
+### 序列化的条件
+
+类的对象序列化需要满足两个条件
+
+- 该类必须实现 java.io.Serializable 对象。
+- 该类的所有属性必须是可序列化的。如果有一个属性不是可序列化的，则该属性必须注明是短暂的（通过 **transient** 关键字声明）。
+
+想知道一个 Java 标准类是否是可序列化的，请查看该类的文档。检验一个类的实例是否能序列化十分简单， 只需要查看该类有没有实现 java.io.Serializable 接口。
 
 
 
@@ -23,23 +39,93 @@ Java 提供了对象序列化的机制：一个对象可以转换为一个字节
 
    Externalizable接口继承自 Serializable接口；
 
+
+
 ### 对象序列化的步骤：
 
 1 创建一个对象输出流，它可以包装一个其他类型的目标输出流，如文件输出流；
 2 通过对象输出流的writeObject()方法写对象。
 
-ObjectInputStream  类包含序列化对象的方法：
+ObjectInputStream  类包含序列化对象的方法;
 
-```
-//该方法序列化一个对象，并将它发送到输出流。
-public final void writeObject(Object x) throws IOException
-```
+类似的， ObjectInputStream 类包含反序列化一个对象的方法;
 
-相似的， ObjectInputStream 类包含反序列化一个对象的方法：
+```java
+public class ObjectSerialTest {
+	
+	public static void main(String[] args) 
+			throws IOException, ClassNotFoundException {
+		String filePath = "/Users/liuyuanyuan/user1";
+		User user = new User(1, "yuan", 18);
+		ObjectSerialTest.writeObject(user, filePath);
+		User restoreUser = (User) ObjectSerialTest.readObject(filePath);
+	}
 
-```
-//该方法从流中取出下一个对象，并将对象反序列化。它的返回值为Object，因此，你需要将它转换成合适的数据类型。
-public final Object readObject() throws IOException,                                 ClassNotFoundException
+	//序列化
+	public static final void writeObject(Object obj, String filePath) throws IOException {
+		FileOutputStream fos = null;
+		ObjectOutputStream oos = null;
+		try {		
+			fos = new FileOutputStream(filePath);
+			oos = new ObjectOutputStream(fos);
+			oos.writeObject(obj);
+			System.out.println("Serialized data is saved in " + filePath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (oos != null) {
+				oos.close();
+			}
+			if (fos != null) {
+				fos.close();
+			}
+		}
+	}
+
+	//反序列化
+	public static final Object readObject(String filePath) 
+			throws IOException, ClassNotFoundException {
+		User user = null;
+		FileInputStream fis = null;
+		ObjectInputStream ois = null;
+		try {
+			fis = new FileInputStream(filePath);
+			ois = new ObjectInputStream(fis);
+			user = (User) ois.readObject();
+			System.out.println("Deserialize User: ");
+			System.out.println("id : " + user.getId());
+			System.out.println("name : " + user.getName());
+			System.out.println("age : " + user.getAge());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (ois != null) {
+				ois.close();
+			}
+			if (fis != null) {
+				fis.close();
+			}
+		}
+		return user;
+	}
+}
+//序列化的对象
+public class User implements Serializable{
+	//default serial
+	//private static final long serialVersionUID = 1L;
+	//generated serial
+	private static final long serialVersionUID = -7884044395190826641L;
+	
+	private int id;
+	private String name;
+	private int age;
+	public User(int id,String name, int age) {
+		this.id = id;
+		this.name = name ;
+		this.age = age;
+	}
+  //此处getter、setter方法省略...
+}
 ```
 
 
@@ -59,7 +145,7 @@ public final Object readObject() throws IOException,                            
 1 当希望类的不同版本对序列化兼容，因此需要确保类的不同版本，具有相同的serialVersionUID；
 2 当不希望类的不同版本对序列化兼容，因此需要确保类的不同版本，具有不同的serialVersionUID。
 
-```
+```javascript
 public class TestSerial {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		SerialPerson sp = new SerialPerson("Yolanda", 26);

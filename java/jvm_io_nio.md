@@ -2,29 +2,41 @@
 
 [TOC]
 
-**参考**： [Java SE 12 Doc - Base -  IO/NIO ](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/io/package-summary.html)
+**参考**：
 
-## I/O模型
+-  [Java SE 12 Doc - Base -  IO/NIO ](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/io/package-summary.html)
 
-### 预备知识：同步/异步、阻塞/非阻塞
+- [深入分析 Java I/O 的工作机制](https://www.ibm.com/developerworks/cn/java/j-lo-javaio/)
+
+## 预备知识：同步/异步、阻塞/非阻塞
 
 **同步和异步**
 
-同步：如果有多个任务或者事件发生，这些任务或者事件必须逐个地进行，一个事件或者任务的执行会导致整个流程的暂时等待，这些事件没有办法并发地执行；（串行）
+**同步：用户线程发起I/O请求后需要等待或者轮询内核I/O操作完成后才能继续执行。**
 
-异步：如果有多个任务或者事件发生，这些事件可以并发地执行，一个事件或者任务的执行不会导致整个流程的暂时等待。（并发）
+> 如果有多个任务或者事件发生，这些任务或者事件必须逐个地进行，一个事件或者任务的执行会导致整个流程的暂时等待，这些事件没有办法并发地执行；
+
+**异步：用户线程发起I/O请求后仍需要继续执行，当内核I/O操作完成后会通知用户线程，或者调用用户线程注册的回调函数。**
+
+> 如果有多个任务或者事件发生，这些事件可以并发地执行，一个事件或者任务的执行不会导致整个流程的暂时等待。
 
 举例说明：假如有一个任务包括两个子任务A和B，对于同步，当A在执行的过程中，B只有等待，直至A执行完毕，B才能执行；而对于异步，就是A和B可以并发地执行，B不必等待A执行完毕之后再执行，这样就不会由于A的执行导致整个任务的暂时等待。
 
 **阻塞与非阻塞**
 
-阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，但是由于该请求操作需要的条件不满足，那么就会一直在那等待，直至条件满足；
+**阻塞：I/O操作需要彻底完成后才能返回给用户。**
 
-非阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，如果该请求操作需要的条件不满足，会立即返回一个标志信息告知条件不满足，不会一直在那等待。
+> 当某个事件或者任务在执行过程中，它发出一个请求操作，但是由于该请求操作需要的条件不满足，那么就会一直在那等待，直至条件满足；
+
+**非阻塞：指I/O操作被调用后立即返回一个状态值，无需等I/O操作彻底完成。**
+
+> 当某个事件或者任务在执行过程中，它发出一个请求操作，如果该请求操作需要的条件不满足，会立即返回一个标志信息告知条件不满足，不会一直在那等待。
 
 举例说明：假如我要读取一个文件中的内容，如果此时文件中没有内容可读，对于同步来说就是会一直在那等待，直至文件中有内容可读；而对于非阻塞来说，就会直接返回一个标志信息告知文件中暂时无内容可读。
 
 
+
+## I/O模型
 
 ### 1 阻塞IO模型（Blocking-IO）
 
@@ -65,7 +77,7 @@ while(true){
 
 ### 3 多路复用IO模型
 
-是目前使用比较多的模型。Java NIO 实际上就是多路复用 IO。
+**是目前使用比较多的模型。Java NIO 实际上就是多路复用 IO。**
 
 在多路复用 IO 模型中，会有一个线程不断去轮询多个 socket 的状态，只有当 socket 真正有读写事件时，才真正调用实际的 IO 读写操作。因为在多路复用 IO 模型中，只需要使用一个线程就可以管理多个 socket，系统不需要建立新的进程或者线程，也不必维护这些线程和进程，并且仅在真正有 socket 读写事件进行时，才会使用 IO 资源，所以它大大减少了资源占用。在 Java NIO 中，是通 过selector.select()去查询每个通道是否有到达事件，如果没有事件，则一直阻塞在那里，因此这 种方式会导致用户线程的阻塞。多路复用 IO 模式，通过一个线程就可以管理多个 socket，只有当 socket 真正有读写事件发生才会占用资源来进行实际的读写操作。因此，多路复用 IO 比较适合连 接数比较多的情况。	
 
@@ -95,9 +107,103 @@ while(true){
 
 
 
-## Java IO
+## BIO、NIO、AIO  概述
 
-Java IO 是基于字节流和字符流进行操作。java.io包中的核心类：
+### BIO（传统java.io包）- 同步阻塞
+
+基于流模型实现；
+
+传统的java.io包，基于流模型实现，
+
+提供了我们最熟悉的一些IO功能，如File抽象、输入输出流等；
+
+交互方式是：同步、阻塞的方式，线程的调用是可靠的串行。
+
+优点：代码比较简单、直观；
+
+缺点： IO 效率和扩展性存在局限性，容易成为应用性能的瓶颈。
+
+> 很多时候，人们把 java.net下面提供的部分网络 API，比如 Socket、ServerSocket、HttpURLConnection 也归类到同步阻塞 IO 类库，因为网络通信同样是 IO 行为。
+
+### NIO(java.nio包) - 多路复用、同步非阻塞
+
+在 Java 1.4 中引入了 NIO 框架（java.nio 包）;
+
+提供了 Channel、Selector、Buffer 等新的抽象;
+
+可以构建多路复用的、同步非阻塞 IO 程序;
+
+同时提供了更接近操作系统底层的高性能数据操作方式。
+
+### AIO - 异步非阻塞
+
+在Java 7 中，NIO 有了进一步的改进，也就是 NIO 2，引入了异步非阻塞 IO 方式，也有很多人叫它 AIO（Asynchronous IO）。
+
+异步 IO 操作基于事件和回调机制：可以简单理解为，应用操作直接返回，而不会阻塞在那里，当后台处理完成，操作系统会通知相应线程进行后续工作。
+
+
+
+## Java IO概念
+
+参考： https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html
+
+Java 的 I/O 类大大简化了IO操作；Java的序列化允许程序将整个对象写入流，并从流中再读取出来。I/O 操作类在包 java.io 下，大概有将近 80 个类：
+
+- 根据传输数据的格式：
+  - 基于字节（操作媒体文件）操作的 I/O 接口：InputStream 和 OutputStream
+  - 基于字符（操作文本文件）操作的 I/O 接口：Writer 和 Reader
+
+- 根据数据传输的方式：
+  - 基于磁盘操作的 I/O 接口：File
+  - 基于网络操作的 I/O 接口：Socket
+
+## 传统BIO
+
+按操作数据分为：字节流（InputStream、OutputStream）和字符流（Reader、Writer）
+
+按流向分：输入流（Reader、InputStream）和输出流（Writer、OutputStream）
+
+**字符流：**用来处理文本数据（不能操作多媒体数据）；常用类为FileReader和FileWriter；
+
+- 写入文件必须要用flush()刷新；
+
+- 在创建一个文件时，若目录下有同名文件，将被覆盖               
+
+**字节流：**用来处理媒体数据。**字节流和字符流的基本操作相同，只是要操作媒体文件必须用字节流。**
+
+- 字节流操作可以不用刷新流操作
+- InputStream特有方法：int available()（返回文件中的字节个数）
+
+**带缓冲区的流**(带Buffered的类)：为**提高流的操作效率**而生；
+
+- 需要被提高效率的流，作为参数传递给缓冲区的构造函数；
+- 在缓冲区中封装了一个数组，存入数据后一次取出；
+
+### java.util.Scanner
+
+java.util.Scanner 是一个用于扫描输入文本的新的实用程序。
+
+nextInt()：只能读取数值，若是格式不对，会抛出java.util.InputMismatchException异常
+
+next()：遇见第一个有效字符（非空格，非换行符）时，开始扫描，当遇见第一个分隔符或结束符（空格或换行符）时，结束扫描，获取扫描到的内容
+
+nextLine()：可以扫描到一行内容并作为字符串而被捕获到
+
+hasNext()、hasNextLine()、hasNextxxx()：就是为了判断输入行中是否还存在xxx的意思
+
+delimiter()有关方法：应该是输入内容的分隔符设置。
+
+应该是输入内容的分隔符设置，
+
+### [Java I/O 流细分](https://docs.oracle.com/javase/tutorial/essential/io/streams.html)
+
+- [Byte Streams](https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html) 字节流，处理原始二进制数据的IO；
+- [Character Streams](https://docs.oracle.com/javase/tutorial/essential/io/charstreams.html) 字符流，处理字符数据的IO，自动处理本地字符集的翻译；
+- [Buffered Streams](https://docs.oracle.com/javase/tutorial/essential/io/buffers.html) 缓冲流，通过减少native API方法的调用，来优化输入和输出；
+- [Scanning and Formatting](https://docs.oracle.com/javase/tutorial/essential/io/scanfor.html) 扫描和格式化，允许程序读取和写入格式化的文本；
+- [I/O from the Command Line](https://docs.oracle.com/javase/tutorial/essential/io/cl.html) 来自命令行的IO，描述标准流和控制台对象。
+- [Data Streams](https://docs.oracle.com/javase/tutorial/essential/io/datastreams.html) 数据流，处理基元数据类型的二进制 I/O 和"String"值。
+- [Object Streams](https://docs.oracle.com/javase/tutorial/essential/io/objectstreams.html) 对象流， 处理对象的二进制 I/O；
 
 <img src="images/io-class.png" style="zoom:67%;" />
 
@@ -111,7 +217,7 @@ NIO 基于Channel 和 Buffer 进行操作，数据总是从Channel读取到Buffe
 
 > NIO 与 IO的最大区别是：IO是面向Stream（byte-stream, character-stream），NIO是面向Buffer的。
 
-java nio的核心抽象：
+Java nio 的核心抽象：
 
 - [*Buffers*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/package-summary.html#buffers), which are containers for data, and provides an overview of the other NIO packages;
 - [*Charsets*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/charset/package-summary.html) and their associated *decoders* and *encoders*, which translate between bytes and Unicode characters;
@@ -122,7 +228,11 @@ java nio的核心抽象：
 
 ### [Channel](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/Channel.html)
 
-Channel 常翻译为“通道”，和 IO 中的 Stream差不多一个等级。但是，Stream 是单向的，如InputStream/OutputStream 和 Reader/Writer 分别用来读和写；而 Channel 是双向的，既可以用来进行读操作，又可以用来进行写操作。
+Channel 常译为 “通道”；
+
+- 和 IO 中的 Stream差不多一个等级；但是Stream 是单向的，如InputStream/OutputStream 和 Reader/Writer 分别用来读和写；而 Channel 是双向的，既可以用来进行读操作，又可以用来进行写操作。
+- Channel可以进行异步的读写；
+- 对Channel的读写必须通过buffer对象；
 
 NIO 中 Channel 是抽象类，其实现类有:
 
@@ -139,7 +249,7 @@ AbstractInterruptibleChannel, AbstractSelectableChannel, AsynchronousFileChannel
 
 Buffer 字面意为缓冲区，实际上是一个容器，是一个连续数组。Channel 提供从文件、 网络读取数据的渠道，但是读取或写入的数据都必须经由 Buffer。
 
-NIO中Buffer是顶层父类、抽象类，Buffer 及其子类如下所示：
+NIO 中 Buffer 是顶层父类、抽象类，Buffer 及其子类如下所示：
 
 | Buffer 及其子类                                              | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -168,7 +278,161 @@ Selector 选择区，Selector 能够检测多个注册的通道上是否有事�
 
 
 
+## java.nio.file.Files 静态方法集
 
+### [创建Path](https://docs.oracle.com/javase/tutorial/essential/io/pathOps.html)
 
+```java
+//You can easily create a Path object by using one of the following get methods from the Paths (note the plural) helper class:
+Path p1 = Paths.get("/tmp/foo");
+Path p2 = Paths.get(args[0]);
+Path p3 = Paths.get(URI.create("file:///Users/joe/FileTest.java"));
+//The Paths.get method is shorthand for the following code:
+Path p4 = FileSystems.getDefault().getPath("/users/sally");
+//The following example creates /u/joe/logs/foo.log assuming your home directory is /u/joe, or C:\joe\logs\foo.log if you are on Windows.
+Path p5 = Paths.get(System.getProperty("user.home"),"logs", "foo.log");
+```
 
+### File读写操作
 
+```java
+//try-with-resources 自动关闭资源
+Charset charset = Charset.forName("US-ASCII");
+String s = ...;
+try (BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
+    writer.write(s, 0, s.length());
+} catch (IOException x) {
+    System.err.format("IOException: %s%n", x);
+}
+//try-catch-finally  手动关闭资源
+harset charset = Charset.forName("US-ASCII");
+String s = ...;
+BufferedWriter writer = null;
+try {
+    writer = Files.newBufferedWriter(file, charset);
+    writer.write(s, 0, s.length());
+} catch (IOException x) {
+    System.err.format("IOException: %s%n", x);
+} finally {
+    if (writer != null) writer.close();
+}
+//The following code snippet shows how the getFile method might be used:
+try (...) {
+    ...    
+} catch (NoSuchFileException x) {
+    System.err.format("%s does not exist\n", x.getFile());
+}
+```
+
+### 检查文件/路径
+
+1 判断文件/路径是否存在 [`File.exists(Path, LinkOption...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#exists-java.nio.file.Path-java.nio.file.LinkOption...-)  [`File.notExists(Path, LinkOption...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#notExists-java.nio.file.Path-java.nio.file.LinkOption...-) 
+
+`!Files.exists(path)` 与 `Files.notExists(path)` 不等价。
+
+判断文件/路径是否存在时，通常有三个结果：
+
+- true：存在
+- false：不存在
+- false：文件状态不可知，这种结果发生于程序对文件没有访问权限时。
+
+如果 `exists` 和 `notExists` 都返回 `false`，表示文件状态不可知。
+
+2 判断文件的是否可访问
+
+```java
+Path file = ...;
+boolean isRegularRWEFile = Files.isRegularFile(file) 
+  & Files.isReadable(file) & Files.isWritble(file) & Files.isExecutable(file);
+```
+
+3 判断两文路径是指向同一个文件
+
+```java
+Path p1 = ...;
+Path p2 = ...;
+if (Files.isSameFile(p1, p2)) {
+    // Logic when the paths locate the same file
+}
+```
+
+### 删除文件/路径
+
+```java
+//删除文件时不抛出异常
+Files.deleteIfExists(path);
+//删除文件时抛出异常
+try {
+    Files.delete(path);
+} catch (NoSuchFileException x) {
+    System.err.format("%s: no such" + " file or directory%n", path);
+} catch (DirectoryNotEmptyException x) {
+    System.err.format("%s not empty%n", path);
+} catch (IOException x) {
+    // File permission problems are caught here.
+    System.err.println(x);
+}
+```
+
+### 复制文件/路径
+
+```java
+import static java.nio.file.StandardCopyOption.*;
+...
+//copy a file or directory from source to target
+Files.copy(sourcePath, targetPath, REPLACE_EXISTING);
+//copy all bytes from an input stream to a file.
+Files.copy(inputStream, path, REPLACE_EXISTING);
+// copy all bytes from a file to an output stream
+Files.copy(path, outputStream);
+```
+
+### 移动文件/路径
+
+```java
+import static java.nio.file.StandardCopyOption.*;
+...
+Files.move(sourcePath, targetPath, REPLACE_EXISTING);
+```
+
+### [管理元数据(文件或者文件存储的属性)](https://docs.oracle.com/javase/tutorial/essential/io/fileAttr.html)
+
+```java
+Path file = ...;
+BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+
+System.out.println("creationTime: " + attr.creationTime());
+System.out.println("lastAccessTime: " + attr.lastAccessTime());
+System.out.println("lastModifiedTime: " + attr.lastModifiedTime());
+
+System.out.println("isDirectory: " + attr.isDirectory());
+System.out.println("isOther: " + attr.isOther());
+System.out.println("isRegularFile: " + attr.isRegularFile());
+System.out.println("isSymbolicLink: " + attr.isSymbolicLink());
+System.out.println("size: " + attr.size());
+```
+
+### [读、写、创建文件](https://docs.oracle.com/javase/tutorial/essential/io/file.html)
+
+### [链接、符号或其他](https://docs.oracle.com/javase/tutorial/essential/io/links.html)
+
+### [遍历文件树](https://docs.oracle.com/javase/tutorial/essential/io/walk.html)
+
+```java
+walkFileTree(Path, FileVisitor)
+walkFileTree(Path, Set<FileVisitOption>, int, FileVisitor)
+```
+
+### [查找文件](https://docs.oracle.com/javase/tutorial/essential/io/find.html)
+
+```java
+PathMatcher matcher =
+    FileSystems.getDefault().getPathMatcher("glob:*.{java,class}");
+
+Path filename = ...;
+if (matcher.matches(filename)) {
+    System.out.println(filename);
+}
+```
+
+### [监视文件变动](https://docs.oracle.com/javase/tutorial/essential/io/notification.html)
