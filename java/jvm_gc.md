@@ -22,7 +22,7 @@
 
 **特点**：概算占用了少量的内存空间来计数，但原理简单，判定效率高；但是该算法不够完善，有很多例外的情况需要考虑，比如对象之间的相互循环引用的问题。
 
-### 可达性分析算法（Reachability Analysis）
+### 可达性分析算法（Reachability Analysis）- Hotpot VM
 
 当前主流的商用程序语言（java、c#以及上溯古老的Lisp）的内存管理都是通过可达性分析算法来判断对象是否存活。
 
@@ -79,18 +79,18 @@ JDK1.2之后，Java对引用的概念进行了扩充，强度由强到弱，将�
 
 当前商业虚拟机的垃圾收集器，大都遵循了“分代收集（Generation Collection）”理论进行设计，分代收集名理论，实际是一套符合大多数程序运行实际情况的经验法则，它建立在2个分代假说之上：
 
-- 弱分代假说（Weak Generational Hypothesis）：绝大多数对象都是朝生夕灭的。
-- 强分代假说（Strong Generational Hypothesis）：熬过越多次垃圾收集过程的对象就越难一消亡。
+- **弱分代假说（Weak Generational Hypothesis）**：绝大多数对象都是朝生夕灭的。
+- **强分代假说（Strong Generational Hypothesis）**：熬过越多次垃圾收集过程的对象就越难一消亡。
 
 分代收集的情况：
 
 **部分收集Partial GC：**指目标不是完整收集整个Java堆的垃圾收集。
 
-- 新生代收集（Minor GC/Young GC）：目标只是新生代的垃圾收集；
+- **新生代收集（Minor GC/Young GC）**：目标只是新生代的垃圾收集；
 
-- 老年代收集（Major GC/Old GC）：目标只是老年代的垃圾收集；目前只有CMS收集器会有单独收集老年代代行为。另外请注意“Major GC”这个说法现在有点混淆，在不同资料上常有不同所指，读者需要按上下文区分到底是指老年代代收集还是整堆收集。
+- **老年代收集（Major GC/Old GC）**：目标只是老年代的垃圾收集；目前只有CMS收集器会有单独收集老年代代行为。另外请注意“Major GC”这个说法现在有点混淆，在不同资料上常有不同所指，读者需要按上下文区分到底是指老年代代收集还是整堆收集。
 
-- 混合代收集（Mixed GC）：目标是收集整个新生代以及部分老年代代垃圾收集。目前只有**G1收集器**会有这种行为。
+- **混合代收集（Mixed GC）**：目标是收集整个新生代以及部分老年代代垃圾收集。目前只有**G1收集器**会有这种行为。
 
 **整堆收集Full GC：**指收集整个Java堆和方法区的垃圾收集；
 
@@ -211,7 +211,7 @@ Parallel Old 是 Parallel Scavenfe 收集器的**老年代**版本，支持**多
 
 <img src="images/gc_parallelscavenge_parallelold.png" alt="image-20200303142402379" style="zoom:60%;" />
 
-### CMS （Concurrent Mark Sweap）收集器（多线程，标记-清除算法）
+### CMS （Concurrent Mark Sweap）并发标记清除收集器（多线程，标记-清除算法）
 
 CMS （Concurrent Mark Sweap）收集器是**老年代**的垃圾收集器， 主要目标是获取最**短垃圾回收停顿时间**，使用**多线程**的**标记-清除算法**。
 

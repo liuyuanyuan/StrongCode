@@ -8,19 +8,25 @@
 
 - [深入分析 Java I/O 的工作机制](https://www.ibm.com/developerworks/cn/java/j-lo-javaio/)
 
+- [Java IO、NIO、AIO详解（带图解）](https://www.jianshu.com/p/4ba0e7df71ec)
+
+  
+
 ## 预备知识：同步/异步、阻塞/非阻塞
 
 **同步和异步**
 
-**同步：用户线程发起I/O请求后需要等待或者轮询内核I/O操作完成后才能继续执行。**
+**同步：用户线程发起I/O请求后，需要等待或者轮询内核I/O操作完成后才能继续执行。**
 
-> 如果有多个任务或者事件发生，这些任务或者事件必须逐个地进行，一个事件或者任务的执行会导致整个流程的暂时等待，这些事件没有办法并发地执行；
+> 如果有多个任务或者事件发生，这些任务或者事件必须逐个地进行，一个事件或者任务的执行会导致整个流程的暂时等待，这些事件没有办法并发地执行；（串行）
 
-**异步：用户线程发起I/O请求后仍需要继续执行，当内核I/O操作完成后会通知用户线程，或者调用用户线程注册的回调函数。**
+**异步：用户线程发起I/O请求后，可以继续执行，当内核I/O操作完成后会通知用户线程，或者调用用户线程注册的回调函数，然后用户线程可以获取资源（将资源从内核拷贝到用户线程）。**
 
-> 如果有多个任务或者事件发生，这些事件可以并发地执行，一个事件或者任务的执行不会导致整个流程的暂时等待。
+> 如果有多个任务或者事件发生，这些事件可以并发地执行，一个事件或者任务的执行不会导致整个流程的暂时等待。（并发）
 
 举例说明：假如有一个任务包括两个子任务A和B，对于同步，当A在执行的过程中，B只有等待，直至A执行完毕，B才能执行；而对于异步，就是A和B可以并发地执行，B不必等待A执行完毕之后再执行，这样就不会由于A的执行导致整个任务的暂时等待。
+
+
 
 **阻塞与非阻塞**
 
@@ -73,9 +79,9 @@ while(true){
 >- 1查看数据是否就绪
 >- 2 进行数据拷贝（内核将数据拷贝到用户线程）
 >
->那么阻塞（blocking IO）和非阻塞（non-blocking IO）的区别就在于第一个阶段，如果数据没有就绪，在查看数据是否就绪的过程中是一直等待，还是直接返回一个标志信息。
+>那么阻塞（blocking IO）和非阻塞（non-blocking IO）的区别就在于第一个阶段，如果数据没有就绪，在查看数据是否就绪的过程中是一直等待（阻塞），还是直接返回一个标志信息（非阻塞）。
 
-### 3 多路复用IO模型
+### 3 多路复用IO模型(multiplexed IO)
 
 **是目前使用比较多的模型。Java NIO 实际上就是多路复用 IO。**
 
@@ -85,7 +91,7 @@ while(true){
 >
 > 在非阻塞IO 中，不断询问 socket 状态是通过用户线程去进行的；而在多路复用 IO 中，轮询每个 socket 状态是在内核进行的，这个效率要比用户线程要高的多。 								
 
-注意：多路复用 IO 模型是通过轮询的方式来检测是否有事件到达，并且对到达的事件逐一进行响应。因此对于多路复用 IO 模型来说，一旦事件响应体很大，那么就会导致后续的事件 迟迟得不到处理，并且会影响新的事件轮询。
+注意：多路复用 IO 模型是通过轮询的方式来检测是否有事件到达，并且对到达的事件逐一进行响应。因此对于多路复用 IO 模型来说，一旦事件响应体很大，那么就会导致后续的事件迟迟得不到处理，并且会影响新的事件轮询。
 
 
 
@@ -97,53 +103,17 @@ while(true){
 
 ### 5 异步IO模型（Async-IO）
 
-**异步 IO 模型才是最理想的 IO 模型。**
+**异步 IO 模型是最理想的 IO 模型。但是因为性能随OS有所不同，因此应用并不广泛。**
 
 在异步 IO 模型中，当用户线程发起 read 操作之后，立刻就可以开始去做其它的事。而另一方面，从内核的角度，当它收到一个 asynchronous read 之后， 它会立刻返回，说明 read 请求已经成功发起了，因此不会对用户线程产生任何 block。然后，内核会等待数据准备完成，然后将数据拷贝到用户线程，当这一切都完成之后，内核会给用户线程 发送一个信号，告诉它 read 操作完成了。也就说用户线程完全不需要知道实际的整个 IO 操作是如何进行的，只需要先发起一个请求，当接收内核返回的成功信号时表示 IO 操作已经完成，可以直接去使用数据了。
 
 也就说在异步 IO 模型中，IO 操作的两个阶段都不会阻塞用户线程，这两个阶段都是由内核自动完成，然后发送一个信号告知用户线程操作已完成。用户线程中不需要再次调用 IO 函数进行具体的读写。这点是和信号驱动模型有所不同的，在信号驱动模型中，当用户线程接收到信号表示数据已经就绪，然后需要用户线程调用 IO 函数进行实际的读写操作；而在异步 IO 模型中，收到信号表示 IO 操作已经完成，不需要再在用户线程中调用 IO 函数进行实际的读写操作。
 
-注意：异步 IO 是需要操作系统的底层支持，在 Java 7 中，提供了 Asynchronous IO。参考：http://www.importnew.com/19816.html 。
+注意：异步 IO 是需要操作系统的底层支持，在 Java 7 中，提供了 AsynchronousIO。参考：http://www.importnew.com/19816.html 。
 
-
+![img](images/5_io_model.png)
 
 ## BIO、NIO、AIO  概述
-
-### BIO（传统java.io包）- 同步阻塞
-
-基于流模型实现；
-
-传统的java.io包，基于流模型实现，
-
-提供了我们最熟悉的一些IO功能，如File抽象、输入输出流等；
-
-交互方式是：同步、阻塞的方式，线程的调用是可靠的串行。
-
-优点：代码比较简单、直观；
-
-缺点： IO 效率和扩展性存在局限性，容易成为应用性能的瓶颈。
-
-> 很多时候，人们把 java.net下面提供的部分网络 API，比如 Socket、ServerSocket、HttpURLConnection 也归类到同步阻塞 IO 类库，因为网络通信同样是 IO 行为。
-
-### NIO(java.nio包) - 多路复用、同步非阻塞
-
-在 Java 1.4 中引入了 NIO 框架（java.nio 包）;
-
-提供了 Channel、Selector、Buffer 等新的抽象;
-
-可以构建多路复用的、同步非阻塞 IO 程序;
-
-同时提供了更接近操作系统底层的高性能数据操作方式。
-
-### AIO - 异步非阻塞
-
-在Java 7 中，NIO 有了进一步的改进，也就是 NIO 2，引入了异步非阻塞 IO 方式，也有很多人叫它 AIO（Asynchronous IO）。
-
-异步 IO 操作基于事件和回调机制：可以简单理解为，应用操作直接返回，而不会阻塞在那里，当后台处理完成，操作系统会通知相应线程进行后续工作。
-
-
-
-## Java IO概念
 
 参考： https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html
 
@@ -157,7 +127,130 @@ Java 的 I/O 类大大简化了IO操作；Java的序列化允许程序将整个�
   - 基于磁盘操作的 I/O 接口：File
   - 基于网络操作的 I/O 接口：Socket
 
-## 传统BIO
+- 根据功能的发展：
+  - BIO 同步阻塞（同步阻塞IO模型）
+  - NIO 同步非阻塞（多路复用、同步非阻塞的IO模型）
+  - AIO 异步非阻塞（异步阻塞IO模型）
+
+### BIO(java.io) - 同步阻塞
+
+传统的java.io包，基于流模型实现。
+
+提供了我们最熟悉的一些IO功能，如File抽象、输入输出流等；
+
+交互方式是：同步、阻塞的方式，线程的调用是可靠的串行。
+
+优点：代码比较简单、直观；
+
+缺点： IO 效率和扩展性存在局限性，容易成为应用性能的瓶颈。
+
+> 很多时候，人们把 java.net下面提供的部分网络 API，比如 Socket、ServerSocket、HttpURLConnection 也归类到同步阻塞 IO 类库，因为网络通信同样是 IO 行为。
+
+### NIO(java.nio包) - 同步非阻塞、多路复用
+
+在 Java 1.4 中引入了 NIO 框架（java.nio 包）;
+
+提供了 Channel、Selector、Buffer 等新的抽象;
+
+可以构建多路复用的、同步非阻塞 IO 程序;
+
+同时提供了更接近操作系统底层的高性能数据操作方式。
+
+### AIO(java.nio.AsynchronousX) - 异步非阻塞
+
+在Java 1.7 中，NIO 有了进一步的改进，也就是 NIO 2，引入了异步非阻塞 IO 方式，也有很多人叫它 AIO（Asynchronous IO）。
+
+异步 IO 操作基于事件和回调机制：可以简单理解为，应用操作直接返回，而不会阻塞在那里，当后台处理完成，操作系统会通知相应线程进行后续工作。
+
+**AsynchronousChannel**：支持异步通道，实现类有：AsynchronousSocketChannel、AsynchronousServerSocketChannel、AsynchronousFileChannel、AsynchronousDatagramChannel；
+
+
+
+作者：一点点努力
+链接：https://www.jianshu.com/p/45f84a946047
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。。
+
+**CompletionHandler**：用户处理器。定义了一个用户处理就绪事件的接口，由用户自己实现，异步io的数据就绪后回调该处理器消费或处理数据。
+
+**AsynchronousChannelGroup**：一个用于资源共享的异步通道集合。处理IO事件和分配给CompletionHandler。
+
+### [Java I/O 流细分列表](https://docs.oracle.com/javase/tutorial/essential/io/streams.html)
+
+- [Byte Streams](https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html) 字节流，处理原始二进制数据的IO；
+
+  InputStream
+
+  OutputStream
+
+- [Character Streams](https://docs.oracle.com/javase/tutorial/essential/io/charstreams.html) 字符流，处理字符数据的IO，自动处理本地字符集的翻译；
+
+  Reader
+
+  Write
+
+- [Buffered Streams](https://docs.oracle.com/javase/tutorial/essential/io/buffers.html) 缓冲流，通过减少native API方法的调用，来优化输入和输出；
+
+   [`BufferedInputStream`](https://docs.oracle.com/javase/8/docs/api/java/io/BufferedInputStream.html) and [`BufferedOutputStream`](https://docs.oracle.com/javase/8/docs/api/java/io/BufferedOutputStream.html)
+
+   [`BufferedReader`](https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html) and [`BufferedWriter`](https://docs.oracle.com/javase/8/docs/api/java/io/BufferedWriter.html)
+
+- [Scanning and Formatting](https://docs.oracle.com/javase/tutorial/essential/io/scanfor.html) 扫描和格式化，允许程序读取和写入格式化的文本；
+
+  ```
+  Scanner s = null;
+  s = new Scanner(new BufferedReader(new FileReader("xanadu.txt")));
+  while (s.hasNext()) {
+     System.out.println(s.next());
+  }
+  ```
+
+  ```
+  System.out.format("The square root of %d is %f.%n", i, r);
+  ```
+
+- [I/O from the Command Line](https://docs.oracle.com/javase/tutorial/essential/io/cl.html) 来自命令行的IO，描述标准流和控制台对象。
+
+  ```
+  InputStreamReader cin = new InputStreamReader(System.in);
+  
+  Console c = System.console();
+  if (c == null) {
+      System.err.println("No console.");
+      System.exit(1);
+  }
+  String login = c.readLine("Enter your login: ");
+  char [] oldPassword = c.readPassword("Enter your old password: ");
+  ```
+
+- [Data Streams](https://docs.oracle.com/javase/tutorial/essential/io/datastreams.html) 数据流，处理基元类型数据和和String值的二进制 I/O 。
+
+  | Order in record | Data type | Data description | Output Method                  | Input Method                 | Sample Value     |
+  | --------------- | --------- | ---------------- | ------------------------------ | ---------------------------- | ---------------- |
+  | 1               | `double`  | Item price       | `DataOutputStream.writeDouble` | `DataInputStream.readDouble` | `19.99`          |
+  | 2               | `int`     | Unit count       | `DataOutputStream.writeInt`    | `DataInputStream.readInt`    | `12`             |
+  | 3               | `String`  | Item description | `DataOutputStream.writeUTF`    | `DataInputStream.readUTF`    | `"Java T-Shirt"` |
+
+- [Object Streams](https://docs.oracle.com/javase/tutorial/essential/io/objectstreams.html) 对象流， 处理对象的二进制 I/O；
+
+```java
+ObjectOutputStream out= ..
+bject ob = new Object();
+out.writeObject(ob);
+out.writeObject(ob);
+```
+
+
+
+```java
+ObjectInputStream in= ..
+Object ob1 = in.readObject();
+Object ob2 = in.readObject();
+```
+
+
+
+## 传统Blockig IO
 
 按操作数据分为：字节流（InputStream、OutputStream）和字符流（Reader、Writer）
 
@@ -195,21 +288,11 @@ delimiter()有关方法：应该是输入内容的分隔符设置。
 
 应该是输入内容的分隔符设置，
 
-### [Java I/O 流细分](https://docs.oracle.com/javase/tutorial/essential/io/streams.html)
-
-- [Byte Streams](https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html) 字节流，处理原始二进制数据的IO；
-- [Character Streams](https://docs.oracle.com/javase/tutorial/essential/io/charstreams.html) 字符流，处理字符数据的IO，自动处理本地字符集的翻译；
-- [Buffered Streams](https://docs.oracle.com/javase/tutorial/essential/io/buffers.html) 缓冲流，通过减少native API方法的调用，来优化输入和输出；
-- [Scanning and Formatting](https://docs.oracle.com/javase/tutorial/essential/io/scanfor.html) 扫描和格式化，允许程序读取和写入格式化的文本；
-- [I/O from the Command Line](https://docs.oracle.com/javase/tutorial/essential/io/cl.html) 来自命令行的IO，描述标准流和控制台对象。
-- [Data Streams](https://docs.oracle.com/javase/tutorial/essential/io/datastreams.html) 数据流，处理基元数据类型的二进制 I/O 和"String"值。
-- [Object Streams](https://docs.oracle.com/javase/tutorial/essential/io/objectstreams.html) 对象流， 处理对象的二进制 I/O；
-
 <img src="images/io-class.png" style="zoom:67%;" />
 
 
 
-## Java New IO
+## New IO
 
 NIO的三个核心部分：**通道 Channel、缓冲区 Buffer、选择区 Selector**。
 
@@ -219,10 +302,10 @@ NIO 基于Channel 和 Buffer 进行操作，数据总是从Channel读取到Buffe
 
 Java nio 的核心抽象：
 
-- [*Buffers*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/package-summary.html#buffers), which are containers for data, and provides an overview of the other NIO packages;
-- [*Charsets*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/charset/package-summary.html) and their associated *decoders* and *encoders*, which translate between bytes and Unicode characters;
-- [*Channels*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/package-summary.html) of various types, which represent connections to entities capable of performing I/O operations; and
-- *Selectors* and *selection keys*, which together with *selectable channels* define a [multiplexed, non-blocking I/O](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/package-summary.html#multiplex) facility.
+- [*Buffers*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/package-summary.html#buffers) 数据的容器；
+- [*Charsets*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/charset/package-summary.html) 字符集及相应的编码器和解码器，用于 bytes 与 Unicode characters 之间转换；
+- [*Channels*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/package-summary.html) 各种的通道，表示与能够执行IO操作的实体的连接； 
+- Selectors 和 selection keys 以及可选的通道，构成一个 [multiplexed多路复用, non-blocking非阻塞 I/O](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/package-summary.html#multiplex) 程序。
 
 <img src="images/nio_class.png" style="zoom: 67%;" />
 
@@ -275,6 +358,31 @@ Selector 选择区，Selector 能够检测多个注册的通道上是否有事�
  <img src="images/nio-selector.png" alt="image-20200228123212999" style="zoom:50%;" />
 
 所有的Channel都归Selector管理，这些channel中只要有至少一个有IO动作，就可以通过Selector.select方法检测到，并且使用selectedKeys得到这些有IO的channel，然后对它们调用相应的IO操作。
+
+
+
+## Asynchronous IO
+
+AIO socket编程中：发出一个事件（accept read write等）之后要指定事件处理类（回调函数
+
+- AsynchronousServerSocketChannel(服务端通道)
+
+  - open() 静态工厂方法；
+
+  - bind() 用于绑定服务端IP地址(还有端口号)；
+
+  - accept() 用于接收用户连接请求。
+
+- AsynchronousSocketChannel(客户端通道)
+
+  - open() 静态工厂方法；
+  - read()/write() 用于读写；
+
+- CompletionHandler<V,A>(事件处理类，回调函数) 
+  - void completed(V result, A attachment); 异步操作成功时被回调；
+  - void failed(Throwable exc, A attachment); 异步操作失败时被回调；
+
+
 
 
 

@@ -27,10 +27,6 @@
 
 
 
-
-
-
-
 ## 安装使用
 
 #### 1 Install Redis (Centos7)

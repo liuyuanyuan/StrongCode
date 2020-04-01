@@ -8,21 +8,21 @@
 
 是 Java 语言中所有错误或异常的超类。下一层分为 Error 和 Exception。
 
-#### Error（内存异常）
+Throwable的子类中，Error和RuntimeException都是非检查异常，其他的都是检查异常。
 
-是J ava 运行时系统的内部错误和资源耗尽错误。
+#### Error(内存异常) - 非检查异常
 
-应用程序不会抛出该类对象。如果出现此类的错误，除了告知用户，剩下的就是尽力使程序安全的终止。
+是Java 运行时系统的内部错误和资源耗尽错误。应用程序不会抛出该类对象。如果出现此类的错误，除了告知用户，剩下的就是尽力使程序安全的终止。
 
-#### Exception
+IOError、OutOfMemoryException。
 
-下一层分为：运行时异常 RuntimeException 和检查异常 CheckedException。
+#### Exception：程序有可能恢复的异常
 
-##### RuntimeException 运行时异常（运行时报错，不受检查）
+##### -- RuntimeException ( 运行时异常) - 非检查异常
 
  是那些可能在 Java 虚拟机正常运行期间抛出的异常的超类。 如果出现 RuntimeException，那么一定是程序员的错误。 如 : NullPointerException 、 ClassCastException ; 
 
-##### CheckedException 检查异常（编译器报错，受检查）
+##### -- （必须try catch捕获）受检查异常 
 
 一般是外部错误，这种异常都发生在编译阶段，Java 编译器会强制程序去捕获此类异常，即会出现要求你把这段可能出现异常的程序进行 try catch，该类异常一般包括几个方面:
 

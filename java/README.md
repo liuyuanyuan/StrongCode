@@ -11,7 +11,7 @@
 
 - [JVM](jvm.md)
 
-  - [I/O&New I/O](jvm_io_nio.md)
+  - [IO&NIO&AIO](jvm_io_nio.md)
   - [类加载机制](jvm_class_load.md)
   - [垃圾收集和内存动态分配](jvm_gc.mds)
   - [Java对象的内存布局](jvm_object.md)
