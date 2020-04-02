@@ -77,9 +77,11 @@ JVM 内存区域主要分为线程私有区域【程序计数器、虚拟机栈�
 
 ​	堆也是垃圾收集器管理的主要区域。Java 堆从 GC 的角度还可以细分为: **新生代**(Eden 区、From Survivor 区 和 To Survivor 区)和**老年代。**
 
-​	若在Java堆中没有内存完成实例分配，并且堆也无法再扩展时，Java虚拟机将抛出OutOfMemoryError异常。
+​	若在Java堆中没有内存完成实例分配，并且堆也无法再扩展时，Java虚拟机将抛出**OutOfMemoryError**异常。
 
  <img src="images/jvm_heap_gc_part.png" alt="image-20200303145614322" style="zoom:60%;" />
+
+
 
 ##### 2 方法区（method area） 
 

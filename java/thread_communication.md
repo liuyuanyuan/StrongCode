@@ -251,7 +251,7 @@ public class Account {
 ```java
 public class TestPipeConnect {
 	public static void main(String[] args) {
-		//创建管道输出流
+		  //创建管道输出流
         PipedOutputStream pos = new PipedOutputStream();
         //创建管道输入流
         PipedInputStream pis = new PipedInputStream();
@@ -293,7 +293,7 @@ public class Consumer extends Thread {
 	private PipedInputStream pis;
 	public Consumer(PipedInputStream pis) {
         this.pis = pis;
-    }
+  }
 	public void run() {
 		try {
 			while (true) {

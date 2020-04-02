@@ -32,7 +32,7 @@ Java 线程的生命周期中存在几种状态。在 Thread 类里有一个枚�
 
    实际很少适用此方法，但它对调试或者测试可能很有用，因为它可能有助于重现由于竞争条件而产生的错误。
 
-3. 阻塞(BLOCKED)：表示线程阻塞于锁。阻塞状态的线程，等待获取一个监视器锁，从而进入同步代码块/方法，或者在调用Object wait() 后重新进入同步代码块/方法。
+3. 阻塞(BLOCKED)：表示线程阻塞于锁。阻塞状态的线程，等待获取一个监视器锁/同步锁，从而进入同步代码块/方法，或者在调用Object wait() 后重新进入同步代码块/方法。
 
    - 阻塞状态是线程阻塞在进入[synchronized](http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247484598&idx=3&sn=f37dbbfa704fb465c8b1ef9fefc24398&chksm=fe79556ec90edc78f06934fd24f73a584a6e32ce542e3790cb3aa62a6a9f35cb32b06cfa56fa&scene=21#wechat_redirect)关键字修饰的方法或代码块(获取锁)时的状态。
 
@@ -348,7 +348,7 @@ public class MyThread extends Thread{
 
 
 
-### object wait - notify / notifyAll 线程等待-唤醒
+### object wait - notify/notifyAll 线程等待-唤醒
 
 在Object.java中，定义了wait(), notify()和notifyAll()接口。
 
@@ -369,7 +369,7 @@ Object类中关于等待/唤醒的API详细信息如下：
 
 
 
-### thread.join() / thread.join(long millis) 
+### thread.join()/thread.join(long millis) 
 
 让父线程等待子线程结束之后才能继续运行。
 
@@ -442,7 +442,7 @@ public static void main(String[] args) throws InterruptedException {
 
 
 
-### LockSupport.park() / LockSupport.parkNanos(long nanos) - LockSupport.unpark(Thread)
+### LockSupport.park()/LockSupport.parkNanos(long nanos) - LockSupport.unpark(Thread)
 
 LockSupport.parkUntil(long deadlines)，使得当前线程进入 WAITING/TIMED_WAITING 状态。对比 wait 方法，它不需要获得锁就可以让线程进入 WAITING/TIMED_WAITING 状态；
 

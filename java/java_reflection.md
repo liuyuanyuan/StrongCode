@@ -79,6 +79,12 @@ Lily
 
 3 使用反射API来操作这些信息。
 
+```java
+ String str = "hello";
+ Method m = str.getClass().getMethod("toUpperCase");
+ System.out.println(m.invoke(str)); //HELLO
+```
+
 
 
 ### 获取Class对象的三种方式

@@ -58,49 +58,161 @@ public static final int v = 8080;
 
 ### 类加载器种类
 
-四种列加载器：
+#### 四种列加载器：
 
-- 启动类加载器（Bootstrap  ClassLoader  ）
+- **启动类加载器**（Bootstrap  ClassLoader  ）：c++编写的
 
-​	负责加载核心类库， JAVA_HOME\lib目录下，如rt.jar, charsets.jar等;
+负责加载核心类库， JAVA_HOME\lib目录下，如rt.jar, charsets.jar等;
 
-- 扩展类加载器（Extension ClassLoader ）：ExtClassLoader
+具体可由启动类加载器加载到的路径可通过`System.getProperty(“sun.boot.class.path”)`查看。由于启动类加载器无法被Java程序直接引用，因此JVM默认直接使用 null 代表启动类加载器。
 
-​	负责加载jre扩展目录JAVA_HOME\lib\ext 中的jar类包；
+- **扩展类加载器**（Extension ClassLoader ）：sun.misc.Launcher$ExtClassLoader
 
-- 系统/应用程序类加载器（Application ClassLoader）：AppClassLoader 
+负责加载jre扩展目录JAVA_HOME\lib\ext 中的jar类包；
 
-​    负责加载ClassPath路径下的类包；
+扩展类加载器加载到的路径可通过`System.getProperty("java.ext.dirs")`查看
 
--  用户自定义类加载器（User  ClassLoader）
+- **系统/应用程序类加载器**（Application ClassLoader）：sun.misc.Launcher$AppClassLoader
 
-​    通过继承**extends** java.lang.ClassLoader可以实现自定义类加载器。
+负责加载ClassPath路径下的类包；
 
-​    负责加载自定义路径下的类包；
+系统类加载器加载到的路径可通过`System.getProperty("java.class.path")`查看
 
-**JVM 通过双亲委派模型（逐层向上委派）进行类的加载，保证类的一致性，从而保证类的唯一性：**
+-  **用户自定义类加载器**（User  ClassLoader）
+
+负责加载自定义路径下的类包；
+
+通过继承extends java.lang.ClassLoader并重写findClass()方法可以实现自定义类加载器。
+
+#### 类加载机制：双亲委派模型
+
+JVM 通过双亲委派模型（逐层向上委派）进行类的加载：当类加载器有加载类的需求时，先委托父类装载器从其搜索路径中寻找目标类，只有在parent找不到的情况下，才由自己从自己的类路径中查找并装载目标类。
+
+**双亲委派模型的好处：**
+
+- Java类随着它的类加载器一起具备了一种**带有优先级的层次关系**，通过这种层级关可以**避免类的重复加载**，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。
+- 其次是出于安全考虑，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer 的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，就不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以**防止核心API库被随意篡改**。
+
+
 
 <img src="images/java_class_loaders.png" alt="image-20200228134333989" style="zoom: 50%;" />
 
 
+
+**自定义类加载器：**
+
+```java
+public class FileSystemClassLoader extends ClassLoader {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		     //打印类加载器的树状图
+		     ClassLoader loader = FileSystemClassLoader.class.getClassLoader();
+		     while (loader != null) {
+			     System.out.println(loader.toString());
+			     loader = loader.getParent();
+		     }
+		
+		    //创建类加载器
+		    FileSystemClassLoader fcl = 
+				   new FileSystemClassLoader("/Users/liuyuanyuan/eclipse-workspace/test/src");
+		    //加载类，得到Class对象
+        Class<?> clazz = fcl.loadClass("jvm.Spiderman");
+		    //得到类的实例
+        Spiderman animal= (Spiderman) clazz.newInstance();
+        animal.say();
+        System.out.println(animal.getClass().getClassLoader());
+        System.out.println(animal.getClass().getClassLoader()
+        		.getParent());
+        System.out.println(animal.getClass().getClassLoader()
+        		.getParent().getParent());
+        System.out.println(animal.getClass().getClassLoader()
+        		.getParent().getParent().getParent());
+	}
+	
+	private String rootDir;
+	public FileSystemClassLoader(String rootDir) {
+		this.rootDir = rootDir;
+	}
+
+  @override
+  protected Class<?> findClass(String name) throws ClassNotFoundException {
+		byte[] classData = getClassData(name);
+		if (classData == null) {
+			throw new ClassNotFoundException();
+		} else {
+			return defineClass(name, classData, 0, classData.length);
+		}
+	}
+
+	private byte[] getClassData(String className) {
+		String path = classNameToPath(className);
+		InputStream ins = null;
+		ByteArrayOutputStream baos = null;
+		try 
+		{
+			ins = new FileInputStream(path);
+			baos = new ByteArrayOutputStream();
+			int bufferSize = 4096;
+			byte[] buffer = new byte[bufferSize];
+			int bytesNumRead = 0;
+			while ((bytesNumRead = ins.read(buffer)) != -1) {
+				baos.write(buffer, 0, bytesNumRead);
+			}
+			return baos.toByteArray();
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		} finally 
+		{
+			if (baos != null) {
+				try {
+					baos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (ins != null) {
+				try {
+					ins.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
+	private String classNameToPath(String className) {
+		return rootDir + File.separatorChar + className.replace('.', File.separatorChar) + ".class";
+	}
+}
+
+```
 
 实战验证：
 
 ```java
 //Java中用c/c++实现的类，其类加载器打印为null）
 public class Test {
-	public static void main(String[] args) {
+	public static void main(String[] args)throws Exception {
 		Map map = new HashMap();
 		System.out.println(Test.class.getClassLoader());
-		System.out.println(map.getClass().getClassLoader());
-		}
+		System.out.println(ClassLoader.getSystemClassLoader());  
+    System.out.println(ClassLoader.getSystemClassLoader().getParent());  
+    System.out.println(ClassLoader.getSystemClassLoader().getParent().getParent());
+    }
 }
-
+/* 
 output:
 jdk.internal.loader.ClassLoaders$AppClassLoader@10f87f48
+sun.misc.Launcher$AppClassLoader@6d06d69c  
+sun.misc.Launcher$ExtClassLoader@70dea4e  
 null
-null
+*/
 ```
+
+
+
+
 
 
 

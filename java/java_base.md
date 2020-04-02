@@ -66,9 +66,33 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
 
 
 
-## 5 Object类
+## 5 java基本类型及其对象类型的装箱和拆箱
 
-Object类 是所有类的父类。
+```java
+        Integer h = new Integer(3);
+        Integer i = 3;                  // 将3自动装箱成Integer类型
+        int j = 3;
+        System.out.println(h == i);     // false 两个引用没有引用同一对象
+        System.out.println(h == j);     // true h自动拆箱成int类型再和j比较
+```
+
+
+
+
+
+## 6 Object类
+
+Object类是所有类的父类。
+
+Object 的 hashcode() 方法是本地方法，也就是用 c 语言或 c++ 实现的，该方法直接返回对象的内存地址。
+
+如果不修改equals方法，那么两个对象比较的是hashCode()（即内存地址）。
+
+> Java对象的eqauls方法和hashCode()方法是这样规定的： 
+>
+> ➀相等（相同）的对象必须具有相等的哈希码（或者散列码）。 
+>
+> ➁如果两个对象的hashCode相同，它们并不一定相同。
 
 ```java
 /**
@@ -154,7 +178,7 @@ System.out.println("2receive: " + s2);
 
 
 
-
+## 7 构造方法的重载（overload）和函数方法的覆盖（@Override）
 
 
 

@@ -12,19 +12,7 @@
 
 ## 集合框架
 
-**效益**
-
-- 减少编程工作量：
-
-- 提高程序速度和质量:
-
-- 允许无关 APIs 之间的相互操作:
-
-- 减少学习和使用新APIs的精力:
-
-- 减少设计新APIs的精力:
-
-- 促进软件复用:
+**效益：**减少编程工作量；提高程序速度和质量；允许无关 APIs 之间的相互操作；减少学习和使用新APIs的精力；减少设计新APIs的精力；促进软件复用。
 
 **位置：**Java 集合框架位于包 java.util 中。
 
@@ -42,9 +30,9 @@
 
 实现类：ArrayList、LinkedList；
 
-​			   HashSet、LinkedHashSet、TreeSet；
+​			   HashMap、LinkedHashMap、TreeMap；
 
-​			   HashMap、HashMap、TreeMap。
+​               HashSet、LinkedHashSet、TreeSet；
 
 ##### 3 算法（Algorithms）
 
@@ -60,13 +48,15 @@
 
 >Java中数据存储方式分为两种数据结构：
 >
->1 数组：连续空间，寻址迅速，但是在增、删元素的时候会有较大幅度的移动；
+>1 数组：连续空间、顺序存储，寻址迅速，但是在增、删元素可能需要较大幅度的移动；
 >
 >​             特点：查询速度快，增、删较慢。
 >
 >2 链表：空间不连续，寻址困难，增、删元素只需修改指针；
 >
 >​              特点：查询速度慢，增、删快。
+>
+>3 散列表
 
 ### **Collection** 
 
@@ -96,6 +86,8 @@
 
 **注意**：要实现集合元素的排序和不可重复，元素对象必须正确实现 [Object 的 equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) ，如：Set是通过元素的hashCode来比较，Map通过元素的Key的hashCode来比较。
 
+
+
 ## 集合实现类（Implements）
 
 普通实现类：
@@ -118,57 +110,59 @@
 
 集合核心实现类介绍：
 
-### List列表（按元素插入顺序存储，元素允许重复，允许null）
+### List列表(按插入顺序、连续存储，元素允许重复、null)
 
 - Arraylist（数组实现）: 
 
-  基于Object 数组实现，按插入顺序连续存储，超出数组容量时进行扩容；
+  基于Object 数组实现，按插入顺序、连续存储，超出数组容量时进行扩容；
 
-  因为顺序存储便于建立索引，所以随机查找和便利速度快；插入（需要扩容时会新建更大数组并将原有元素复制进去）和删除（删除非末端元素时需移动后续元素）存在潜在的巨大开销。
+  特点：因为顺序存储便于建立索引，所以随机查找和便利速度快；插入（需要扩容时会新建更大数组并将原有元素复制进去）和删除（删除非末端元素时需移动后续元素）存在潜在的巨大开销。
+
+  **Array和ArrayList区别：容量上定长和可增长；ArrayList只能是添加对象类型，Array支持对象和基础类型。**
 
 - LinkedList（双向链表实现）: 
 
   基于双向链表(jdk1.6之前为循环链表，jdk1.7取消了循环) ，存储不一定连续；
 
-  因为带有链所以动态插入和删除快；因为存储不连续从而不容易作索引，所以随机访问和顺序遍历比较慢。
+  特点：因为带有链所以动态插入和删除快；因为存储不连续从而不容易作索引，所以随机访问和顺序遍历比较慢。
 
 - Vector（数组实现，线程同步）: 
 
   实现与Arraylist实现类似，另外使用 synchronized 保证线程安全。
 
-  线程同步的开销导致它比ArrayList慢。
+  特点：线程同步的开销导致它比ArrayList慢。
 
-### [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)映射（key不重复）
+### [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html) 映射（key不重复）
 
    **常规用途实现**
 
-- [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) （数组+链表/红黑树，按照key的hashCode()值顺序存储）:  
-
-  **key 和 value 都允许为 null 。**
+- [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) （数组+链表/红黑树，key的hashCode()值作为entry的存储位置）:  
 
   jdk1.8之前，HashMap由**数组+链表**组成，数组是主体，链表则主要为了解决哈希冲突而存在的(（“拉链法”解决哈希冲突；key经过哈希函数后得到的地址值出现重复，即为哈希冲突)；jdk1.8以后，HashMap由**数组+链表/红黑树**组成，在解决哈希冲突时有了较大的变化，**当链表长度大于阈值(默认为8)时，将链表转化为红黑树，以减少搜索时间，性能达到最大化。**
 
-  按照key的哈希函数值顺序存储，可以快速定位元素。
+  特点：按照key的hashCode()值随机存储（key允许一个null值 ，value允许多个null值），可以快速定位元素，以及添加、删除元素。
 
   <img src="images/hashmap.png" alt="image-20200122140241123" style="zoom:30%;" />
 
 - [LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) （按元素插入顺序）:  
 
-  继承自 HashMap，其底层仍然是由**数组和链表/红黑树**组成。另外，LinkedHashMap 在 HashMap结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。**近乎HashMap的性能和按插入顺序的迭代。**
+  继承自 HashMap，其底层仍然是由**数组和链表/红黑树**组成。另外增加了一条双向链表，来维护键值对的插入顺序，实现了元素的访问顺序。
 
-- [TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)（元素按key排序，默认升序） :  
+  特点：近乎HashMap的性能，iterator按插入顺序遍历，先插入的数据先得到。
 
-  使用红黑树(自平衡的排序二叉树)。**实现了SortedMap接口方法，默认按key的升序排列**。
+- [TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)（按key排序，默认升序） :  
 
-  在使用 TreeMap 时，key 必须实现 Comparable 接口或者在构造 TreeMap 传入自定义的 Comparator，否则会在运行时抛出 java.lang.ClassCastException 类型的异常。
+  实现了SortedMap接口方法，使用红黑树(自平衡的排序二叉树)原理排序，默认按key的升序排列。
+
+  > 在使用 TreeMap 时，key 必须实现 Comparable 接口或者在构造 TreeMap 传入自定义的 Comparator，否则会在运行时抛出 java.lang.ClassCastException 类型的异常。
 
 - HashTable（线程安全的）:  
 
   **key 和 value 都不允许为null。**
 
-  底层数据结构 与jdk1.8之前的 HashMap 类似，都是采用 **数组+链表**，数组是主体，链表则主要为了解决哈希冲突而存在的。
+  底层数据结构 与jdk1.8之前的 HashMap 类似，都是采用 **数组+链表**，数组是主体，链表则主要为了解决哈希冲突。
 
-  **使用synchronzied关键字，对数据对象整体加单锁**来实现线程安全，随着元素增多并发效率急剧下降，因此在并发实践中优先使用ConcurrentHashMap而不推荐Hashtable。
+  特点：**使用synchronzied关键字，对数据对象整体加单锁**，随着元素增多并发效率急剧下降；在并发实践中优先使用效率更高的ConcurrentHashMap而不推荐Hashtable。
 
   **并发实现  **
 
@@ -178,13 +172,14 @@
   
   实现了 [java.util.concurrent](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [ConcurrentMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 Map 的原子方法（CAS） `putIfAbsent`, `remove` 和 `replace` ）。
   
-  ConcurrentHashMap 支持全并发的检索和高度并发的更新，其所有操作都是线程安全的（虽然在检索时没有加锁，在更新时也未对数据整体加锁）。 允许客户端选择用于更新的并发级别（concurrencyLevel：估计的执行并发更新的线程素）。
-  
-  ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法，只是实现线程安全的细节不同。
-  
-  在jdk1.8之前，主体分为多个Segment（Segment size = capacity / concurrencyLevel ），来对每个 Segment 加一个 lock，达到锁分离，来提高并发效率； jdk1.8之后，直接用**Node数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
-  
-  ConcurrentHashMap旨在替代Hashtable：它支持Hashtable特有的所有方法，只是实现的同步的具体方式不同。
+  - jdk1.8之前，将**主体分为多个Segment**（Segment size = capacity / concurrencyLevel ），来对每个 Segment 加一个 lock，达到锁分离，来提高并发效率；
+  -  jdk1.8之后，直接用**Node数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
+
+ConcurrentHashMap 支持全并发的检索和高度并发的更新，其所有操作都是线程安全的（虽然在检索时没有加锁，在更新时也未对数据整体加锁）。 允许客户端选择用于更新的并发级别（concurrencyLevel：估计的执行并发更新的线程数）。
+
+ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法，只是实现线程安全的细节不同。
+
+
 
 **区分HashMap、Hashtable、ConcurrentHashMap，如下：**
 
@@ -195,34 +190,32 @@
 **特殊用途实现**
 
 - [EnumMap](https://docs.oracle.com/javase/8/docs/api/java/util/EnumMap.html) : EnumMap 在内部实现为数组，是一种用于枚举键的高性能Map实现。此实现将Map接口的丰富性和安全性与接近数组的速度结合在一起。如果要将枚举映射到值，则应始终使用EnumMap优先于数组。
-
 - [WeakHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/WeakHashMap.html) : WeakHashMap 是Map接口的实现，该接口仅存储对其键的弱引用。当不再在WeakHashMap外部引用键值对时，仅存储弱引用将允许对键值对进行垃圾回收。此类提供了利用弱引用功能的最简单方法。这对于实现“类似注册表的”数据结构非常有用，在这种结构中，当任何线程都无法再访问其键时，该条目的实用程序就会消失.
-
 - [IdentityHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/IdentityHashMap.html) : IdentityHashMap 是基于哈希表的基于身份的Map实现。此类对于保留拓扑的对象图转换（例如序列化或深度复制）很有用。要执行这样的转换，您需要维护一个基于身份的“节点表”，以跟踪已经看到的对象。基于身份的映射还用于在动态调试器和类似系统中维护对象到元信息的映射。最后，基于身份的映射在阻止“欺骗攻击”中很有用，这是故意不正当的equals方法的结果，因为IdentityHashMap从未在其键上调用equals方法。此实现的另一个好处是它速度很快。
 
 ### Set集合（元素无序，不重复）
 
 - HashSet (用HashMap存元素)：
 
-  内部采用 HashMap 来保存所有元素，将元素对象作为key，value则统一用一个空Object对象；
+  内部采用 HashMap 来保存所有元素，将元素对象作为key，value则统一用一个 new Object()；
 
-- LinkedHashSet（HashSet + LinkedHashMap）：
+- LinkedHashSet（有序，HashSet + LinkedHashMap）：
 
   LinkedHashSet 继承于 HashSet，内部是通过 LinkedHashMap 来保存所有元素。
+
+  内部增加了一条针对多有entry的双向链表，来保证元素的顺序。
 
 - TreeSet(可排序，用TreeMap保存元素)：
 
   内部采用 TreeMap 来保存所有元素；
 
-  使用红黑树(自平衡的排序二叉树)原理。每次新添加对象时，都要按照排序规则（升序/降序）进行排序，将对象插入二叉树的指定位置。（删除对象时怎需要重新平衡树结构）
+  使用红黑树(自平衡的排序二叉树)原理。每次新添加对象时，都要按照排序规则（升序/降序）进行排序，将对象插入二叉树的指定位置。（删除对象时则需要重新平衡树结构）
 
-  **注意：**
-
-  Integer 和 String 对象都可以进行默认的 TreeSet 排序，而自定义的类必须实现 Comparable 接口，并且覆写相应的 compareTo()函数，才可以正常使用。
-
-  在覆写 compare()函数时，要返回相应的值才能使 TreeSet 按照一定的规则来排序
-
-  比较此对象与指定对象的顺序。如果该对象小于、等于或大于指定对象，则分别返回负整数、零或正整数。
+  > **注意：**
+>
+  > Integer 和 String 对象都可以进行默认的 TreeSet 排序，而自定义的类必须实现 Comparable 接口，并且覆写相应的 compareTo()函数，才可以正常使用。
+>
+  > 在覆写 compare() 函数时，要返回相应的值才能使 TreeSet 按照一定的规则来排序比较此对象与指定对象的顺序。如果该对象小于、等于或大于指定对象，则分别返回负整数、零或正整数。
 
 ### Queue队列（FIFO）
 
@@ -237,7 +230,7 @@
 
 **Java 集合框架中的队列** 
 
-队列接口java.util.Queue 继承自 Collection 接口 ，其实现有： Deque, LinkedList, PriorityQueue, BlockingQueue 等。
+队列接口 java.util.Queue 继承自 Collection 接口 ，其实现有：Deque, LinkedList, PriorityQueue, BlockingQueue 等。
 
 #### 接口java.util.Queue FIFO队列
 
@@ -310,7 +303,7 @@ BlockingQueue除继承的Queue的操作方法外，还额外支持以下操作�
 
 **BlockingQueue实现是线程安全的**。所有排队方法都可以使用内部锁或其他形式的并发控制来原子地实现其效果。但是，除非在实现中另行指定，否则批量Collection操作addAll，containsAll，retainAll和removeAll不一定是原子执行的。因此，例如，仅在c中添加一些元素之后，addAll（c）可能会失败（引发异常）。
 
-BlockingQueue本质上不支持任何类型的“close”或“shutdown”操作，以指示将不再添加任何项目。这些功能的需求和使用往往取决于实现。例如，一种常见的策略是让生产者插入特殊的流尾对象或有毒对象，这些特殊对象在被消费者拿走时会被相应地解释。
+BlockingQueue本质上不支持任何类型的 close 或 shutdown 操作，以指示将不再添加任何项目。这些功能的需求和使用往往取决于实现。例如，一种常见的策略是让生产者插入特殊的流尾对象或有毒对象，这些特殊对象在被消费者拿走时会被相应地解释。
 
 以下是基于典型生产者-使用者方案的使用示例。请注意，BlockingQueue 可以安全地与多个生产者和多个使用者一起使用。
 
@@ -352,7 +345,7 @@ class Producer implements Runnable {
 
 内存一致性效果：与其他并发集合一样，先在一个线程中将对象放入 BlockingQueue 的操作 [*happen-before*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/concurrent/package-summary.html#MemoryVisibility) 随后在另一线程从 BlockingQueue 中访问或移除该元素的操作。（并发集合的happens-before原则：插入先于访问和删除）
 
-#### 实现类PriorityQueue 优先队列
+#### 实现类 PriorityQueue 优先队列
 
 基于优先级堆的无界限优先级队列。根据使用的构造函数：在Comparator不提供或者为null时，优先级队列的元素根据其**自然顺序进行排序**；提供则通过**在队列构建时提供的Comparator进行排序**。**优先级队列不允许null元素**。依赖自然顺序的优先级队列也不允许插入不可比较的对象（这样做可能会导致ClassCastException）。
 
@@ -365,8 +358,6 @@ class Producer implements Runnable {
 **注意，此实现类是未同步。**如果任何线程修改了队列，则多个线程不应同时访问PriorityQueue实例。而是**使用线程安全的  java.util.concurrent.PriorityBlockingQueue 类**。
 
 实现类注意事项：此实现类为入队和出队方法（`offer`, `poll`, `remove()` 和 `add`) 提供的时间复杂度为 **O(log(n))** ； remove(Object)和contains(Object) 方法是**线性时间**；检索方法(`peek`, `element`, 和 `size`)是**常量时间**。
-
-#### 
 
 ## Iterator - 集合统一迭代器
 
