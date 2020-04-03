@@ -54,6 +54,7 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
     AbstractStringBuilder(int capacity) {
         value = new char[capacity];
     }
+}
 ```
 
 对于三者使用的总结:
@@ -78,9 +79,7 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
 
 
 
-
-
-## 6 Object类
+## 6 Object 类
 
 Object类是所有类的父类。
 

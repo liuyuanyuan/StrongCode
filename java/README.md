@@ -11,6 +11,7 @@
 
 - [JVM](jvm.md)
 
+  - [Java 对象序列化-将对象内容流化](java_serializable.md)
   - [IO&NIO&AIO](jvm_io_nio.md)
   - [类加载机制](jvm_class_load.md)
   - [垃圾收集和内存动态分配](jvm_gc.mds)
@@ -37,8 +38,7 @@
   - [Java 反射机制](java_reflection.md)
   - [Java 注解](java_annotation.md)
   - [Java 泛型](java_generics.md)
-- [Java 序列化](java_serializable.md)
-  - [Java 复制(浅复制和深复制)](java_clone.md)
+- [Java 复制(浅复制和深复制)](java_clone.md)
   
 
 [Java 程序日志(slf4j及其实现)](java_log.md)

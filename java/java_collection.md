@@ -359,6 +359,21 @@ class Producer implements Runnable {
 
 实现类注意事项：此实现类为入队和出队方法（`offer`, `poll`, `remove()` 和 `add`) 提供的时间复杂度为 **O(log(n))** ； remove(Object)和contains(Object) 方法是**线性时间**；检索方法(`peek`, `element`, 和 `size`)是**常量时间**。
 
+
+
+### 队列的实现类
+
+(1) ArrayBlockingQueue：基于数组结构的有界阻塞队列，按FIFO排序任务； 
+(2) LinkedBlockingQuene：基于链表结构的阻塞队列，按FIFO排序任务，吞吐量通常要高于ArrayBlockingQuene； 
+(3) SynchronousQuene：一个不存储元素的阻塞队列，每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量通常要高于LinkedBlockingQuene； 
+(4) PriorityBlockingQuene：具有优先级的无界阻塞队列（无界队列的风险：容易内存溢出）；
+
+> LinkedBlockingQueue比ArrayBlockingQueue：在插入删除节点性能方面更优，但是二者在put(), take()任务的时均需要加锁；
+>
+> SynchronousQueue使用无锁算法，根据节点的状态判断执行，而不需要用到锁，其核心是Transfer.transfer()。
+
+
+
 ## Iterator - 集合统一迭代器
 
  Iterator 模式总是用同一种逻辑来遍历集合。使得客户端自身不需要来维护集合的内部结构，所有的内部状态都由 Iterator 来维护。客户端从不直接和集合类打交道，它总是控制 Iterator，向它发送”向前”，”向后”，”取当前元素”的命令，就可以间接遍历整个集合。
@@ -370,6 +385,10 @@ class Producer implements Runnable {
 - 1 迭代器允许调用者利用定义良好的语义在迭代期间从迭代器所指向的 collection 移除元素。
 
 - 2 方法名称得到了改进。
+
+  >Iterator可用来遍历Set和List集合，但是ListIterator只能用来遍历List。 
+  >Iterator对集合只能是前向遍历，ListIterator既可以前向也可以后向。 
+  >ListIterator实现了Iterator接口，并包含其他的功能，比如：增加元素、替换元素、获取前一个和后一个元素的索引等等。
 
 ```java
 /*接口定义*/
@@ -388,6 +407,10 @@ while (iter.hasNext())
 }
 System.out.println();
 ```
+
+
+
+
 
 
 
