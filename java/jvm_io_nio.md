@@ -272,6 +272,8 @@ Object ob2 = in.readObject();
 - 需要被提高效率的流，作为参数传递给缓冲区的构造函数；
 - 在缓冲区中封装了一个数组，存入数据后一次取出；
 
+![image-20200407005309068](images/java_bio_socket.png)
+
 ### java.util.Scanner
 
 java.util.Scanner 是一个用于扫描输入文本的新的实用程序。
