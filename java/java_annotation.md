@@ -4,7 +4,7 @@
 
 注解（Annotation）是 Java 提供的一种对元程序中元素关联信息和元数据(metadata)的途径
 
-和方法。Annatation是一个接口，程序可以通过反射来获取指定程序中元素的 Annotation
+和方法。**Annatation是一个接口**，程序可以通过反射来获取指定程序中元素的 Annotation
 
 对象，然后通过该 Annotation 对象来获取注解中的元数据信息。
 

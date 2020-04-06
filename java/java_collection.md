@@ -416,7 +416,13 @@ System.out.println();
 
 ## 集合的遍历方法
 
-### 0 使用Iterator（ 适用于所有类型的集合）
+### 0 使用Iterator（ 适用于所有类型的集合）:
+
+```
+for(Iterator<Person> it=roster.iterator(); it.hasNext();){
+  	System.out.println(it.next().getName());
+}  
+```
 
 ### 1 使用 for循环（适用于简单操作）：
 

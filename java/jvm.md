@@ -81,7 +81,7 @@ JVM 内存区域主要分为线程私有区域【程序计数器、虚拟机栈�
 
  <img src="images/jvm_heap_gc_part.png" alt="image-20200303145614322" style="zoom:60%;" />
 
-
+<img src="images/java_heap_gc_args.png" alt="image-20200404190634094" style="zoom: 67%;" />
 
 ##### 2 方法区（method area） 
 

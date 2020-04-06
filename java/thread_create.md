@@ -194,6 +194,10 @@ public static void main(String[] args) {
 
 3 如果新建一个工作线程，使当前运行的线程数量>maximumPoolSize，则交给RejectedExecutionHandler来处理任务。
 
+> **workQueue最大容量 =  maximumPoolSize - corePoolSize；**
+
+> corePoolSize 和 workQueue 都满了，则当前线程总量达到了maximumPoolSize，此后请求的线程转给RejectedExecutionHandler来处理。
+
 当 ThreadPoolExecutor 创建新线程时，通过 CAS 来更新线程池的状态ctl。
 
 

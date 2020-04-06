@@ -7,7 +7,18 @@
 - 书籍：Design Pattern  GoF （鼻祖）
 - 书籍：Head First Design Patterns （生动形象）
 
+
+
 设计结构对系统性能的影响要远高于代码优化。熟悉一些典型的设计模式和方法，有助于设计高性能软件。
+
+## 设计模式的渊源
+
+在 1994 年，由 Erich Gamma、Richard Helm、Ralph Johnson 和 John Vlissides 四人合著出版了一本名为 **Design Patterns - Elements of Reusable Object-Oriented Software（中文译名：设计模式 - 可复用的面向对象软件元素）** 的书，该书首次提到了软件开发中设计模式的概念。
+
+四位作者合称 **GOF（四人帮，全拼 Gang of Four）**。他们所提出的设计模式主要是基于以下的面向对象设计原则。
+
+- 对接口编程而不是对实现编程。
+- 优先使用对象组合而不是继承。
 
 ## 概念和分类
 
@@ -17,22 +28,36 @@
 
 根据设计模式的参考书 **Design Patterns - Elements of Reusable Object-Oriented Software（中文译名：设计模式 - 可复用的面向对象软件元素）** 中所提到的，**总共有 23 种设计模式**。这些模式可以分为**3大类**：**创建型模式（Creational Patterns）、结构型模式（Structural Patterns）、行为型模式（Behavioral Patterns）。**
 
-- 创建型模式(5种，绿色)：
+**GOF提出的设计模式总共有23种，分为以下三类：**
 
-工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。
+- **创建型模式(5种**，绿色)：
 
-- 结构型模式(7种，橙色)：
+**单例模式、工厂方法模式、抽象工厂模式、**建造者模式、原型模式。
 
-适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。
+- **结构型模式(7种**，橙色)：
 
-- 行为型模式(11种，粉色)：
+适配器模式、**装饰器模式、代理模式、**外观模式、桥接模式、组合模式、享元模式。
 
-策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。
+- **行为型模式(11种**，粉色)：
+
+策略模式、模板方法模式、**观察者模式**、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。
 
 
 以下是网上经典的设计模式关系图：
 
 <img src="images/design_pattern_relationship.png" alt="img" style="zoom:75%;" />
+
+**J2EE 模式**
+除了GoF提出的23种设计模式之外，常用的还有J2EE设计模式：这些设计模式特别关注表示层。这些模式是由 Sun Java Center 鉴定的。
+
+- MVC 模式（MVC Pattern）
+- 业务代表模式（Business Delegate Pattern）
+- 组合实体模式（Composite Entity Pattern）
+- 数据访问对象模式（Data Access Object Pattern）
+- 前端控制器模式（Front Controller Pattern）
+- 拦截过滤器模式（Intercepting Filter Pattern）
+- 服务定位器模式（Service Locator Pattern）
+- 传输对象模式（Transfer Object Pattern）
 
 
 
@@ -453,7 +478,7 @@ public class Test {
 
 
 
-### 抽象工厂模式【重点】
+## 抽象工厂模式【重点】
 
 **定义：**提供一个创建一系列相关或相互依赖对象的接口，而无须指定它们具体的类；具体的工厂负责实现具体的产品实例。
 
@@ -536,6 +561,93 @@ public class Test {
 输出：
 	果汁
 	薯片
+```
+
+
+
+## 装饰器模式（Decorator Pattern）
+
+装饰器模式（Decorator Pattern）允许向一个现有的对象添加新的功能，同时又不改变其结构。这种类型的设计模式属于结构型模式，它是作为现有的类的一个包装。
+
+这种模式创建了一个装饰类，用来包装原有的类，并在保持类方法签名完整性的前提下，提供了额外的功能。
+
+我们通过下面的实例来演示装饰器模式的用法。其中，我们将把一个形状装饰上不同的颜色，同时又不改变形状类：
+
+### 步骤 1
+
+创建一个接口：Shape.java
+
+```
+public interface Shape {   
+    void draw(); 
+}
+```
+
+### 步骤 2
+
+创建实现接口的实体类。Rectangle.java
+
+```
+public class Rectangle implements Shape {    
+    @Override
+     public void draw() {
+        System.out.println("Shape: Rectangle");
+     } 
+}
+```
+
+### 步骤 3
+
+创建实现了 *Shape* 接口的抽象装饰类。
+
+## ShapeDecorator.java
+
+```
+public abstract class ShapeDecorator implements Shape {  
+		protected Shape decoratedShape;
+    public ShapeDecorator(Shape decoratedShape){
+    	this.decoratedShape = decoratedShape;
+    }
+    public void draw(){
+    	decoratedShape.draw();
+    }
+}
+```
+
+### 步骤 4
+
+创建扩展了 *ShapeDecorator* 类的实体装饰类。RedShapeDecorator.java
+
+```
+public class RedShapeDecorator extends ShapeDecorator {
+	public RedShapeDecorator(Shape decoratedShape) {      		   
+		super(decoratedShape);        
+	}
+	@Override
+  public void draw() {
+  	decoratedShape.draw();
+    setRedBorder(decoratedShape);
+ }
+ private void setRedBorder(Shape decoratedShape){      			
+     System.out.println("Border Color: Red");
+ } 
+} 
+```
+
+### 步骤 5
+
+使用 *RedShapeDecorator* 来装饰 *Shape* 对象。DecoratorPatternDemo.java
+
+```
+public class DecoratorPatternDemo {
+    public static void main(String[] args) {
+    Shape circle = new Circle();
+    circle.draw();
+    
+    ShapeDecorator redRectangle = new RedShapeDecorator(new Rectangle());      
+    redRectangle.draw();
+  } 
+}
 ```
 
 
