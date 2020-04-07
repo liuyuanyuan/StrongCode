@@ -2,6 +2,8 @@
 
 ![image-20200302232621665](images/java_annotation.png)
 
+官方文档： [Java Annotation](https://docs.oracle.com/javase/tutorial/java/annotations/QandE/questions.html)
+
 ## 概念
 
 Java 注解（Annotation，又叫标注），是 JDK5.0 引入的一种对元数据的支持。注解与注释是有一定区别的，可以把注解理解为代码里的特殊标记，这些标记可以在编译，类加载，运行时被读取，并执行相应的处理。通过注解开发人员可以在不改变原有代码和逻辑的情况下在源代码中嵌入补充信息。
