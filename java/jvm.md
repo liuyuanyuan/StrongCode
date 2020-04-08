@@ -75,13 +75,43 @@ JVM 内存区域主要分为线程私有区域【程序计数器、虚拟机栈�
 
 ​	堆是虚拟机所管理的内存中最大的一块，在虚拟机启动时自动创建，此区域唯一目的是存放对象实例；
 
-​	堆也是垃圾收集器管理的主要区域。Java 堆从 GC 的角度还可以细分为: **新生代**(Eden 区、From Survivor 区 和 To Survivor 区)和**老年代。**
+​	堆也是垃圾收集器管理的主要区域。Java 堆从 GC 的角度还可以细分为: **新生代**(Eden 区、From Survivor 区 和 To Survivor 区)和**老年代**( 默认是 15 岁，可以通过参数 -XX:MaxTenuringThreshold 来设定 )。
 
 ​	若在Java堆中没有内存完成实例分配，并且堆也无法再扩展时，Java虚拟机将抛出**OutOfMemoryError**异常。
 
  <img src="images/jvm_heap_gc_part.png" alt="image-20200303145614322" style="zoom:60%;" />
 
 <img src="images/java_heap_gc_args.png" alt="image-20200404190634094" style="zoom: 67%;" />
+
+堆内存heap：
+
+- 新生代Young generation（1/3heap）：存放新建对象，频繁MinorGC(标记-复制算法)；
+
+  一次MinorGC包括：标记、复制、交换三个过程：
+
+  - Eden（8/10 yg）：
+
+    存放Java新创建的对象。当 Eden 区内存不够创建新对象时，就会触发 MinorGC，对Eden区和FromSurvivor区进行一次垃圾回收，存活的对象会被复制到ToSurvivor区，同时存活对象年龄+1）；
+
+  - FromSurvivor（1/10 yg）
+
+    前一次 GC 的幸存者，作为当前这次 GC 的被扫描者。
+
+    存活者被复制到ToSurvivor区，年龄+1，达到指定老年代年龄的被复制到老年代。
+
+  - ToSurvivor（1/10 yg）
+
+    用来存储一次MinorGC后存活的对象；
+
+    在一次MinorGC后，会将Eden和FromSurvivor进行清除，然后将FromSurvivor进行交换。
+
+- 老年代Old generation（2/3heap）：存放生命周期较长的对象，不频繁MajorGC(标记-清理算法)
+
+  主要用来存放达到指定年龄的对象，对象生命周期较长且稳定，所以MajorGC不频繁。
+
+- jdk8之前是永久代perment，jdk8之后是元数据区meta-data：存放class类信息和元数据信息，不会执行GC，内存满后也会抛OOM异常。
+
+  
 
 ##### 2 方法区（method area） 
 

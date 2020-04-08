@@ -294,9 +294,9 @@ delimiter()有关方法：应该是输入内容的分隔符设置。
 
 
 
-## New IO
+## NIO(多路复用IO模型)
 
-NIO的三个核心部分：**通道 Channel、缓冲区 Buffer、选择区 Selector**。
+NIO的三个核心部分：**通道 Channel、缓冲区 Buffer、多路复用器/选择器 Selector**。
 
 NIO 基于Channel 和 Buffer 进行操作，数据总是从Channel读取到Buffer中，或者从Buffer写入到Channel中去。Selector用于监听多个通道的事件(比如：连接打开，数据到达)，因此，单个线程可以监听多个数据通道。
 
@@ -304,10 +304,10 @@ NIO 基于Channel 和 Buffer 进行操作，数据总是从Channel读取到Buffe
 
 Java nio 的核心抽象：
 
-- [*Buffers*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/package-summary.html#buffers) 数据的容器；
+- [*Buffers*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/package-summary.html#buffers) 所传输的数据的容器；
 - [*Charsets*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/charset/package-summary.html) 字符集及相应的编码器和解码器，用于 bytes 与 Unicode characters 之间转换；
 - [*Channels*](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/package-summary.html) 各种的通道，表示与能够执行IO操作的实体的连接； 
-- Selectors 和 selection keys 以及可选的通道，构成一个 [multiplexed多路复用, non-blocking非阻塞 I/O](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/package-summary.html#multiplex) 程序。
+- Selectors(多路复用器) 和 selection keys(注册令牌)以及可选的通道，构成一个 [多路复用(multiplexed)的非阻塞 I/O ](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/package-summary.html#multiplex) 程序。
 
 <img src="images/nio_class.png" style="zoom: 67%;" />
 
@@ -324,9 +324,9 @@ NIO 中 Channel 是抽象类，其实现类有:
 AbstractInterruptibleChannel, AbstractSelectableChannel, AsynchronousFileChannel, AsynchronousServerSocketChannel, AsynchronousSocketChannel, **DatagramChannel**, **FileChannel**, Pipe.SinkChannel, Pipe.SourceChannel, SctpChannel, SctpMultiChannel, SctpServerChannel, SelectableChannel, **ServerSocketChannel, SocketChannel**
 
 - **FileChannel**：面向文件IO
+- **ServerSocketChannel**：面向TCP的Server
+- **SocketChannel**：面向TCP的Client
 - **DatagramChannel**：面向UDP
-- **ServerSocketChannel**：面向TCP Server
-- **SocketChannel**：面向TCP Client
 
 
 
@@ -355,11 +355,188 @@ NIO 中 Buffer 是顶层父类、抽象类，Buffer 及其子类如下所示：
 
 ### [Selector](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/nio/channels/Selector.html)
 
-Selector 选择区，Selector 能够检测多个注册的通道上是否有事件发生，如果有事件发生，便获取事件然后针对每个事件进行相应的响应处理。这样，只是用一个单线程就可以管理多个通道，也就是管理多个连接。这样使得只有在连接真正有读写事件发生时，才会调用函数来进行读写，就大大地减少了系统开销，并且不必为每个连接都创建一个线程，不用去维护多个线程，并且避免了多线程之间的上下文切换导致的开销。
+Selector 多路复用器，用于检测多个注册的通道上是否有事件发生，如果有事件发生，便获取事件然后针对每个事件进行相应的响应处理。
+
+这样，只是用一个单线程就可以管理多个通道，也就是管理多个连接。这样使得只有在连接真正有读写事件发生时，才会调用函数来进行读写，就大大地减少了系统开销，并且不必为每个连接都创建一个线程，不用去维护多个线程，并且避免了多线程之间的上下文切换导致的开销。
 
  <img src="images/nio-selector.png" alt="image-20200228123212999" style="zoom:50%;" />
 
 所有的Channel都归Selector管理，这些channel中只要有至少一个有IO动作，就可以通过Selector.select方法检测到，并且使用selectedKeys得到这些有IO的channel，然后对它们调用相应的IO操作。
+
+```java
+public class NIOServer {
+
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		// 打开一个Selector（SelectableChannel的多路复用器）
+		Selector selector = Selector.open();
+
+		// 打开一个服务端通道
+		ServerSocketChannel ssChannel = ServerSocketChannel.open();
+		// 将通道设置为非阻塞模式，因为默认都是阻塞模式的
+		ssChannel.configureBlocking(false);
+		
+		/* 注册多路复用器的监听事件
+		 * SelectionKey.OP_READ 对应 00000001，通道中有数据可以进行读取 
+		 * SelectionKey.OP_WRITE 对应 00000100，可以往通道中写入数据 
+		 * SelectionKey.OP_CONNECT 对应 00001000，成功建立 TCP 连接
+		 * SelectionKey.OP_ACCEPT 对应 00010000，接受 TCP 连接
+		 */
+		SelectionKey selectionKey = ssChannel.register(selector, SelectionKey.OP_ACCEPT);
+		
+		//创建服务器对象
+		ServerSocket serverSocket = ssChannel.socket();
+        InetSocketAddress address = new InetSocketAddress("127.0.0.1", 8888);
+        serverSocket.bind(address);
+        System.out.println("NIO SERVER IS RUNNING...");
+ 
+        while (true) {
+            //阻塞到至少有一个通道在你注册的选择器上就绪了
+            selector.select();
+            /**
+             *    selector.keys():当前所有向Selector注册的SelectionKey集合
+             *    selector.selectedKeys()：相关事件已经被Selector捕获的SelectionKey集合
+             */
+            Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            Iterator<SelectionKey> keyIterator = selectionKeys.iterator();
+            while (keyIterator.hasNext()) {
+                SelectionKey key = keyIterator.next();
+                //whether this key's channel is ready to accept a new socket connection.
+                if (key.isAcceptable()) {
+                    ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
+                    // 服务器会为每个新的客户端连接创建一个 SocketChannel
+                    SocketChannel sChannel = serverSocketChannel.accept();
+                    //配置为 非阻塞 模式
+                    sChannel.configureBlocking(false);
+                    // 这个新连接主要用于从客户端读取数据
+                    sChannel.register(selector, SelectionKey.OP_READ);
+                    System.out.println("acceptable:" + readString(sChannel));
+                    sChannel.close();
+                }
+                //Tests whether this key's channel is ready for reading.
+                else if (key.isReadable()) {
+                	System.out.println("readable");
+                	SocketChannel socketChannel = (SocketChannel) key.channel();
+                    System.out.println("readable:" + readString(socketChannel).toString());
+                    socketChannel.close();
+                }
+                /**
+                 * 每次迭代末尾的remove()调用，Selector不会自己从已选择的SelectionKey集合中
+                 * 移除SelectionKey实例的，必须在处理完通道时自己移除
+                 */
+                keyIterator.remove();
+            }
+        }
+    }
+ 
+	private static Serializable readObject(SocketChannel sChannel) 
+			throws IOException, ClassNotFoundException
+	{
+		ObjectInputStream ois = null;
+		try {
+			ByteBuffer buffer = ByteBuffer.allocate(1024);
+			sChannel.read(buffer);
+			if (buffer.remaining() == 0) {
+				ois = new ObjectInputStream(new ByteArrayInputStream(buffer.array()));
+				final Serializable ret = (Serializable) ois.readObject();
+				// clean up
+				buffer = null;
+				return ret;
+			}
+		} finally {
+			ois.close();
+		}
+		return null;
+	}
+	
+    private static String readString(SocketChannel sChannel) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        StringBuilder data = new StringBuilder();
+        while (true) {
+            buffer.clear();
+            int n = sChannel.read(buffer);
+            if (n == -1) {
+                break;
+            }
+            buffer.flip();
+            int limit = buffer.limit();
+            char[] dst = new char[limit];
+            for (int i = 0; i < limit; i++) {
+                dst[i] = (char) buffer.get(i);
+            }
+            data.append(dst);
+            buffer.clear();
+        }
+        return data.toString();
+    }
+}
+
+public class SocketChannelClient {
+	public static void main(String[] args) throws IOException {
+		SocketChannel client = null;
+		try
+		{
+			client = SocketChannel.open();
+			client.connect(new InetSocketAddress("localhost", 8888));
+			Scanner scanner = new Scanner(System.in);
+			while(scanner.hasNextLine()) {
+				String msg = scanner.nextLine();
+				if("quit".equals(msg)) {
+					break;
+				}
+				client.write(ByteBuffer.wrap(msg.getBytes()));
+				System.err.println("sended:"+msg);
+			}
+			//sendFile(client);
+			//sendObject(client);
+		} finally {
+			client.close();
+		}
+	}
+
+public static void sendString(SocketChannel client, String msg) 
+  throws IOException {
+		client.write(ByteBuffer.wrap(msg.getBytes()));
+}
+public static void sendObject(SocketChannel client) 
+  throws IOException {
+		MsgDTO msg = new MsgDTO(1, "i'm yoland ");
+		ByteArrayOutputStream baos = null;
+		ObjectOutputStream oos = null;
+		try {
+			baos = new ByteArrayOutputStream();
+			for (int i = 0; i < 4; i++) {
+				baos.write(0);
+			}
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(msg);
+			oos.close();
+			final ByteBuffer wrap = ByteBuffer.wrap(baos.toByteArray());
+			wrap.putInt(0, baos.size() - 4);
+			client.write(wrap);
+			System.out.println("Sent obj :" + msg.toString());
+		} finally {
+			oos.close();
+			baos.close();
+		}
+	}
+	public static void sendFile(SocketChannel client) throws IOException {
+		FileChannel fileChannel = null;
+		try {
+			Path path = Paths.get("/Users/liuyuanyuan/eclipse-workspace/send.md");
+			fileChannel = FileChannel.open(path);
+			ByteBuffer buffer = ByteBuffer.allocate(1024);
+			while (fileChannel.read(buffer) > 0) {
+				buffer.flip();
+				client.write(buffer);
+				buffer.clear();
+			}
+			System.out.println("Sent File :" + path.getFileName());
+		} finally {
+			fileChannel.close();
+		}
+	}
+}
+```
 
 
 

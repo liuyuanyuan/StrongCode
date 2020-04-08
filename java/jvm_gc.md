@@ -66,10 +66,12 @@ JDK1.2之后，Java对引用的概念进行了扩充，强度由强到弱，将�
 
 ## 垃圾收集算法
 
+如何判定对象可回收?
+
 根据判定对象消亡的算法，垃圾收集算法分为两大类：
 
 - 引用计数式垃圾收集 Reference counting GC（也称作直接垃圾收集）
-- 追踪式垃圾收集 Tracing GC（也称作间接垃圾收集）**（主流）**
+- 追踪式垃圾收集 Tracing GC（也称作间接垃圾收集）
 
 引用计数式垃圾收集算法在主流JVM中均未涉及，以下所有垃圾收集算法均属于追踪式垃圾收集。
 
@@ -102,19 +104,72 @@ Java堆内存（线程共享）从 GC 的角度还可以细分为: **新生代**
 
 - 新生代：存放新创建的对象，由于对象创建频繁，所以MinorGC频繁；
 
-   一次MiniorGC包括：
+   一次MiniorGC(复制>清空>互换)包括：
 
-  - 对Eden和FromSurvivor进行标记-清理，将存活者复制到ToSurvivor，存活者年龄+1（达到一定年龄的存活对象会复制到老年代）；
+  - 对Eden和FromSurvivor进行标记，将存活者复制到ToSurvivor，存活者年龄+1，达到指定的老年代年龄（默认是 15 岁，可通过参数设定）的存活对象会复制到老年代区域；(如果 ToServivor 区域的位置不够也会被放到老年区);
+  - 然后清空Eden和FromSurvivor区；
 
-  - FromSurvivor和ToSurvivor互换；
+  - 将FromSurvivor和ToSurvivor互换；
 
-- 老年代：存放达到一定年龄的对象，对象生命周期长且较稳定，不需要频繁MajorGC。
+- 老年代：存放达到指定的老年年龄的对象(**默认是 15 岁，可以通过参数 -XX:MaxTenuringThreshold 来设定)**，对象生命周期长且较稳定，不需要频繁MajorGC。
 
-     如果老年代空间占满，会导致OOM异常。
+  如果老年代空间占满，会导致OOM异常。
 
 <img src="/Users/liuyuanyuan/github/StrongCode/java/images/jvm_heap_gc_part.png" alt="image-20200303145614322" style="zoom:60%;" />
 
-- 除此之外，还有一个存放class和元数据的区域，在jdk1.8之前叫永久代，在jdk1.8之后叫元数据区。该区域不会在运行时进行GC，存满后会抛出OOM异常。
+- 除此之外，还有一个存放class和元数据的区域，在jdk1.8之前叫 Permanent 永久代，在jdk1.8之后叫元数据区。该区域不会在运行时进行GC，存满后会抛出OOM异常。
+
+
+
+**堆内存分代区域中使用的垃圾收集器概况：**
+
+- 新生代垃圾收集器
+
+  Serial （单线程GC+stop，标记-复制算法） `-XX:+UseSerialGC`
+
+​       ParNew（多线程GC+stop， 标记-复制算法 ）
+
+​       Parallel Scavenge（多线程GC+并发，标记-复制）
+
+- 老年代垃圾收集器
+
+  Serial Old（单线程GC+stop，标记-复制算法）
+
+  Parallel Old（多线程GC+stop， 标记-整理算法）`-XX:+UseParallelOldGC `
+
+  CMS(Concurrent Mark Sweap) (多线程GC+并发，标记-清除算法)
+
+- 新生代、老年代：G1(Garbage First)（多线程+并发，标记-整理算法）
+
+<img src="images/garbage_collectors.png" alt="image-20200303140038456" style="zoom:50%;" />
+
+
+
+**JVM 参数详解**：https://www.cnblogs.com/rinack/p/9888692.html
+
+![image-20200408233052937](images/jvm_parameters.png)
+
+```
+-Xmn 新生代大小；
+-XX:NewRatio 新生代区（Eden+2*Survivor）/老年代区（不包含永久代）比率；
+-XX:SurvivorRatio  新生代的Eden/1个Survivor比率（新生代=Eden+2*Survivor）;
+-XX: PretenureSizeThreshold 晋升老年代的对象的年龄标志;
+
+-Xms 设置堆的最小空间大小。
+-Xmx 设置堆的最大空间大小。
+-Xmn 设置年轻代大小
+-XX:NewSize 设置新生代最小空间大小。
+-XX:MaxNewSize 设置新生代最大空间大小。
+-XX:PermSize 设置永久代最小空间大小。
+-XX:MaxPermSize 设置永久代最大空间大小。
+-Xss 设置每个线程的堆栈大小
+-XX:+UseParallelGC 选择垃圾收集器为并行收集器。此配置仅对年轻代有效。即上述配置下,年轻代使用并发收集,而年老代仍旧使用串行收集。
+-XX:ParallelGCThreads=20 配置并行收集器的线程数,即:同时多少个线程一起进行垃圾回收。此值最好配置与处理器数目相等。
+```
+
+
+
+
 
 
 
@@ -173,6 +228,48 @@ HotSpot VM里面关注吞吐量的**Parallel Scavenge收集器**是基于标记-
 ## 经典的垃圾收集器
 
 <img src="images/garbage_collectors.png" alt="image-20200303140038456" style="zoom:50%;" />
+
+- 新生代垃圾收集器
+
+  Serial （单线程GC+stop，标记-复制算法） `-XX:+UseSerialGC`
+
+​       ParNew（多线程GC+stop， 标记-复制算法 ）
+
+​       Parallel Scavenge（多线程GC+并发，标记-复制）
+
+- 老年代垃圾收集器
+
+  Serial Old（单线程GC+stop，标记-复制算法）
+
+  Parallel Old（多线程GC+stop， 标记-整理算法）`-XX:+UseParallelOldGC `
+
+  CMS(Concurrent Mark Sweap) (多线程GC+并发，标记-清除算法)
+
+- 新生代、老年代：G1(Garbage First)（多线程+并发，标记-整理算法）
+
+JVM 参数详解：https://www.cnblogs.com/rinack/p/9888692.html
+
+![image-20200408233052937](images/jvm_parameters.png)
+
+```
+-Xmn 新生代大小；
+-XX:NewRatio 新生代区（Eden+2*Survivor）/老年代区（不包含永久代）比率；
+-XX:SurvivorRatio  新生代的Eden/1个Survivor比率（新生代=Eden+2*Survivor）;
+-XX: PretenureSizeThreshold 晋升老年代的对象的年龄标志;
+
+-Xms 设置堆的最小空间大小。
+-Xmx 设置堆的最大空间大小。
+-Xmn 设置年轻代大小
+-XX:NewSize 设置新生代最小空间大小。
+-XX:MaxNewSize 设置新生代最大空间大小。
+-XX:PermSize 设置永久代最小空间大小。
+-XX:MaxPermSize 设置永久代最大空间大小。
+-Xss 设置每个线程的堆栈大小
+-XX:+UseParallelGC 选择垃圾收集器为并行收集器。此配置仅对年轻代有效。即上述配置下,年轻代使用并发收集,而年老代仍旧使用串行收集。
+-XX:ParallelGCThreads=20 配置并行收集器的线程数,即:同时多少个线程一起进行垃圾回收。此值最好配置与处理器数目相等。
+```
+
+
 
 ### Serial 收集器（单线程，标记-复制算法）：
 
@@ -299,7 +396,7 @@ CMS工作机制比其他垃圾收集器更复杂，整个过程分四个阶段�
 -XX:+UseCMSCompactAtFullCollection
 ```
 
-### Garbage First （G1）收集器
+### Garbage First （G1）收集器（标记-整理）
 
 是目前垃圾收集器理论发展的最前沿成果， 相比于CMS收集器，G1收集器两个突出的改进：
 

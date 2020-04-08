@@ -104,17 +104,17 @@ public class Singleton {
 * 使用内部类来实现单实例，实例是在类加载时完成创建。
 * 既做到了延迟加载，又对多线程友好（不必使用synchronized关键字），是一种比较完善的实现。
 */
-public class StaticSingleton {
-  //私有化构造方法
-  private StaticSingleton(){
-      //todo
-  }
-  
-  private static class InstanceHolder {
-		private static StaticSingleton instance = new StaticSingleton();//在类加载时创建对象实例
+public class Singleton {
+  //私有化构造方法，防止外部调用
+	private Singleton(){	
+    //todo
 	}
-	public static StaticSingleton getInstance() {
-		return InstanceHolder.instance;
+	private static class Handler{
+    ////在类加载时创建对象实例
+		private static Singleton instance = new Singleton();
+	}
+	public static Singleton getInstance() {
+		return Handler.instance;
 	}
 }
 ```
