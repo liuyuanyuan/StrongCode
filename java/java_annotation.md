@@ -204,3 +204,67 @@ Java 8 开始支持，标识某注解可以在同一个声明上使用多次。
 
 
 
+## 自定义注解
+
+```java
+import java.lang.annotation.*;
+@Target({ElementType.METHOD, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface FieldName {
+    public String value() default "fild name";
+}
+
+public class Person {
+	@FieldName(value = "username")
+	private String name;
+	@Override
+	public String toString() {
+		return name;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+}
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+public class TestAnnotation {
+	public static void main(String[] args) {
+		try {
+            //加载Person.class类
+            Class<?> clazz = TestAnnotation.class.getClassLoader()
+            		.loadClass("base.annocation.Person");
+
+            //获取类中的属性
+            Field[] fields = clazz.getDeclaredFields();
+            //遍历类中的属性
+            for (Field field : fields) {
+                FieldName fn = field.getAnnotation(FieldName.class);
+                System.out.println("value:" + fn.value());//输出username
+            }
+
+            //获取类中的方法
+            Method[] methods = clazz.getMethods();
+            //遍历类中的方法
+            for (Method method : methods) {
+                //判断方法是否带有 FieldName 注解
+                if (method.isAnnotationPresent(FieldName.class)) {
+                    // 获取所有注解 method.getDeclaredAnnotations();
+                    // 获取 FieldName 注解
+                	FieldName myMessage = method.getAnnotation(FieldName.class);
+                    System.out.println("value:" + myMessage.value());
+                }
+            }
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
