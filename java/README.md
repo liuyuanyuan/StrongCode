@@ -12,7 +12,7 @@
 - [JVM](jvm.md)
 
   - [Java 对象序列化-将对象内容流化](java_serializable.md)
-  - [IO&NIO&AIO](jvm_io_nio.md)
+  - [IO&NIO&AIO](jvm_bio_nio_aio.md)
   - [类加载机制](jvm_class_load.md)
   - [垃圾收集和内存动态分配](jvm_gc.mds)
   - [Java对象的内存布局](jvm_object.md)
@@ -45,13 +45,18 @@
 
 [Java 网络编程(Socket)](java_network.md)
 
+[Java 开发工具集&技术栈](dev.md)
+
+- [消息队列](msg_queue.md)
+- [netty](netty.md)
+
 **编程通识：**
 
 - [设计原则](design_rule.md)
 - [设计模式](design_pattern.md)
 - [数据结构与算法](data_structure.md)
 - [Java递归实现](java_recursion.md)
-- 加密算法
+- [排序、加密算法](algorithm)
 - [位运算](bit_operation.md)
 
 

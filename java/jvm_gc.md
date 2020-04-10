@@ -231,21 +231,28 @@ HotSpot VM里面关注吞吐量的**Parallel Scavenge收集器**是基于标记-
 
 - 新生代垃圾收集器
 
-  Serial （单线程GC+stop，标记-复制算法） `-XX:+UseSerialGC`
+  - Serial （单线程GC+stop，标记-复制算法） `-XX:+UseSerialGC`
 
-​       ParNew（多线程GC+stop， 标记-复制算法 ）
+  ​      在**Client**模式下的默认新生代收集器；
 
-​       Parallel Scavenge（多线程GC+并发，标记-复制）
+  - ParNew（多线程GC+stop， 标记-复制算法 ）
+  - Parallel Scavenge（多线程GC+并行，标记-复制，吞吐量）
 
 - 老年代垃圾收集器
 
-  Serial Old（单线程GC+stop，标记-复制算法）
+  - Serial Old（单线程GC+stop，标记-复制算法）
 
-  Parallel Old（多线程GC+stop， 标记-整理算法）`-XX:+UseParallelOldGC `
+  - Parallel Old（多线程GC+stop， 标记-整理算法）`-XX:+UseParallelOldGC `
 
-  CMS(Concurrent Mark Sweap) (多线程GC+并发，标记-清除算法)
+  - CMS(Concurrent Mark Sweap) (多线程GC+并行，标记-清除算法)
 
 - 新生代、老年代：G1(Garbage First)（多线程+并发，标记-整理算法）
+
+使用场景：
+
+- 
+- 注重吞吐量及CPU资源敏感的场合，优先考虑Parallel Scavenge(新生代) + Parallel Old(老年代)收集器。适合吞吐量优先。
+- 
 
 JVM 参数详解：https://www.cnblogs.com/rinack/p/9888692.html
 
@@ -279,16 +286,26 @@ JVM 参数详解：https://www.cnblogs.com/rinack/p/9888692.html
 
 迄今为止，它依然是Hotspot vm运行在**Client模式**的**新生代**的默认收集器。它的简单高效（与其他收集器的单线程相比）优于其他收集器。
 
-运行示意图：
-
-用户线程》GC单线程(stop the world)》用户线程
-
 ```bash
 #serial收集器相关参数#
 -XX:+UseSerialGC
 ```
 
+运行示意图：
 
+![Serial/Serial Old收集器](images/serial_gc.png)
+
+**缺点：**由于Stop The World，给用户带来不良体验，比如，计算机每运行一段时间就会暂停响应几分钟来处理垃圾收集。
+
+**优点：**
+
+1）简单而高效（与其他收集器的单线程比）；
+2）对于限定单个CPU的环境来说，Serial收集器由于没有线程交互的开销，专心做垃圾收集自然可以获得最高的单线程收集效率。
+
+**应用场景：**
+
+1）VM运行在**Client**模式下的默认新生代收集器；
+2）在用户的桌面应用场景中，停顿时间完全可以控制在几十毫秒最多一百多毫秒以内，不频繁发生，是可接受的
 
 ### ParNew 收集器（Serial+多线程）
 
@@ -304,11 +321,25 @@ ParNew是很多JVM运行在**Server模式**下**新生代**的默认垃圾收集
 >
 >- 并发：同一时间垃圾收集器线程和用户线程都在运行。
 
-运行示意图：
+```shell
+#参数配置
+-XX:+UseConcMarkSweepGC 选项后默认新生代收集器为ParNew收集器；
+-XX:+UseParNewGC 选项强制指定使用ParNew收集器；
+-XX:ParallelGCThreads 参数限制垃圾收集的线程数；
+```
 
-用户线程》GC多线程(stop the world)》用户线程
+运行示意图：用户线程》GC多线程(stop the world)》用户线程
 
+![ParNew/Serial Old收集器](images/ParNew_gc.png)
 
+**缺点：**在单CPU的环境中绝对不会有比Serial收集器更好的效果，甚至存在线程交互的开销。
+
+**优点：**
+
+1）除了Serial收集器外，只有ParNew收集器能与CMS收集器配合工作。
+2）CMS（Concurrent Mark Sweep）第一次实现让垃圾收集线程与用户线程（基本上）同时工作。
+
+**应用场景：**运行在Server模式下的VM首选新生代收集器。
 
 ### Parallel Scavenge收集器（多线程，标记-复制算法）
 
@@ -319,7 +350,19 @@ Parallel Scavenge是一个**新生代**垃圾收集器，使用**标记-复制�
 > 吞吐量 = 运行用户代码时间/(运行用户代码时间+垃圾收集时间)
 > $$
 
+```
+参数控制：
+1）用户精确控制吞吐量
+• -XX:MaxGCPauseMillis 控制最大垃圾收集停顿时间
+• -XX:GCTimeRatio 直接设置吞吐量大小
+• -XX:+UseAdaptiveSizePolicy 开关参数，GC自适应的调节策略
+2）MaxGCPauseMillis 允许的值是一个大于0的毫秒数，收集器尽可能保证内存回收时间不超过设定值。
+	GC停顿时间缩短牺牲吞吐量和新生代空间——若将MaxGCPauseMillis该值调小带来的问题：系统把新生代调小一些，收集发生更频繁一些，吞吐量下降。
+ 	GCTimeRatio参数值是一个大于0且小于100的整数，即垃圾收集时间占总时间的比率，相当于吞吐量的倒数。如设置为19，则最大GC时间占1/(1+19)=5%，默认值为99.则最大允许1/(1+99)=1%的垃圾收集时间。
+	UseAdaptiveSizePolicy开关参数：VM会根据当前系统的运行情况收集性能监控信息，动态调整这些参数以提供最合适的停顿时间或最大吞吐量。自适应调节策略是Parallel Scavenge收集器与ParNew收集器的重要区别。
+```
 
+**应用场景：**主要适合后台运算而不需要太多交互的任务
 
 ### Serial Old 收集器（单线程，标记-整理算法）
 
@@ -328,6 +371,11 @@ Serial Old 是 Serial 收集器的老年代版本，是**单线程**的，使用
 该收集器的意义也是**Client模式**下的HotSpot VM的默认的**老年代**的垃圾收集器。
 
 <img src="images/gc_serial_serialold.png" alt="image-20200303141640971" style="zoom: 60%;" />
+
+ **应用场景：**
+
+1）主要给Client模式下的VM使用。
+2）若在Server模式下用，两大用途：1.在JDK1.5及之前的版本中与Parallel Scavenge收集器搭配使用；2.作为CMS收集器备选，并在Concurrent Mode Failure时使用。
 
 ### Parallel Old 收集器（多线程，标记-整理算法）
 
@@ -360,7 +408,7 @@ Parallel Old 是 Parallel Scavenfe 收集器的**老年代**版本，支持**多
 -XX:+UseAdaptiveSizePolicy
 ```
 
-
+**使用场景：**注重吞吐量以及CPU资源敏感的场合，优先考虑Parallel Scavenge + Parallel Old收集器。适合吞吐量优先。
 
 ### CMS （Concurrent Mark Sweap）并发标记清除收集器（多线程，标记-清除算法）
 
@@ -377,12 +425,10 @@ CMS工作机制比其他垃圾收集器更复杂，整个过程分四个阶段�
 
 总体上看GC与用户线程是并发进行的。
 
-优点：并发收集、低停顿。
-缺点：并发阶段会降低吞吐量；使用标记-清理算法会产生内存碎片；并行阶段无法标记浮动垃圾，导致垃圾标记过程长。
+**优点**：并发收集、低停顿。
+**缺点**：并发阶段会降低吞吐量；使用标记-清理算法会产生内存碎片；并行阶段无法标记浮动垃圾，导致垃圾标记过程长。
 
 <img src="images/gc_cms.png" alt="image-20200303143108248" style="zoom:60%;" />
-
-
 
 ```bash
 #CMS相关参数设置#
@@ -394,9 +440,27 @@ CMS工作机制比其他垃圾收集器更复杂，整个过程分四个阶段�
 # 打开对年老代的压缩。虽然可以消除碎片，但可能会影响
 # 性能，不建议采用，还是应该加大堆的大小
 -XX:+UseCMSCompactAtFullCollection
+
+-XX:CMSInitiatingOccupancyFraction #提高触发老年代CMS垃圾回收的百分比；
+-XX:+UseCMSCompactAtFullCollection #开关参数：默认开启，用于CMS收集器要进行Full GC时开启内存碎片合并整理过程，非并发的过程；
+-XX:CMSFullGCsBeforeCompaction #用于设置执行多少次不压缩的Full GC后，紧接着一次带压缩的（默认为0，表示每次进入Full GC时就进行碎片整理）
 ```
 
-### Garbage First （G1）收集器（标记-整理）
+**优点：**并发收集；低停顿（并发低停顿收集器）
+
+**缺点：**
+
+1）CMS收集器对CPU资源非常敏感；
+2）CMS收集器无法处理浮动垃圾，可能出现"Concurrent Mode Failure"失败（备选用Serial Old）而导致另一次Full GC的产生；
+3）CMS是一款基于“标记-清除”算法的收集器，在收集结束后会产生大量空间碎片。
+**缺点具体分析**
+1）**对CPU资源敏感**：在并发阶段会占用一部分线程而导致应用程序变慢，总吞吐量降低；（解决方法是“增量式并发收集器”，但不提倡使用，i-CMS收集器是与单CPU年代PC机操作系统使用抢占式模拟多任务机制的思想，在并发标记、清理的时候让GC线程、用户线程交替执行，尽量减少GC线程的独占资源的时间）
+2）**无法处理浮动垃圾**：CMS并发清理阶段用户线程还在运行，会产生新的垃圾，这部分垃圾出现在标记过程之后，CMS无法在当次收集中处理它们，只好留到下一次GC时再处理。CMS需要预留一部分提供并发收集时的程序运行使用，CMS收集时老年代不能填满再收集。
+3）**收集后产生大量空间碎片**：“标记-清除”算法的缺点，解决方案是使用-XX:+UseCMSCompactAtFullCollection和-XX:CMSFullGCsBeforeCompaction参数
+
+**应用场景：**在互联网站或者B/S系统的服务端上，重视服务的响应速度，希望系统停顿时间最短，给用户带来较好的体验。
+
+### Garbage First (G1)收集器（标记-整理）
 
 是目前垃圾收集器理论发展的最前沿成果， 相比于CMS收集器，G1收集器两个突出的改进：
 
@@ -426,6 +490,18 @@ CMS工作机制比其他垃圾收集器更复杂，整个过程分四个阶段�
 # 并发标记阶段，并行执行的线程数
 -XX:ConcGCThreads=n
 ```
+
+
+
+## 垃圾收集器的配置参数
+
+### GC器的使用
+
+![GC器配合使用](images/gc_use_args.png)
+
+### GC器的参数
+
+![GC参数](images/gc_setting_args.png)
 
 
 
