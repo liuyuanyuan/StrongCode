@@ -50,7 +50,7 @@ HTTP报文是包裹在TCP报文中进行传输的，当TCP出现瓶颈时，HTTP
 
 ### HTTP长连接、短连接
 
-在HTTP/1.0中，默认使用短连接。也就是说，客户端和服务器每进行一次HTTP操作，就建立一次连接，任务结束就中断连接。当客户端浏览器访问的某个HTML或其他类型的Web页中包含有其他的Web资源(如JavaScript文件、图像 文件、CSS文件等)，每遇到这样一个Web资源，浏览器就会重新建立一个HTTP会话。
+**在HTTP/1.0中，默认使用短连接：也就是说，客户端和服务器每进行一次HTTP操作，就建立一次连接，任务结束就中断连接。**当客户端浏览器访问的某个HTML或其他类型的Web页中包含有其他的Web资源(如JavaScript文件、图像 文件、CSS文件等)，每遇到这样一个Web资源，浏览器就会重新建立一个HTTP会话。
 
 而从HTTP/1.1起，默认使用长连接，用以保持连接特性。使用长连接的HTTP协议，会在响应头加入这行代码: `Connection:keep-alive`
 
@@ -61,6 +61,23 @@ HTTP协议的长连接和短连接，实质上是TCP协议的长连接和短连�
 
 
 ### TCP的三次握手、四次握手
+
+TCP(Transmission Control Protocol)传输控制协议
+
+TCP是主机对主机层的传输控制协议，提供可靠的连接服务，采用三次握手确认建立一个连接。位码即tcp标志位，有6种标示：
+
+- SYN(synchronous建立联机) 
+- ACK(acknowledgement 确认) 
+- PSH(push传送) 
+- FIN(finish结束) 
+- RST(reset重置) 
+- URG(urgent紧急)
+- Sequence number(顺序号码) 
+- Acknowledge number(确认号码)
+
+![img](../images/tcp_header.png)
+
+原文链接：https://blog.csdn.net/qq_25948717/article/details/80382766
 
 ### TCP三次握手
 

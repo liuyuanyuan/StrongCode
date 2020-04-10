@@ -1052,6 +1052,80 @@ public class CyclicBarrierExample {
 
 
 
+## 线程本地变量 ThreadLocal 和 InheritableThreadLocal
+
+ThreadLocal<String> tl = new Inheritable();
+
+tl.set(String value ) 和 tl.get()只在自己线程内部可见；（**仅自己-自己**）
+
+InheritableThreadLocal<String> itl = new InheritableThreadLocal();
+
+itl.set(String value ) 和 itl.get()只在自己线程及其子线程内部可见；（**仅自己-自己，自己-子线程**）
+
+```java
+
+package thread;
+
+import java.util.concurrent.Semaphore;
+
+public class TestThreadLocal {
+
+	public static void main(String[] args) {
+		//ThreadLocal<String> tl = new Inheritable();
+		InheritableThreadLocal<String> tl = new InheritableThreadLocal();
+		tl.set("11123");
+		System.out.println("before:" + tl.get());
+		
+		Semaphore sp = new Semaphore(1);
+		Thread t1 = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					sp.acquire();
+					System.out.println("t1before=" + tl.get());
+					tl.set("thread1-" + System.currentTimeMillis());
+					System.out.println("t1after=" + tl.get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} finally {
+					sp.release();
+				}
+			}
+		});
+
+		Thread t2 = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					sp.acquire();
+					System.out.println("t2before=" + tl.get());
+					tl.set("thread2-" + System.currentTimeMillis());
+					System.out.println("t2after=" + tl.get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} finally {
+					sp.release();
+				}
+			}
+		});
+
+		t1.start();
+		t2.start();
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("after:" + tl.get());
+	}
+}
+
+
+```
+
+
+
 ## Exectors
 
 ### Executor Interfaces
