@@ -48,7 +48,7 @@
 
 - READ UNCOMMITTED（读为提交）
 
-![在这里插入图片描述](/Users/liuyuanyuan/github/StrongCode/java/images/pg_transaction_isolation.png)
+![在这里插入图片描述](images/pg_transaction_isolation.png)
 
 语法：
 
