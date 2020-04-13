@@ -1063,13 +1063,10 @@ InheritableThreadLocal<String> itl = new InheritableThreadLocal();
 itl.set(String value ) 和 itl.get()只在自己线程及其子线程内部可见；（**仅自己-自己，自己-子线程**）
 
 ```java
-
 package thread;
 
 import java.util.concurrent.Semaphore;
-
 public class TestThreadLocal {
-
 	public static void main(String[] args) {
 		//ThreadLocal<String> tl = new Inheritable();
 		InheritableThreadLocal<String> tl = new InheritableThreadLocal();
