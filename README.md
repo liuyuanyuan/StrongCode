@@ -13,19 +13,19 @@ Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
 
 
 
-## Eclipse IDE and Debug
-
-* [Java Debugging with Eclipse - Tutorial](http://www.vogella.com/tutorials/EclipseDebugging/article.html)
-* [Eclipse Remote Debug(Local code must same to product)](http://blog.ankursharma.org/2010/05/remote-debugging-eclipse.html)
-  - [Eclipse RCP项目(Eclipse插件)远程Debug实践](http://zhoujianboy.iteye.com/blog/1852823)
-
-
-
 ## Git
 
 Use git to manage code and team development.
 
 - [Github Continuous Integration](https://github.com/marketplace/category/continuous-integration)
+
+
+
+## Eclipse IDE and Debug
+
+* [Java Debugging with Eclipse - Tutorial](http://www.vogella.com/tutorials/EclipseDebugging/article.html)
+* [Eclipse Remote Debug(Local code must same to product)](http://blog.ankursharma.org/2010/05/remote-debugging-eclipse.html)
+  - [Eclipse RCP项目(Eclipse插件)远程Debug实践](http://zhoujianboy.iteye.com/blog/1852823)
 
 
 
@@ -56,6 +56,5 @@ This is an Eclipse Rich Client Platform Development Guid.
 
 
 ## Javascript/React & bootstrap/AntD
-
 
 

@@ -1,4 +1,10 @@
-删除Github远程仓库中文件夹
+# Git常用命令
+
+[TOC]
+
+## 删除Github远程仓库中文件夹
+
+```
 1.克隆远程仓库到本地库：
 git clone git@github.com:xxx/xxx.git
 2.对需要删除的文件、文件夹进行如下操作:
@@ -7,21 +13,34 @@ git rm test.txt  (删除文件)git rm -r test    (删除文件夹)
 git commit -m "Delete some files."
 4.将修改提交到远程仓库的xxx分支:
 git push origin xxx
+```
 
 
-查看分支情况
+
+## 分支管理
+
+查看分支详情
+
+```
 git branch -a
+```
 
 创建分支
-git branch newbranch
-提交分支到远程库
+
+```shell
+#以当前代码创建新分支
+git branch -b newbranch
+#将本地分支提交到远程库
 git push origin newbranch
+```
 
 删除分支
-git branch -r -d origin/branchname
 
-提交本地分支到远程库origin
-git push origin :branchname
+```
+git push --delete origin branchname
+```
+
+
 
 创建与远程分支对应的本地分支并下载代码到本地
 git checkout -b remotebranch origin/remotebranch
@@ -88,4 +107,16 @@ git config http.postBuffer 524288000
 git config --global http.lowSpeedLimit 0
 git config --global http.lowSpeedTime 999999
 
+
+
+**分支重命名**
+
+```shell
+#本地分支重命名
+git branch -m oldName newName
+#上传新命名的分支
+git push origin newName
+#删除远程旧分支
+git push --delete origin oldName
+```
 

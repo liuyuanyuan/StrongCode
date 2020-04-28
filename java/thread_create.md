@@ -228,7 +228,7 @@ threadPoolExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOld
 
 实验：
 
-```
+```java
 public static void main(String[] args) {
 		//ExecutorService pool = Executors.newFixedThreadPool(3);//固定缓存线程数
 		//ExecutorService pool = Executors.newCachedThreadPool();//智能缓存线程数
