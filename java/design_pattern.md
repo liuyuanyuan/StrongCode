@@ -117,6 +117,28 @@ public class Singleton {
 		return Handler.instance;
 	}
 }
+
+
+/**
+* 双端检锁方式实现-线程安全的单例模式
+*/
+public class DoubleCheckedLock {
+    private static DoubleCheckedLock instance;  
+	  
+    public static DoubleCheckedLock getInstance() {  
+        // 第一次检查
+        if (instance != null) { 
+          return instance;  
+        }
+        synchronized (DoubleCheckedLock.class) {
+            // 再次检查
+        		if(instance == null){
+        			 instance=new DoubleCheckedLock();
+        		}
+        }
+        return instance;  
+}  
+
 ```
 
 
