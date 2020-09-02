@@ -136,15 +136,15 @@ public static void main(String[] args) {
 
 **传入参数:**
 
-**corePoolSize** 保留在池中的线程数，即使它们处于空闲状态也被保留，除非设置了`allowCoreThreadTimeOut`。
+- **corePoolSize** 保留在池中的线程数，即使它们处于空闲状态也被保留，除非设置了`allowCoreThreadTimeOut`。
 
-**maximumPoolSize** 池中允许的最大线程数； 
+- **maximumPoolSize** 池中允许的最大线程数； 
 
-**keepAliveTime** 当线程数大于**corePoolSize**时，多余的空闲线程在终止之前，等待新任务的最大时间；
+- **keepAliveTime** 当线程数大于**corePoolSize**时，多余的空闲线程在终止之前，等待新任务的最大时间；
 
-**unit**  `keepAliveTime` 参数的时间单位；
+- **unit**  `keepAliveTime` 参数的时间单位；
 
-**workQueue** 用来保存等待被执行的任务的阻塞队列.。此队列将仅保留`execute`方法提交的`Runnable`任务。
+- **workQueue** 用来保存等待被执行的任务的阻塞队列.。此队列将仅保留`execute`方法提交的`Runnable`任务。
 
 > JDK中提供了如下阻塞队列的实现类：
 >
@@ -233,7 +233,7 @@ public static void main(String[] args) {
 		//ExecutorService pool = Executors.newFixedThreadPool(3);//固定缓存线程数
 		//ExecutorService pool = Executors.newCachedThreadPool();//智能缓存线程数
         ThreadPoolExecutor pool = 
-        		new ThreadPoolExecutor(2, 3, 0l, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(5));
+        		new ThreadPoolExecutor(2, 3, l, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(5));
         //pool.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());//default
         pool.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         //pool.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());

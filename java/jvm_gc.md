@@ -33,10 +33,11 @@
 - 在虚拟机栈中（栈帧中的本地变量表）中引用的对象，如各线程中被调用的方法堆栈中使用的参数、局部变量、临时变量等。
 - 方法区中**类静态属性引用的对象**，如Java类的引用类型静态变量；
 - 方法区中常量引用的对象，如字符串常量池（String table）里的引用；
-- 本地方法栈中JNI引用的对象；
-- JVM内部的引用，如基本数据类型对应的class对象， 一些常驻的异常对象如NullPointerException、OutOfMemoryError。
-- 所有被同步锁持有（synchronized修饰的）对象；
+- 本地方法栈中 JNI 引用的对象；
+- JVM内部的引用，如：类加载器加载的class对象，基本数据类型对应的class对象， 一些常驻的异常对象如 NullPointerException、OutOfMemoryError；
 - 反映JVM内部情况的JMXBean、JVMTI中注册的回调、本地代码缓存等；
+- 处于激活状态的线程；
+- 所有被同步锁持有（synchronized修饰的）对象；
 
 
 
@@ -100,11 +101,11 @@ JDK1.2之后，Java对引用的概念进行了扩充，强度由强到弱，将�
 
 
 
-Java堆内存（线程共享）从 GC 的角度还可以细分为: **新生代**(Eden 区、From Survivor 区 和 To Survivor 区)和**老年代**。
+**Java堆内存（线程共享）从 GC 的角度还可以细分为**: **新生代**(Eden 区、From Survivor 区 和 To Survivor 区)和**老年代**。
 
-- 新生代：存放新创建的对象，由于对象创建频繁，所以MinorGC频繁；
+- 新生代：存放新创建的对象，由于对象创建、回收频繁，所以MinorGC频繁；
 
-   一次MiniorGC(复制>清空>互换)包括：
+   一次MiniorGC(标记复制>清空>互换)包括：
 
   - 对Eden和FromSurvivor进行标记，将存活者复制到ToSurvivor，存活者年龄+1，达到指定的老年代年龄（默认是 15 岁，可通过参数设定）的存活对象会复制到老年代区域；(如果 ToServivor 区域的位置不够也会被放到老年区);
   - 然后清空Eden和FromSurvivor区；
@@ -169,10 +170,6 @@ Java堆内存（线程共享）从 GC 的角度还可以细分为: **新生代**
 
 
 
-
-
-
-
 ### 标记-清除（mark-sweap）算法：
 
 是最早出现的，也是最基础的垃圾收集算法，在1960年由Lisp之父John McCarthy所提出。
@@ -189,13 +186,13 @@ Java堆内存（线程共享）从 GC 的角度还可以细分为: **新生代**
 
 现在商用Java虚拟机大都优先采用这种收集算法回收**新生代**。
 
-1989  年，Andrew Appel针对具备“朝生夕灭”（即IBM专项研究中新生代中98%的对象熬不过第一轮垃圾收集）特点的对象，提出了一种更优化的半区复制分代策略，现称为**“Appel式回收”**。HotSpot虚拟机的**Serial、ParNew垃圾收集器**均采用了这种策略来设计新生代代的内存布局。Appel式回收具体做法：把新生代分为一块较大的Eden空间和两块较小的Survivor空间，每次分配内存只使用Eden和其中一块Survivor空间；发生垃圾搜索时，将Eden和Survivor中仍然存活的对象，一次复制到另一块Survivor空间；然后直接清理掉Eden和用过的那块Survivor空间。
+1989  年，Andrew Appel针对具备“朝生夕灭”（即IBM专项研究中新生代中98%的对象熬不过第一轮垃圾收集）特点的对象，提出了一种更优化的半区复制分代策略，现称为**“Appel式回收”**。HotSpot虚拟机的**Serial、ParNew垃圾收集器**均采用了这种策略来设计新生代的内存布局。Appel式回收具体做法：把新生代分为一块较大的Eden空间和两块较小的Survivor空间，每次分配内存只使用Eden和其中一块Survivor空间；发生垃圾搜索时，将Eden和Survivor中仍然存活的对象，一次复制到另一块Survivor空间；然后直接清理掉Eden和用过的那块Survivor空间。
 
 **HotSpot VM 默认Eden和Survior的大小比例时8:1。**即在新生代的容量中，Eden占80%，Survior1占10%， Survior2占10%；每次只使用90%（Eden+Survior1），保留10%（Survior2）。这种设计适只用于每次回收后存活对象<10%的情况，但实际无法保证一定如此，因此Appel式回收还有一个充当罕见情况的“逃生门”的安全设计，当Survior空间不足以容纳一次MinorGC后存活的对象时，就依赖其他内存区域（实际单多时老年嗲）进行分配担保（Handle Promotion）。
 
 <img src="images/jvm-mark_copy.png" alt="image-20200301201606894" style="zoom:50%;" />
 
-### 标记-整理（mark-compact）算法（老年代）：
+### 标记-整理（mark-compact）算法（老年代）:对象移动时StopTheWorld
 
 针对老年代对象的存亡特征（应对对象100%存活的极端情况），1974年Edward Lueders提出了另外一种有针对性的“标记-整理（mark-compact）算法“，其中的标记过程仍然“与标记-清除算法”一样，后续步骤是：让所有存活的对象都向内存空间一端移动，然后直接清理掉边界以外的内存。
 
@@ -231,22 +228,29 @@ HotSpot VM里面关注吞吐量的**Parallel Scavenge收集器**是基于标记-
 
 - 新生代垃圾收集器
 
-  - Serial （单线程GC+stop，标记-复制算法） `-XX:+UseSerialGC`
+  - Serial （单线程GC+stop，标记-复制算法） 
 
-  ​      在**Client**模式下的默认新生代收集器；
+    `-XX:+UseSerialGC` ：Serial + Serial Old， 在**Client**模式下的默认配置值；
 
-  - ParNew（多线程GC+stop， 标记-复制算法 ）
+  - ParNew（多线程GC+stop， 标记-复制算法 ） 
+
+    `-XX:+UseParNewGC`：ParNew+Serial Old，在JDK1.8被废弃，在JDK1.7还可使用；
+
+    `-XX:+UseConcMarkSweepGC`，ParNew+CMS+Serial Old
+
   - Parallel Scavenge（多线程GC+并行，标记-复制，吞吐量）
+
+    `-XX:+UseParallelOldGC`：Parallel Scavenge+Parallel Old；
 
 - 老年代垃圾收集器
 
   - Serial Old（单线程GC+stop，标记-复制算法）
-
-  - Parallel Old（多线程GC+stop， 标记-整理算法）`-XX:+UseParallelOldGC `
-
+  - Parallel Old（多线程GC+stop， 标记-整理算法）
   - CMS(Concurrent Mark Sweap) (多线程GC+并行，标记-清除算法)
 
 - 新生代、老年代：G1(Garbage First)（多线程+并发，标记-整理算法）
+
+     `-XX:+UseG1GC`：G1 + G1。
 
 使用场景：
 
@@ -278,7 +282,7 @@ JVM 参数详解：https://www.cnblogs.com/rinack/p/9888692.html
 
 
 
-### Serial 收集器（单线程，标记-复制算法）：
+### Serial 收集器（单线程，STW, 标记-复制算法）：
 
 是最基础、历史最悠久的垃圾收集器；使用标记-复制算法；在JDK1.3之前是Hotspot VM新生代收集器的唯一选择。
 
@@ -307,7 +311,7 @@ JVM 参数详解：https://www.cnblogs.com/rinack/p/9888692.html
 1）VM运行在**Client**模式下的默认新生代收集器；
 2）在用户的桌面应用场景中，停顿时间完全可以控制在几十毫秒最多一百多毫秒以内，不频繁发生，是可接受的
 
-### ParNew 收集器（Serial+多线程）
+### ParNew 收集器（Serial+多线程,STW）
 
 实际上是**Serial收集器**的**多线程**并行版本。除了使用多条线程进行垃圾收集之外，其他行为都与Serial收集器一致。
 
@@ -364,7 +368,7 @@ Parallel Scavenge是一个**新生代**垃圾收集器，使用**标记-复制�
 
 **应用场景：**主要适合后台运算而不需要太多交互的任务
 
-### Serial Old 收集器（单线程，标记-整理算法）
+### Serial Old 收集器（单线程，STW, 标记-整理算法）
 
 Serial Old 是 Serial 收集器的老年代版本，是**单线程**的，使用**标记-整理算法**。
 
@@ -377,7 +381,7 @@ Serial Old 是 Serial 收集器的老年代版本，是**单线程**的，使用
 1）主要给Client模式下的VM使用。
 2）若在Server模式下用，两大用途：1.在JDK1.5及之前的版本中与Parallel Scavenge收集器搭配使用；2.作为CMS收集器备选，并在Concurrent Mode Failure时使用。
 
-### Parallel Old 收集器（多线程，标记-整理算法）
+### Parallel Old 收集器（多线程，STW, 标记-整理算法）
 
 Parallel Old 是 Parallel Scavenfe 收集器的**老年代**版本，支持**多线程**并发收集，基于**标记-整理**算法实现。
 
@@ -410,7 +414,7 @@ Parallel Old 是 Parallel Scavenfe 收集器的**老年代**版本，支持**多
 
 **使用场景：**注重吞吐量以及CPU资源敏感的场合，优先考虑Parallel Scavenge + Parallel Old收集器。适合吞吐量优先。
 
-### CMS （Concurrent Mark Sweap）并发标记清除收集器（多线程，标记-清除算法）
+### CMS （Concurrent Mark Sweap）并发低停顿(标记清除)s收集器（多线程并发，标记-清除算法）
 
 CMS （Concurrent Mark Sweap）收集器是**老年代**的垃圾收集器， 主要目标是获取最**短垃圾回收停顿时间**，使用**多线程**的**标记-清除算法**。
 
@@ -567,9 +571,9 @@ GC 的日志数据可以使用 `jstat` 命令观测，或使用 JVM 参数 `-Xlo
 
   
 
-**2.2 生成与分析 dump 文件**
+**2.2 生成与分析 dump (转储)文件**
 
-**Warning：无论是生成 heap dump 还是 thread dump，都会造成 JVM 的停顿，因此需要再生产环境上谨慎执行。**
+**Warning：无论是生成 heap dump(堆转储) 还是 thread dump(线程转储)，都会造成 JVM 的停顿，因此需要在生产环境上谨慎执行。**
 
 生成与分析 dump 文件也是常用来分析 JVM 运行的一种手段，JVM 的 dump 文件包括两类
 
@@ -596,8 +600,6 @@ JVM 本身提供了许多有用的工具用来调试 Java 程序，这些程序�
 - `jmc`（Java Mission Control）JMC 采用采样技术而不是传统的代码植入的技术，其对应用性能的影响非常小，可以用来实时监控、分析 Java 程序。
 - [gchisto](https://link.zhihu.com/?target=https%3A//github.com/jewes/gchisto) 分析 GC 日志
 - [gcplot](https://link.zhihu.com/?target=https%3A//github.com/dmart28/gcplot)
-
-
 
 
 

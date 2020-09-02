@@ -164,13 +164,6 @@ Java 的 I/O 类大大简化了IO操作；Java的序列化允许程序将整个�
 
 **AsynchronousChannel**：支持异步通道，实现类有：AsynchronousSocketChannel、AsynchronousServerSocketChannel、AsynchronousFileChannel、AsynchronousDatagramChannel；
 
-
-
-作者：一点点努力
-链接：https://www.jianshu.com/p/45f84a946047
-来源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。。
-
 **CompletionHandler**：用户处理器。定义了一个用户处理就绪事件的接口，由用户自己实现，异步io的数据就绪后回调该处理器消费或处理数据。
 
 **AsynchronousChannelGroup**：一个用于资源共享的异步通道集合。处理IO事件和分配给CompletionHandler。

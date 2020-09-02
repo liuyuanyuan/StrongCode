@@ -15,7 +15,11 @@
 
 > JDK API学习方法提示：先看API doc，再看源码实现，在编码实验并使用jconsole监控效果。:)
 
-## 背景：多线程的风险
+
+
+## 0 并发编程理论基础
+
+### 1 背景：多线程的风险
 
 **多线程的性能：**多线程用于提高性能，但多线程并不一定比单线程快。
 
@@ -43,7 +47,7 @@
 
 
 
-## 线程安全：问题与解决方法
+### 2 线程安全：问题与解决方法
 
 #### 什么是线程安全（thread-safe）:
 
@@ -61,15 +65,15 @@
 
 
 
-## 0 并发编程理论基础
-
-### 几种特性
+### 3 并发编程3大特性
 
 #### 原子性 
 
 即一个或多个操作，要么全部执行并且执行过程不会被任何因素打断，要么就都不执行。
 
+```
 经典例子就是银行账户转账问题：从账户A向账户B转1000元，那么必然包括2个操作：从账户A减去1000元，往账户B加上1000元。这2个操作必须要具备原子性才能保证不出现意外。
+```
 
 #### 可见性 
 
@@ -79,9 +83,9 @@
 
 即程序执行的顺序按照代码的先后顺序执行。
 
-## 
 
-### 先行发生原则（Happens-Before）
+
+### 4 先行发生原则（Happens-Before）
 
 如果Java内存模型的有序性都只依靠volatile和synchronized来完成，那么有一些操作就会变得很啰嗦，但是我们在编写Java并发代码时并没有感受到，这是因为Java语言天然定义了一个“先行发生”原则，这个原则非常重要，依靠这个原则我们可以很容易地判断在并发环境下两个操作是否可能存在竞争冲突问题。
 
@@ -149,9 +153,9 @@ int j = 2;
 
 所以，“先行发生”不一定“时间上先发生”。
 
-## 
 
-#### 死锁（Dead Lock）
+
+### 5 死锁（Dead Lock）
 
 **死锁的含义：**当线程T1持有锁L1并想获得锁L2的同时，线程T2持有锁L2并尝试所得锁L1，那么这两个线程将永远的等待下去，这种情况就是最简单的死锁。
 
@@ -187,7 +191,7 @@ Jconsole是**JDK自带的监控工具**，在JDK/bin目录下可以找到。它�
 
 
 
-### 锁的分类
+### 6 锁的分类
 
 - 线程是否需要对资源加锁：乐观锁和悲观锁；
 - 资源已经被锁定，线程是否阻塞：自旋锁
@@ -210,7 +214,7 @@ Jconsole是**JDK自带的监控工具**，在JDK/bin目录下可以找到。它�
 
 
 
-## 1 synchronized(内置锁/监视器锁)：同步方法/代码块
+## 1 synchronized(内置锁/监视器锁)：对方法/代码块进行同步
 
 >**锁的概念**
 >
@@ -255,7 +259,7 @@ synchronized(this/obj){
 
 
 
-## 2 volatile关键字：保证变量可见性
+## 2 volatile：保证变量的可见性、有序性
 
 volatile 仅可修饰变量；volatile 变量可以确保可见性、有序性（确保变量在一个线程的更新操作通知到其他所有线程），但不具备原子性。
 
@@ -272,6 +276,10 @@ volatile还有一个作用是防止指令重排序；
 Java 的 volatile 关键字用于标记一个变量是“应当存储在主存”。更确切地说，每次读取volatile变量，都应该从主存读取，而不是从CPU缓存读取。每次写入一个volatile变量，应该写到主存中，而不是仅仅写到CPU缓存。
 
 <img src="images/threads-volatile.png" alt="image-20200122170241969" style="zoom:50%;" />
+
+![image-20200824135927212](images/thread_concurrency_volatile.png)
+
+![诸葛老师的Java线程内存模型](images/thrad_concurrency_volatile.png)
 
 **synchronized与volatile比较**
 
@@ -306,13 +314,17 @@ volatile变量来控制状态的可见性，通常比使用锁的代码更脆弱
 
 
 
-## CAS 操作
+## 3 CAS & AtomicXx
 
-**CAS(CompareAndSwap/CompareAndSet）比较并交换**。是用于实现多线程同步的**原子指令**。 Java1.5 开始引入了 CAS，主要代码都放在 java.util.concurrent.atomic 包下，通过 sun 包下的 Unsafe 类实现，而Unsafe类中的方法都是 native 方法，由 JVM 本地实现。
+### CAS 操作
 
-**CAS实现原理：**
+**CAS(CompareAndSwap/CompareAndSet）比较并交换**。是用于实现多线程同步的**原子指令**。
 
-CAS机制中使用了3个基本操作数：内存地址V，旧的预期值A，要修改的新值B。原理是：**当更新一个变量的时候：只有当变量的预期值A和内存地址V当中的实际值相同时，才会将内存地址V对应的值修改为B。这是作为单个原子操作完成的。**
+CAS操作使用3个基本操作数：数值存放的内存地址V，预期原值A，要修改的新值B。当更新一个变量的时候：当内存地址V的值与预期值A相同时，处理器才会将内存地址V的值更改为B；否则，处理器不做任何操作；两种情况下返回值都是V的原值。
+
+当多个线程尝试使用CAS同时更新一个变量，最终只有一个线程会成功，其他线程都会失败。**但与使用锁不同，失败的线程不会被阻塞，而是被告之本次更新操作失败了，可以再试一次**；线程可以根据实际情况，继续重试或者跳过操作，大大减少因为阻塞而损失的性能。所以，CAS是一种乐观的操作，它希望每次都能成功地执行更新操作。
+
+CAS是从 Java1.5 开始引入的，主要代码都在 java.util.concurrent.atomic 包下，通过 sun 包下的 Unsafe 类实现，而 Unsafe 类中的方法都是 native 方法，由 JVM 本地实现。
 
 **CAS的缺点：**
 
@@ -322,12 +334,11 @@ CAS机制中使用了3个基本操作数：内存地址V，旧的预期值A，�
 
 
 
-## 3 Atomic 原子类
-
-### Atomic 原子类
+### AtomicXx 原子类 - 保证变量的可见性、顺序性、原子性
 
 这里的 Atomic 指一个操作是不可中断的。即使在多个线程一起执行时，一个操作一旦开始就不会被其他线程干扰。所以，所谓原子类说简单点就是具有原子操作特征的类。
-原子类都在 包java.util.concurrent.atomic 下，如下。
+
+Java 原子类都在 java.util.concurrent.atomic 包下，共4种12个类：
 
 ```
 基本类型：使用原子的方式更新基本类型
@@ -340,20 +351,20 @@ AtomicIntegerArray:整形数组原子类
 AtomicLongArray:长整形数组原子类 
 AtomicReferenceArray :引用类型数组原子类
 
-引用类型
+引用类型:
 AtomicReference:引用类型原子类 
 AtomicStampedRerence:原子更新引用类型里的字段原子类 
 AtomicMarkableReference :原子更新带有标记位的引用类型
 
-对象的属性修改类型 
+对象的属性修改类型: 
 AtomicIntegerFieldUpdater:原子更新整形字段的更新器
 AtomicLongFieldUpdater:原子更新长整形字段的更新器
 AtomicStampedReference:原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原 子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
 ```
 
-例子：AtomicLong
+举例说明：
 
-常用方法：
+AtomicLong 常用方法：
 
 ```java
 public final long get() //获取当前的值
@@ -361,26 +372,41 @@ public final long getAndSet(long newValue)//获取当前的值，并设置新的
 public final long getAndIncrement()//获取当前的值，并自增
 public final long getAndDecrement() //获取当前的值，并自减
 public final long getAndAdd(int delta) //获取当前的值，并加上预期的值
-public final boolean compareAndSet(long expectedValue, long newValue) //如果输入的数值等于预期值，则以原子方式将该值设置 为输入值(update)
+public final boolean compareAndSet(long expectedValue, long newValue) //如果输入的数值等于预期值，则以原子方式将该值设置为输入值(update)
 
 public final void lazySet(long newValue)//最终设置为newValue,使用 lazySet 设置之后可能导致其他线 程在之后的一小段时间内还是可以读到旧的值。 
 ```
 
-源码及原理
+AtomicLong 源码及原理
 
 AtomicLong 类主要利用 CAS (compare and swap)、volatile 和 native 方法（unsafe的objectFieldOffset方法）保证可见性和原子操作，从而避免 synchronized 的高开销，使执行效率大为提升。
 
-CAS 的原理是拿期望的值和原本的一个值作比较，如果相同则更新成新的值。UnSafe 类的 objectFieldOffset() 方法是一个本地方法，这个方法是用来拿到“原来的值”的内存地址，返回值是 valueOffset；value 是一个 volatile 变 量，在内存中可见。因此，JVM可以保证任何时刻任何线程总能拿到该变量的最新值。
+CAS 的原理是拿期望值和原本值作比较，如果相同则更改为新值。
+
+- UnSafe 类的 objectFieldOffset() 方法是一个本地方法，这个方法是用来拿到“原来的值”的内存地址，返回值是 valueOffset；
+- value 是一个 volatile 变 量，在内存中可见，因此JVM可以保证任何时刻任何线程总能拿到该变量的最新值。
 
 ```java
-		/*
-     * This class intended to be implemented using VarHandles, but there
-     * are unresolved cyclic startup dependencies.
-     */
-    private static final jdk.internal.misc.Unsafe U = jdk.internal.misc.Unsafe.getUnsafe();
-    private static final long VALUE = U.objectFieldOffset(AtomicLong.class, "value");
 
+    private static final jdk.internal.misc.Unsafe U = jdk.internal.misc.Unsafe.getUnsafe();
+    // UnSafe 类的 objectFieldOffset() 方法是JVM本地方法，用于获取指定字段在所在类的存储中的内存地址。
+    private static final long VALUE = U.objectFieldOffset(AtomicLong.class, "value");
+    // 使用 volatile 变量存放数值，可以保证线程间的可见性
     private volatile long value;
+
+    /**
+     * Atomically sets the value to {@code newValue}
+     * if the current value {@code == expectedValue},
+     * with memory effects as specified by {@link VarHandle#compareAndSet}.
+     *
+     * @param expectedValue the expected value
+     * @param newValue the new value
+     * @return {@code true} if successful. False return indicates that
+     * the actual value was not equal to the expected value.
+     */
+    public final boolean compareAndSet(int expectedValue, int newValue) {
+        return U.compareAndSetInt(this, VALUE, expectedValue, newValue);
+    }
 ```
 
 使用：
@@ -388,8 +414,7 @@ CAS 的原理是拿期望的值和原本的一个值作比较，如果相同则�
 ```java
 public class Sequence {
 	private AtomicLong; 
-  public Sequence()
-  {
+  public Sequence(){
      value = new AtomicLong(0);
   }
 	public Long getNext() {
@@ -407,30 +432,79 @@ public class Sequence {
 			t.start();
 		}
 	}
+  
 }
 ```
 
 
 
-## 4 并发集合
+## 4 线程安全集合
 
-The `java.util.concurrent` package includes a number of additions to the Java Collections Framework. These are most easily categorized by the collection interfaces provided:
+`java.util.concurrent` 包中有很多 Java Collections Framework 的类。
 
-### BlockingQueue (FIFO)
+### BlockingQueue
 
-[`BlockingQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html) defines a first-in-first-out data structure that blocks or times out when you attempt to add to a full queue, or retrieve from an empty queue.
+- 接口 BlockingQueue (FIFO 阻塞队列)
 
-### ConcurrentMap/ConcurrentHashMap
+  [BlockingQueue](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html) 是FIFO数据结构；堆满时向队列中添加或队空时从队列中检索，都会阻塞或等待超时。
 
-[`ConcurrentMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) is a subinterface of [`java.util.Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html) that defines useful atomic operations. These operations remove or replace a key-value pair only if the key is present, or add a key-value pair only if the key is absent. Making these operations atomic helps avoid synchronization. The standard general-purpose implementation of `ConcurrentMap` is [`ConcurrentHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html), which is a concurrent analog of [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html).
+- 接口 BlockingDeque （双向阻塞队列）
 
-### ConcurrentNavigableMap
+  在 BlockingQueue 的阻塞特性基础上，添加或者检索元素时，需指定从队头或者队尾进行。
 
-[`ConcurrentNavigableMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentNavigableMap.html) is a subinterface of `ConcurrentMap` that supports approximate matches. The standard general-purpose implementation of `ConcurrentNavigableMap` is [`ConcurrentSkipListMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentSkipListMap.html), which is a concurrent analog of [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html).
+- ConcurrentLinkedQueue
+
+- ConcurrentLinkedDeque
+
+#### API 方法
+
+添加元素
+
+- *add() –* returns *true* if insertion was successful, otherwise throws an *IllegalStateException*
+- *put() –* inserts the specified element into a queue, waiting for a free slot if necessary
+- *offer() –* returns *true* if insertion was successful, otherwise *false*
+- *offer(E e, long timeout, TimeUnit unit) –* tries to insert element into a queue and waits for an available slot within a specified timeout
+
+检索元素
+
+- *take()* – waits for a head element of a queue and removes it. If the queue is empty, it blocks and waits for an element to become available
+- *poll(long timeout, TimeUnit unit) –* retrieves and removes the head of the queue, waiting up to the specified wait time if necessary for an element to become available. Returns *null* after a timeou
+
+#### 有界队列/无界队列
+
+- 无界队列：缺省容量为 Integer.MAX_VALUE
+
+因此向队列中添加元素时永远不会阻塞；队列可能会增长的非常大；在队列消费速度小于队列生产速度时，可能会引起OOM错误。
+
+```java
+BlockingQueue uboundedBlockingQueue = ConcurrentLinkedQueue<>();
+```
+
+- 有界队列（推荐使用）
+
+```java
+BlockingQueue uboundedBlockingQueue = ConcurrentLinkedQueue<>(1000);
+```
 
 
 
+### ConcurrentMap
 
+- 接口 ConcurrentMap
+
+  [`ConcurrentMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) is a subinterface of [`java.util.Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html) that defines useful atomic operations. These operations remove or replace a key-value pair only if the key is present, or add a key-value pair only if the key is absent. Making these operations atomic helps avoid synchronization. 
+
+- ConcurrentHashMap
+
+  The standard general-purpose implementation of `ConcurrentMap` is [`ConcurrentHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html), which is a concurrent analog of [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html).
+
+- 接口 NavigableMap
+
+- ConcurrentNavigableMap
+
+  [`ConcurrentNavigableMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentNavigableMap.html) is a subinterface of `ConcurrentMap` that supports approximate matches. The standard general-purpose implementation of `ConcurrentNavigableMap` is [`ConcurrentSkipListMap`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentSkipListMap.html), which is a concurrent analog of [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html).
+
+  
 
 ## 5 Lock 接口的实现（显式锁）对代码块加、解锁
 
@@ -596,6 +670,70 @@ public class Sequence {
 }
 ```
 
+### ReentrantLock 与 Condition 配合使用
+
+```java
+
+mport java.util.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * 有界阻塞队列
+ *
+ * @author liuyuanyuan
+ * @version 1.0.0
+ * @create 2020/8/27
+ */
+public class BoundedBlockingQueue {
+
+    private int capacity;
+    private volatile LinkedList<Integer> queue;
+    private static ReentrantLock lock;
+    private Condition empty;
+    private Condition full;
+    public BoundedBlockingQueue(int capacity) {
+        this.capacity = capacity;
+        queue = new LinkedList<Integer>();
+        lock = new ReentrantLock();
+        empty = lock.newCondition();
+        full = lock.newCondition();
+    }
+
+    public void enqueue(int element) throws InterruptedException {
+        lock.lock();
+        try {
+            while (queue.size() == capacity) {
+                full.await();
+            }
+            queue.add(element);
+            full.signal();
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    public int dequeue() throws InterruptedException {
+        lock.lock();
+        try {
+            while (queue.size() == 0) {
+                empty.await();
+            }
+            int lastValue = queue.getFirst();
+            queue.removeLast();
+            empty.signal();
+            return lastValue;
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    public int size() {
+        return queue.size();
+    }
+}
+```
+
 
 
 ### 自定义可重入锁（implements Lock）
@@ -680,15 +818,15 @@ public class Sequence {
 
 ## 6 AQS 抽象队列式同步器 - 构建锁及其他同步组件的基础框架
 
-java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）队列同步器：是用来构建锁或者其他同步组件的基础框架。
+java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）抽象队列同步器：是用来构建锁或者其他同步组件的基础框架。
 
 参考：https://www.zhihu.com/people/an-shi-yan-50
 
 ### AQS核心思想
 
-AQS核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设 置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS是用CLH队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
+AQS核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设 置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
 
-> CLH(Craig,Landin,and Hagersten)队列(FIFO)：是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁 的分配。
+> CLH(Craig,Landin,and Hagersten)队列(FIFO)：是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁的分配。
 
 **基于AQS实现的锁有：在LOCK包中的相关锁(常用的有ReentrantLock、 ReadWriteLock)都是基于AQS来构建，一般我们叫AQS为同步器。**
 
@@ -1049,6 +1187,10 @@ public class CyclicBarrierExample {
 }
 
 ```
+
+### 
+
+
 
 
 

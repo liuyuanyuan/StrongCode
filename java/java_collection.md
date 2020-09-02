@@ -18,13 +18,13 @@
 
 **概念**：集合框架是用于表示和操作集合的统一体系结构。所有集合框架都包含以下内容：
 
-##### 1 接口（Interfaces）
+### 1 接口（Interfaces）
 
 代表集合的抽象数据类型 。接口允许独立于其表示的细节来操纵集合。在面向对象的语言中，接口通常形成层次结构。
 
 接口类： Collection、List、Set、SortedSet(元素排序)、Map、SortedMap(元素的key排序)。
 
-##### 2 实现（Implementations）
+### 2 实现（Implementations）
 
 这些是集合接口的具体实现（类）。本质上，它们是可重用的数据结构。
 
@@ -34,7 +34,7 @@
 
 ​               HashSet、LinkedHashSet、TreeSet；
 
-##### 3 算法（Algorithms）
+### 3 算法（Algorithms）
 
 是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
 
@@ -56,7 +56,7 @@
 >
 >​              特点：查询速度慢，增、删快。
 >
->3 散列表
+>3 散列表：
 
 ### **Collection** 
 
@@ -74,7 +74,7 @@
 
 - Deque - 用于在处理之前容纳多个元素的集合。
 
-  Deque可同时用作FIFO（先进先出）和LIFO（先进先出）。
+  Deque可同时用作FIFO（先进先出）和LIFO（后进先出）。
 
 ### **Map** 
 
@@ -116,7 +116,7 @@
 
   基于Object 数组实现，按插入顺序、连续存储，超出数组容量时进行扩容；
 
-  特点：因为顺序存储便于建立索引，所以随机查找和便利速度快；插入（需要扩容时会新建更大数组并将原有元素复制进去）和删除（删除非末端元素时需移动后续元素）存在潜在的巨大开销。
+  特点：因为顺序存储便于建立索引，所以随机查找和遍历速度快；插入（需要扩容时会新建更大数组并将原有元素复制进去）和删除（删除非末端元素时需移动后续元素）存在潜在的巨大开销。
 
   **Array和ArrayList区别：容量上定长和可增长；ArrayList只能是添加对象类型，Array支持对象和基础类型。**
 
@@ -124,7 +124,7 @@
 
   基于双向链表(jdk1.6之前为循环链表，jdk1.7取消了循环) ，存储不一定连续；
 
-  特点：因为带有链所以动态插入和删除快；因为存储不连续从而不容易作索引，所以随机访问和顺序遍历比较慢。
+  特点：因为带有链所以动态插入和删除快；因为存储不连续从而不容易作索引，所以随机查找和顺序遍历比较慢。
 
 - Vector（数组实现，线程同步）: 
 
@@ -138,7 +138,7 @@
 
 - [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) （数组+链表/红黑树，key的hashCode()值作为entry的存储位置）:  
 
-  jdk1.8之前，HashMap由**数组(Node<k,v>哈希桶的数组)+链表(哈希桶)**组成，数组是主体，链表则主要为了解决哈希冲突而存在的(（“拉链法”解决哈希冲突；key经过哈希函数后得到的地址值出现重复，即为哈希冲突)；jdk1.8以后，HashMap由**数组+链表/红黑树**组成，在解决哈希冲突时有了较大的变化，**当链表长度大于阈值(默认为8)时，将链表转化为红黑树，以减少搜索时间，性能达到最大化。**
+  jdk1.8之前，HashMap由**数组(Node<k,v>哈希桶)+链表(哈希桶)**组成，数组是主体，链表则主要为了解决哈希冲突而存在的(（“拉链法”解决哈希冲突；key经过哈希函数后得到的地址值出现重复，即为哈希冲突)；jdk1.8以后，HashMap由**数组+链表/红黑树**组成，在解决哈希冲突时有了较大的变化，**当链表长度大于阈值(默认为8)时，将链表转化为红黑树，以减少搜索时间，性能达到最大化。**
 
    **扩容：**将原来数组中的哈希桶挪到新的更大数组中，是一个很耗时的操作，所以当程序员在使用HashMap的时候，估算map的大小，初始化时候要给一个合适数值，避免map进行频繁的扩容。
 
@@ -166,19 +166,19 @@
 
 **特点**：以key的hashCode()值作为哈希桶的存储地址，随机存储（key允许一个null值 ，value允许多个null值），可以快速定位元素，以及添加、删除元素。但因为是随机存储，所以顺序访问比较慢。
 
-- [LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) （按元素插入顺序）:  
+- ##### [LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) （按元素插入顺序）:  
 
   继承自 HashMap，其底层仍然是由**数组和链表/红黑树**组成。另外增加了一条双向链表，来维护键值对的插入顺序，实现了元素的访问顺序。
 
   特点：近乎HashMap的性能，iterator按插入顺序遍历，先插入的数据先得到。
 
-- [TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)（按key排序，默认升序） :  
+- ##### [TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)（按key排序，默认升序） :  
 
   实现了SortedMap接口方法，使用红黑树(自平衡的排序二叉树)原理排序，默认按key的升序排列。
 
   > 在使用 TreeMap 时，key 必须实现 Comparable 接口或者在构造 TreeMap 传入自定义的 Comparator，否则会在运行时抛出 java.lang.ClassCastException 类型的异常。
 
-- HashTable（线程安全的）:  
+- ##### HashTable（线程安全的）:  
 
   **key 和 value 都不允许为null。**
 
@@ -188,22 +188,20 @@
 
   **并发实现  **
 
-- [ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) 
+- ##### [ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) 
 
   **key 和 value 都不允许为 null。**
   
   实现了 [java.util.concurrent](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [ConcurrentMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 Map 的原子方法（CAS） `putIfAbsent`, `remove` 和 `replace` ）。
   
-  - jdk1.8之前，将**主体分为多个Segment**（Segment size = capacity / concurrencyLevel ），来对每个 Segment 加一个 lock，达到锁分离，来提高并发效率；
+  - jdk1.8之前，将**主体分为多个Segment**（Segment size = capacity / concurrencyLevel ），来对每个 Segment 加一个 ReentrantLock，达到锁分离，来提高并发效率；
   -  jdk1.8之后，直接用**Node数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
 
 ConcurrentHashMap 支持全并发的检索和高度并发的更新，其所有操作都是线程安全的（虽然在检索时没有加锁，在更新时也未对数据整体加锁）。 允许客户端选择用于更新的并发级别（concurrencyLevel：估计的执行并发更新的线程数）。
 
 ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法，只是实现线程安全的细节不同。
 
-
-
-**区分HashMap、Hashtable、ConcurrentHashMap，如下：**
+##### 区分HashMap、Hashtable、ConcurrentHashMap，如下：
 
 <img src="images/HashMap_ConcurrentHashMap.png" alt="image-20200309090806288" style="zoom: 67%;" />
 
@@ -217,17 +215,17 @@ ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法
 
 ### Set集合（元素无序，不重复）
 
-- HashSet (用HashMap存元素)：
+- ##### HashSet (用HashMap存元素)：
 
   内部采用 HashMap 来保存所有元素，将元素对象作为key，value则统一用一个 new Object()；
 
-- LinkedHashSet（有序，HashSet + LinkedHashMap）：
+- ##### LinkedHashSet(有序，HashSet + LinkedHashMap）：
 
   LinkedHashSet 继承于 HashSet，内部是通过 LinkedHashMap 来保存所有元素。
 
   内部增加了一条针对多有entry的双向链表，来保证元素的顺序。
 
-- TreeSet(可排序，用TreeMap保存元素)：
+- ##### TreeSet (可排序，用TreeMap保存元素)：
 
   内部采用 TreeMap 来保存所有元素；
 

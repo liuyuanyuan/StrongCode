@@ -4,7 +4,7 @@
 
 - JDK:  openjdk
 
-- IDE: eclipse、inteliJ
+- IDE: eclipse、inteliJ IDEA
 - 部署容器：Tomcat
 
 - 测试：

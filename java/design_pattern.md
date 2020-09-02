@@ -121,22 +121,33 @@ public class Singleton {
 
 /**
 * 双端检锁方式实现-线程安全的单例模式
+synchronized可以保证单例的线程安全，但性能却不容乐观，因为对整个方法体加了同步锁。
+其实仅在首次初始化对象的时候需要同步，对于之后的获取不需要同步锁。使用双端检锁可以解决这个问题。
 */
+public class SyncLock {
+    private static SyncLock instance;  
+    public static synchronized SyncLock getInstance()   {  
+        if (instance == null) {  
+        	instance=new SyncLock();
+        }  
+        return instance;  
+    }  
+}
 public class DoubleCheckedLock {
     private static DoubleCheckedLock instance;  
-	  
     public static DoubleCheckedLock getInstance() {  
-        // 第一次检查
-        if (instance != null) { 
+        if (instance != null) // 第一次检查
+        { 
           return instance;  
         }
-        synchronized (DoubleCheckedLock.class) {
-            // 再次检查
+        synchronized (DoubleCheckedLock.class) // 再次检查
+        {
         		if(instance == null){
         			 instance=new DoubleCheckedLock();
         		}
         }
         return instance;  
+    }
 }  
 
 ```
