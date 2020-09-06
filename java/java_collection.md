@@ -22,17 +22,31 @@
 
 代表集合的抽象数据类型 。接口允许独立于其表示的细节来操纵集合。在面向对象的语言中，接口通常形成层次结构。
 
-接口类： Collection、List、Set、SortedSet(元素排序)、Map、SortedMap(元素的key排序)。
+接口类：
+
+Collection、
+
+- List、
+
+- Set、SortedSet(元素排序)、
+
+- Map、SortedMap(元素的key排序)、
+
+- Queue<Deque
 
 ### 2 实现（Implementations）
 
 这些是集合接口的具体实现（类）。本质上，它们是可重用的数据结构。
 
-实现类：ArrayList、LinkedList；
+实现类：
 
-​			   HashMap、LinkedHashMap、TreeMap；
+- ArrayList、LinkedList；
 
-​               HashSet、LinkedHashSet、TreeSet；
+- HashMap、LinkedHashMap、TreeMap；
+- HashSet、LinkedHashSet、TreeSet；
+- ArrayQueue、LinkedList
+
+
 
 ### 3 算法（Algorithms）
 
@@ -58,33 +72,27 @@
 >
 >3 散列表：
 
-### **Collection** 
-
 集合层次架构的根；表示一组对象（称作元素）的集合。
 
-- List - 按插入顺序连续存储的集合（有时称为序列）。列表可以包含重复的元素。
+- List 列表- 按插入顺、连续存储的集合（有时称为序列），元素可重复、可为Null。
 
-- Set - 不包含重复元素的集合。（内部使用Map实现，元素作为key，value统一为一个空Object对象。）
+- Map 映射 - 键值对(key-value entry)的集合，key值唯一，按key的hashCode来保存结点；
+
+  SortedMap —可排序Map接口， 默认按键的升序排列其映射的。
+
+  **注意**：要实现集合元素的排序和不可重复，元素对象必须正确实现 [Object 的 equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) ，如：Set是通过元素的hashCode来比较，Map通过元素的Key的hashCode来比较。
+
+- Set 集合- 不包含重复元素的集合。（内部使用Map实现，元素作为key，value统一为一个空Object对象。）
 
   - SortedSet(升序Set) - 默认按升序排列其元素的Set。
 
-- Queue - 用于在处理之前保存多个元素的集合。
+- Queue 队列 - 用于在处理之前，保存多个元素的集合。
 
   队列通常但不一定以FIFO（先进先出）的方式对元素进行排序。
 
-- Deque - 用于在处理之前容纳多个元素的集合。
+- Deque 双向队列- 用于在处理之前，保存多个元素的集合。
 
   Deque可同时用作FIFO（先进先出）和LIFO（后进先出）。
-
-### **Map** 
-
-映射集合层次架构的根，键值对（key-value entry）映射的集合。
-
-将键（key）映射到值（value）的对象。映射不能包含重复的键；每个键最多可以映射到一个值。
-
-- SortedMap —一个默认按键的升序排列其映射的Map。
-
-**注意**：要实现集合元素的排序和不可重复，元素对象必须正确实现 [Object 的 equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) ，如：Set是通过元素的hashCode来比较，Map通过元素的Key的hashCode来比较。
 
 
 
@@ -92,79 +100,447 @@
 
 普通实现类：
 
-| Interfaces | Hash table Implementations | Resizable array Implementations | Tree Implementations  | Linked list Implementations | Hash table + Linked list Implementations | thread-safe implementations |
-| ---------- | -------------------------- | ------------------------------- | --------------------- | --------------------------- | ---------------------------------------- | --------------------------- |
-| Set        | `HashSet`                  |                                 | `TreeSet` (SortedSet) |                             | `LinkedHashSet`                          |                             |
-| List       |                            | `ArrayList`                     |                       | `LinkedList`                |                                          | Vector                      |
-| Queue      |                            |                                 |                       |                             |                                          |                             |
-| Deque      |                            | `ArrayDeque`                    |                       | `LinkedList`                |                                          |                             |
-| Map        | `HashMap`                  |                                 | `TreeMap` (SortedMap) |                             | `LinkedHashMap`                          | Hashtable                   |
+| Interfaces | Hash table Implementations | Resizable array Implementations | Tree Implementations | Linked list Implementations | Hash table + Linked list Implementations | thread-safe implementations  |
+| ---------- | -------------------------- | ------------------------------- | -------------------- | --------------------------- | ---------------------------------------- | ---------------------------- |
+| List       |                            | `ArrayList`                     |                      | `LinkedList`                |                                          | Vector                       |
+| Queue      |                            |                                 |                      |                             |                                          | ConcurrentLinkedQueue        |
+| Deque      |                            | `ArrayDeque`                    |                      | `LinkedList`                |                                          | ConcurrentLinkedDeque        |
+| Map        | `HashMap`                  |                                 | `TreeMap`(SortedMap) |                             | `LinkedHashMap`                          | Hashtable  ConcurrentHashMap |
+| Set        | `HashSet`                  |                                 | `TreeSet`(SortedSet) |                             | `LinkedHashSet`                          |                              |
 
-并发实现类：
 
-| Concurrent Interfaces          | Concurrent Implementation(thread-safe) |      |
-| ------------------------------ | -------------------------------------- | ---- |
-| BlockingQueue  (extends Queue) |                                        |      |
-| ConcurrentMap  (extends Map)   | ConcurrentHashMap                      |      |
-|                                |                                        |      |
 
-集合核心实现类介绍：
+## Array数组-定长，按插入顺序、连续存储，元素允许重复/null
 
-### List列表(按插入顺序、连续存储，元素允许重复、null)
+## List列表
 
-- Arraylist（数组实现）: 
+### Arraylist-数组实现，按插入顺序、连续存储
 
-  基于Object 数组实现，按插入顺序、连续存储，超出数组容量时进行扩容；
+基于Object 数组实现，按插入顺序、连续存储，元素允许重复/null，超出数组容量时进行自动扩容；
 
-  特点：因为顺序存储便于建立索引，所以随机查找和遍历速度快；插入（需要扩容时会新建更大数组并将原有元素复制进去）和删除（删除非末端元素时需移动后续元素）存在潜在的巨大开销。
+特点：
 
-  **Array和ArrayList区别：容量上定长和可增长；ArrayList只能是添加对象类型，Array支持对象和基础类型。**
+- 因为顺序存储便于建立索引，所以随机查找和遍历速度快；
 
-- LinkedList（双向链表实现）: 
+- 插入（需要扩容时会新建更大数组并将原有元素复制进去）和删除（删除非末端元素时需移动后续元素）存在潜在的巨大开销。
 
-  基于双向链表(jdk1.6之前为循环链表，jdk1.7取消了循环) ，存储不一定连续；
+Array和ArrayList区别：
 
-  特点：因为带有链所以动态插入和删除快；因为存储不连续从而不容易作索引，所以随机查找和顺序遍历比较慢。
+- 容量上，Array定长和ArrayList变长可增长；
 
-- Vector（数组实现，线程同步）: 
+- ArrayList只能是添加对象类型，Array支持对象和基础类型。
 
-  实现与Arraylist实现类似，另外使用 synchronized 保证线程安全。
+### LinkedList-双向链表实现，存储不连续，带指向前驱/后继的链
 
-  特点：线程同步的开销导致它比ArrayList慢。
+基于双向链表(jdk1.6之前为循环链表，jdk1.7取消了循环) ，存储不一定连续；
 
-### [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html) 映射（key不重复）
+特点：
 
-   **常规用途实现**
+- 因为带有链所以动态插入和删除快；
+- 因为存储不连续从而不容易作索引，所以随机查找和顺序遍历比较慢。
 
-- [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) （数组+链表/红黑树，key的hashCode()值作为entry的存储位置）:  
+### Vector-数组实现，线程安全
 
-  jdk1.8之前，HashMap由**数组(Node<k,v>哈希桶)+链表(哈希桶)**组成，数组是主体，链表则主要为了解决哈希冲突而存在的(（“拉链法”解决哈希冲突；key经过哈希函数后得到的地址值出现重复，即为哈希冲突)；jdk1.8以后，HashMap由**数组+链表/红黑树**组成，在解决哈希冲突时有了较大的变化，**当链表长度大于阈值(默认为8)时，将链表转化为红黑树，以减少搜索时间，性能达到最大化。**
+实现与Arraylist实现类似，另外在get/set等方法上使用 synchronized 保证线程安全。
 
-   **扩容：**将原来数组中的哈希桶挪到新的更大数组中，是一个很耗时的操作，所以当程序员在使用HashMap的时候，估算map的大小，初始化时候要给一个合适数值，避免map进行频繁的扩容。
+特点：
 
-  - **capacity**：当前数组容量，始终保持 `2^n`，可以扩容，扩容后数组大小为当前的 2 倍。
+- 线程同步的开销导致它比ArrayList慢。
 
-  - **loadFactor**：负载因子，默认为`0.75`。
+## [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html) 映射
 
-    > 负载因子是可以修改的，也可以大于1，但是建议不要轻易修改，除非情况非常特殊。
-    >
-    > 默认的负载因子0.75是对空间和时间效率的一个平衡选择，建议大家不要修改，除非在时间和空间比较特殊的情况下：
-    >
-    > - 如果内存空间很多而又对时间效率要求很高，可以降低负载因子Load factor的值；
-    >
-    > - 相反，如果内存空间紧张而对时间效率要求不高，可以增加负载因子loadFactor的值，这个值可以大于1。
+### [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html)-数组+单向链表/红黑树，key/value允许null值 
 
-  - **threshold**：扩容的阈值，等于 `capacity * loadFactor`
+参考：[美团-Java8 HashMap](https://tech.meituan.com/2016/06/24/java-hashmap.html)
 
-    > threshold是HashMap所能容纳的最大数据量的Node(键值对)个数：
-    >
-    > ​		threshold = length * Loadfactor
-    >
-    > 也就是说，在数组定义好长度之后，负载因子越大，所能容纳的键值对个数越多。
+jdk1.8以前，HashMap由**数组+链表**组成，元素为Entry<k,v>，数组是主体，链表则用于存储哈希冲突的结点(key经哈希计算的地址值出现重复，即为哈希冲突；对冲突结点使用链表存储，即为"拉链法")；
 
-  <img src="images/hashmap.png" alt="image-20200122140241123" style="zoom:30%;" />
+jdk1.8以后，HashMap由**数组+链表/红黑树**组成，元素为Node<k,v>；在解决哈希冲突时有了较大变化：
 
-**特点**：以key的hashCode()值作为哈希桶的存储地址，随机存储（key允许一个null值 ，value允许多个null值），可以快速定位元素，以及添加、删除元素。但因为是随机存储，所以顺序访问比较慢。
+- 在添加结点时，当冲突链表长度>=TREEIFY_THRESHOLD (默认8)  && 哈希表当前容量 >=MIN_TREEIFY_CAPACITY(=64) 时，将链表转化为红黑树，减少搜索时间以最大化性能。
+- 在删除结点时，当冲突链表
+
+**特点**：
+
+- 以 key 的 hashCode() 值作为哈希桶存储地址，随机存储(key允许1个null值 ，value允许多个null值)，随机查找、添加/修改、删除元素的时间复杂度为O(1)。
+
+- 但因为是随机存储，所以顺序访问比较慢。
+
+![image-20200906164700604](images/java_hashmap.png)
+
+**源码分析：**
+
+- **capacity 容量**：哈希表中桶(buckets)的容量，即主体数组的容量；
+
+  该值在创建时定义，**值必须是2^n [2^1, 2^30]，初始值默认为1 << 4 = 16**；
+
+  当capacity达到threshold时，自动扩容，扩容后capacity为原来的 2 倍，如: 从2^4=16，扩容为2^5=32，再扩容为2^6=64。
+
+- **loadFactor 负载因子**：用于决定何时扩容capacity能保证get()/put()操作的时间复杂度为O(1)，**默认值为0.75F**；
+
+  loadFactor默认值0.75，是对空间和时间效率提供了很好的折中，较高的值会降低空间开销，但增加查找成本。loadFactor是可以修改的，但一般不建议修改，除非在时间和空间的特殊情况下：
+
+  - 如果内存空间很多而又对时间效率要求很高，可以降低loadFactor的值；
+
+  - 相反，如果内存空间紧张而对时间效率要求不高，可以增加loadFactor的值，这个值可以大于1。
+
+- **threshold 阈值**：threshold = capacity * loadFactor ，数组扩容的阈值；当数组size>threshold，则resize();
+
+- **resize() 扩容：**将原来数组中的哈希桶挪到新的更大数组中，是一个很耗时的操作，所以当程序员在使用HashMap的时候，估算map的大小，初始化时候要给一个合适数值，避免map进行频繁的扩容。
+
+```java
+//default
+static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; //aka 16
+float loadFactor; = 0.75;
+//then
+threshold = 16*0.75 = 12
+// 所以当插入第12个Entry时，因为 capacity<=threshold，HashTable的capacity仍然为16；
+// 而插入插入第13个Entry时, 因为 capacity>threshold，所以 HashTable 扩容 resize() 为capacity==32；
+```
+
+哈希桶的结构定义：
+
+```java
+    /**
+     * The table, initialized on first use, and resized as
+     * necessary. When allocated, length is always a power of two.
+     * (We also tolerate length zero in some operations to allow
+     * bootstrapping mechanics that are currently not needed.)
+     */
+    transient Node<K,V>[] table;
+
+    /**
+     * Basic hash bin node, used for most entries.  (See below for
+     * TreeNode subclass, and in LinkedHashMap for its Entry subclass.)
+     */
+    static class Node<K,V> implements Map.Entry<K,V> {
+        final int hash;
+        final K key;
+        V value;
+        Node<K,V> next;
+        Node(int hash, K key, V value, Node<K,V> next) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+        //...
+    }
+```
+
+将冲突结点链表转为红黑树，发生在在put元素时：
+
+```java
+    /**
+     * The smallest table capacity for which bins may be treeified.
+     * (Otherwise the table is resized if too many nodes in a bin.)
+     * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts
+     * between resizing and treeification thresholds.
+     MIN_TREEIFY_CAPACITY 树化最小容量：是哈希冲突结点集合(API中称bins)，由链表转为红黑树时，要求的哈希表的最小容量。
+     该值必须>=4 * TREEIFY_THRESHOLD，从而避免 CAPACITY 扩容和TREEIFY_THRESHOLD 之间产生冲突。
+     if(linkedList.size>=TREEIFY_THRESHOLD) {
+         if(capacity>=MIN_TREEIFY_CAPACITY) 哈希冲突链表转为红黑树;
+         else 哈希表主体容量扩容;
+     } 
+     */
+    static final int MIN_TREEIFY_CAPACITY = 64;
+    /**
+     * The bin count threshold for using a tree rather than list for a
+     * bin.  Bins are converted to trees when adding an element to a
+     * bin with at least this many nodes. The value must be greater
+     * than 2 and should be at least 8 to mesh with assumptions in
+     * tree removal about conversion back to plain bins upon shrinkage.
+     TREEIFY_THRESHOLD 树化阀值：是哈希冲突结点集合，由链表转化红黑树，冲突结点总量的阀值；
+     该值必须(2,8]，才能保证协同-结点删除>红黑树收缩>红黑树退化为链表-的情况。
+     */
+    static final int TREEIFY_THRESHOLD = 8;
+
+    /**
+     * The bin count threshold for untreeifying a (split) bin during a
+     * resize operation. Should be less than TREEIFY_THRESHOLD, and at
+     * most 6 to mesh with shrinkage detection under removal.
+     UNTREEIFY_THRESHOLD 树退化阀值: 哈希冲突Node，由红黑树退化为链表，冲突Node数量的阀值；
+     该值必须<=6，以适应结点删除时的树收缩探测。
+     */
+    static final int UNTREEIFY_THRESHOLD = 6;
+
+    public V put(K key, V value) {
+        return putVal(hash(key), key, value, false, true);
+    }
+    final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
+        Node<K,V>[] tab; Node<K,V> p; int n, i;
+        if ((tab = table) == null || (n = tab.length) == 0)
+            n = (tab = resize()).length;
+        if ((p = tab[i = (n - 1) & hash]) == null)
+            tab[i] = newNode(hash, key, value, null);
+        else {
+            Node<K,V> e; K k;
+            if (p.hash == hash &&
+                ((k = p.key) == key || (key != null && key.equals(k))))
+                e = p;
+            else if (p instanceof TreeNode)
+                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+            else {
+                for (int binCount = 0; ; ++binCount) {
+                    if ((e = p.next) == null) {
+                        p.next = newNode(hash, key, value, null);
+                        //
+                        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                            treeifyBin(tab, hash);
+                        break;
+                    }
+                    if (e.hash == hash &&
+                        ((k = e.key) == key || (key != null && key.equals(k))))
+                        break;
+                    p = e;
+                }
+            }
+            if (e != null) { // existing mapping for key
+                V oldValue = e.value;
+                if (!onlyIfAbsent || oldValue == null)
+                    e.value = value;
+                afterNodeAccess(e);
+                return oldValue;
+            }
+        }
+        ++modCount;
+        if (++size > threshold)
+            resize();
+        afterNodeInsertion(evict);
+        return null;
+    }
+
+    /**
+     * Replaces all linked nodes in bin at index for given hash unless
+     * table is too small, in which case resizes instead.
+     */
+    final void treeifyBin(Node<K,V>[] tab, int hash) {
+        int n, index; Node<K,V> e;
+        //
+        if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
+            resize();
+        else if ((e = tab[index = (n - 1) & hash]) != null) {
+            TreeNode<K,V> hd = null, tl = null;
+            do {
+                TreeNode<K,V> p = replacementTreeNode(e, null);
+                if (tl == null)
+                    hd = p;
+                else {
+                    p.prev = tl;
+                    tl.next = p;
+                }
+                tl = p;
+            } while ((e = e.next) != null);
+            if ((tab[index] = hd) != null)
+                hd.treeify(tab);
+        }
+    }
+```
+
+将冲突结点集合从红黑树退化为链表，发生在remove元素时：
+
+```java
+    @Override
+    public boolean remove(Object key, Object value) {
+        return removeNode(hash(key), key, value, true, true) != null;
+    }
+
+		
+    /**
+     * Implements Map.remove and related methods.
+     *
+     * @param hash hash for key
+     * @param key the key
+     * @param value the value to match if matchValue, else ignored
+     * @param matchValue if true only remove if value is equal
+     * @param movable if false do not move other nodes while removing
+     * @return the node, or null if none
+     */
+    final Node<K,V> removeNode(int hash, Object key, Object value,
+                               boolean matchValue, boolean movable) {
+        Node<K,V>[] tab; Node<K,V> p; int n, index;
+        if ((tab = table) != null && (n = tab.length) > 0 &&
+            (p = tab[index = (n - 1) & hash]) != null) {
+            Node<K,V> node = null, e; K k; V v;
+            if (p.hash == hash &&
+                ((k = p.key) == key || (key != null && key.equals(k))))
+                node = p;
+            else if ((e = p.next) != null) {
+                if (p instanceof TreeNode)
+                    node = ((TreeNode<K,V>)p).getTreeNode(hash, key);
+                else {
+                    do {
+                        if (e.hash == hash &&
+                            ((k = e.key) == key ||
+                             (key != null && key.equals(k)))) {
+                            node = e;
+                            break;
+                        }
+                        p = e;
+                    } while ((e = e.next) != null);
+                }
+            }
+            if (node != null && (!matchValue || (v = node.value) == value ||
+                                 (value != null && value.equals(v)))) {
+                if (node instanceof TreeNode)
+                    ((TreeNode<K,V>)node).removeTreeNode(this, tab, movable);
+                else if (node == p)
+                    tab[index] = node.next;
+                else
+                    p.next = node.next;
+                ++modCount;
+                --size;
+                afterNodeRemoval(node);
+                return node;
+            }
+        }
+        return null;
+    }
+
+
+        /**
+         * Removes the given node, that must be present before this call.
+         * This is messier than typical red-black deletion code because we
+         * cannot swap the contents of an interior node with a leaf
+         * successor that is pinned by "next" pointers that are accessible
+         * independently during traversal. So instead we swap the tree
+         * linkages. If the current tree appears to have too few nodes,
+         * the bin is converted back to a plain bin. (The test triggers
+         * somewhere between 2 and 6 nodes, depending on tree structure).
+         */
+        final void removeTreeNode(HashMap<K,V> map, Node<K,V>[] tab,
+                                  boolean movable) {
+            int n;
+            if (tab == null || (n = tab.length) == 0)
+                return;
+            int index = (n - 1) & hash;
+            TreeNode<K,V> first = (TreeNode<K,V>)tab[index], root = first, rl;
+            TreeNode<K,V> succ = (TreeNode<K,V>)next, pred = prev;
+            if (pred == null)
+                tab[index] = first = succ;
+            else
+                pred.next = succ;
+            if (succ != null)
+                succ.prev = pred;
+            if (first == null)
+                return;
+            if (root.parent != null)
+                root = root.root();
+            if (root == null
+                || (movable
+                    && (root.right == null
+                        || (rl = root.left) == null
+                        || rl.left == null))) {
+                tab[index] = first.untreeify(map);  // too small
+                return;
+            }
+            TreeNode<K,V> p = this, pl = left, pr = right, replacement;
+            if (pl != null && pr != null) {
+                TreeNode<K,V> s = pr, sl;
+                while ((sl = s.left) != null) // find successor
+                    s = sl;
+                boolean c = s.red; s.red = p.red; p.red = c; // swap colors
+                TreeNode<K,V> sr = s.right;
+                TreeNode<K,V> pp = p.parent;
+                if (s == pr) { // p was s's direct parent
+                    p.parent = s;
+                    s.right = p;
+                }
+                else {
+                    TreeNode<K,V> sp = s.parent;
+                    if ((p.parent = sp) != null) {
+                        if (s == sp.left)
+                            sp.left = p;
+                        else
+                            sp.right = p;
+                    }
+                    if ((s.right = pr) != null)
+                        pr.parent = s;
+                }
+                p.left = null;
+                if ((p.right = sr) != null)
+                    sr.parent = p;
+                if ((s.left = pl) != null)
+                    pl.parent = s;
+                if ((s.parent = pp) == null)
+                    root = s;
+                else if (p == pp.left)
+                    pp.left = s;
+                else
+                    pp.right = s;
+                if (sr != null)
+                    replacement = sr;
+                else
+                    replacement = p;
+            }
+            else if (pl != null)
+                replacement = pl;
+            else if (pr != null)
+                replacement = pr;
+            else
+                replacement = p;
+            if (replacement != p) {
+                TreeNode<K,V> pp = replacement.parent = p.parent;
+                if (pp == null)
+                    (root = replacement).red = false;
+                else if (p == pp.left)
+                    pp.left = replacement;
+                else
+                    pp.right = replacement;
+                p.left = p.right = p.parent = null;
+            }
+
+            TreeNode<K,V> r = p.red ? root : balanceDeletion(root, replacement);
+
+            if (replacement == p) {  // detach
+                TreeNode<K,V> pp = p.parent;
+                p.parent = null;
+                if (pp != null) {
+                    if (p == pp.left)
+                        pp.left = null;
+                    else if (p == pp.right)
+                        pp.right = null;
+                }
+            }
+            if (movable)
+                moveRootToFront(tab, r);
+        }
+
+
+        /**
+         * Returns a list of non-TreeNodes replacing those linked from
+         * this node.
+         */
+        final Node<K,V> untreeify(HashMap<K,V> map) {
+            Node<K,V> hd = null, tl = null;
+            for (Node<K,V> q = this; q != null; q = q.next) {
+                Node<K,V> p = map.replacementNode(q, null);
+                if (tl == null)
+                    hd = p;
+                else
+                    tl.next = p;
+                tl = p;
+            }
+            return hd;
+        }
+```
+
+
+
+
+
+**提问**
+
+**1 为什么loadFactor默认值为0.75？**
+
+
+
+**2 ConcurrentHashmap HashMap和Hashtable都是key-value存储结构，但他们的有个不同点是 ConcurrentHashmap、Hashtable不支持key或者value为null，而HashMap是支持的。是出于什么原因这样设计的？**
+
+- ConcurrentHashmap 和 Hashtable都是线程安全的，那么当通过 get(k) 获取对应的 value 时，如果获取到的是 null 时，你无法判断，它是 put(k,v)  的时候 value 为null，还是这个 key 从来没有做过映射。(contains(key) 和 get(key) 是两个分离的操作，在并发中无法保证前后一致，所以无法区分null值的两种情况)
+
+- HashMap是线程安全的，可以通过 contains(key) 来做这个判断，而支持并发的 Map 在调用 m.contains(key) 和 m.get(key) 时 m 可能已经不同了。
+   
 
 - ##### [LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) （按元素插入顺序）:  
 
@@ -213,7 +589,7 @@ ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法
 - [WeakHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/WeakHashMap.html) : WeakHashMap 是Map接口的实现，该接口仅存储对其键的弱引用。当不再在WeakHashMap外部引用键值对时，仅存储弱引用将允许对键值对进行垃圾回收。此类提供了利用弱引用功能的最简单方法。这对于实现“类似注册表的”数据结构非常有用，在这种结构中，当任何线程都无法再访问其键时，该条目的实用程序就会消失.
 - [IdentityHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/IdentityHashMap.html) : IdentityHashMap 是基于哈希表的基于身份的Map实现。此类对于保留拓扑的对象图转换（例如序列化或深度复制）很有用。要执行这样的转换，您需要维护一个基于身份的“节点表”，以跟踪已经看到的对象。基于身份的映射还用于在动态调试器和类似系统中维护对象到元信息的映射。最后，基于身份的映射在阻止“欺骗攻击”中很有用，这是故意不正当的equals方法的结果，因为IdentityHashMap从未在其键上调用equals方法。此实现的另一个好处是它速度很快。
 
-### Set集合（元素无序，不重复）
+## Set集合-元素不重复
 
 - ##### HashSet (用HashMap存元素)：
 
@@ -237,7 +613,7 @@ ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法
 >
   > 在覆写 compare() 函数时，要返回相应的值才能使 TreeSet 按照一定的规则来排序比较此对象与指定对象的顺序。如果该对象小于、等于或大于指定对象，则分别返回负整数、零或正整数。
 
-### Queue队列（FIFO）
+## Queue队列（FIFO）
 
 **概念**
 

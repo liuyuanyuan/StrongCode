@@ -470,7 +470,7 @@ public class Sequence {
 - *take()* – waits for a head element of a queue and removes it. If the queue is empty, it blocks and waits for an element to become available
 - *poll(long timeout, TimeUnit unit) –* retrieves and removes the head of the queue, waiting up to the specified wait time if necessary for an element to become available. Returns *null* after a timeou
 
-#### 有界队列/无界队列
+#### 有界/无界阻塞队列
 
 - 无界队列：缺省容量为 Integer.MAX_VALUE
 
@@ -506,9 +506,9 @@ BlockingQueue uboundedBlockingQueue = ConcurrentLinkedQueue<>(1000);
 
   
 
-## 5 Lock 接口的实现（显式锁）对代码块加、解锁
+## 5 Lock 接口实现显式锁-对代码块加、解锁
 
-Lock接口是自 jdk1.5 添加的，Lock作用于代码块， 需要手动加锁 lock() 和解锁 unlock() 。Lock接口和实现类（ReentrantLock）都在包 java.util.concurrent.locks 中。
+Lock接口是自 jdk1.5 添加的，Lock 作用于代码块， 需要手动加锁 lock() 和解锁 unlock() 。Lock接口和实现类（ReentrantLock）都在包 java.util.concurrent.locks 中。
 
 ### Lock 接口
 
@@ -818,13 +818,11 @@ public class Sequence {
 
 ## 6 AQS 抽象队列式同步器 - 构建锁及其他同步组件的基础框架
 
-java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）抽象队列同步器：是用来构建锁或者其他同步组件的基础框架。
-
-参考：https://www.zhihu.com/people/an-shi-yan-50
+java.util.concurrent.locks.AbstractQueuedSynchronizer（AQS）抽象队列同步器：是用来构建锁或者其他同步组件的基础框架。参考：https://www.zhihu.com/people/an-shi-yan-50
 
 ### AQS核心思想
 
-AQS核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设 置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
+AQS核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制是 AQS 用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
 
 > CLH(Craig,Landin,and Hagersten)队列(FIFO)：是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁的分配。
 
@@ -1194,7 +1192,7 @@ public class CyclicBarrierExample {
 
 
 
-## 线程本地变量 ThreadLocal 和 InheritableThreadLocal
+## 8 线程本地变量 ThreadLocal 和 InheritableThreadLocal
 
 ThreadLocal<String> tl = new Inheritable();
 
@@ -1265,7 +1263,7 @@ public class TestThreadLocal {
 
 
 
-## Exectors
+## 9 线程池 Exectors
 
 ### Executor Interfaces
 

@@ -2,38 +2,33 @@
 
 [TOC]
 
+## 汇总表
+
+| 数据结构           | 结构特点                                                     | Java实现类    | 使用特点                                                     |
+| ------------------ | ------------------------------------------------------------ | ------------- | ------------------------------------------------------------ |
+| Array List数组列表 | 顺序、连续存储，元素可重复、可NULL。                         | ArrayList     | 底层通过数组实现，可动态扩展；可以快速随机访问，添加时有扩容的成本，删除时有元素移动成本。 |
+| Link list   链表   | 无序、存储空间不连续。单向链表只有next链，双向链表有pre链和next链。 | LinkedList    | 底层是双向链表，无法快速随机访问，添加、删除元素时成本低。   |
+|                    |                                                              |               |                                                              |
+| Hash Table 哈希表  | key-value 映射，主体通过数组存储，根据key的hashCode将value散列存储到对应的bucket中，哈希冲突value通过拉链法用链表/红黑树存储。 | HashMap       | key值唯一，key/value都允许为null。get的时间复杂度为O(1)，遍历的时间复杂度为O(n)； |
+|                    |                                                              | HashTable     | (线程安全)key值唯一，key/value都不允许为null。               |
+|                    |                                                              | LinkedHashMap |                                                              |
+|                    |                                                              |               |                                                              |
+| Set 集合           | 无序、元素唯一。                                             | Set接口       |                                                              |
+|                    |                                                              | HashSet       | 元素唯一、无序。内部通过 HashMap 存储所有元素，元素当作 key，value共一个 new Object() 。 |
+|                    |                                                              | TreeSet       |                                                              |
+|                    |                                                              | LinkedHashSet | 内部通过 LinkedHashMap 来存储所有元素。                      |
+|                    |                                                              |               |                                                              |
+| Stack              |                                                              |               |                                                              |
+| Queue              |                                                              |               |                                                              |
+| Heap               |                                                              |               |                                                              |
+
+
+
 **参考：**
 
 - [Data Structures and Algorithm Analysis in Java (Third Edition)](https://users.cs.fiu.edu/~weiss/#dsaajava3)  (by [Mark Allen Weiss](https://users.cs.fiu.edu/~weiss/))
-- [Tech talk: data types & date structure](http://xybernetics.com/techtalk/tech-talk-data-types-data-structures/)
-
-
-
-## 汇总表
-
-| 数据结构                     | 结构特点                                                     | Java实现类    | 使用特点                                                     |
-| ---------------------------- | ------------------------------------------------------------ | ------------- | ------------------------------------------------------------ |
-| Array List数组列表           | 顺序存储、存储空间连续                                       | ArrayList     | 底层通过数组实现，可以快速随机访问，添加时有扩容的成本，删除时有元素移动成本。元素允许NULL。 |
-| Link list 链表               | 无序、存储空间不连续。单向链表只有next链，双向链表有pre链和next链。 | LinkedList    | 底层是双向链表，无法快速随机访问，添加、删除元素时成本低。   |
-|                              |                                                              |               |                                                              |
-| Hash Table 哈希表            | key-value映射，将key通过哈希函数得到value存储位置，哈希冲突的value通过红黑树存储在同一位置。 | HashMap       | key值唯一，key/value都允许为null。查找、删除、添加的时间成本为O(1)。 |
-|                              |                                                              | HashTable     | （线程安全）key值唯一，key/value都不允许为null。             |
-|                              |                                                              | LinkedHashMap |                                                              |
-|                              |                                                              |               |                                                              |
-| Set 集合                     | 无序、元素唯一。                                             | Set接口       |                                                              |
-|                              |                                                              | HashSet       | 元素唯一、无序。内部通过 HashMap 存储所有元素，元素当作 key，value共一个 new Object() 。 |
-|                              |                                                              | TreeSet       |                                                              |
-|                              |                                                              | LinkedHashSet | 内部通过 LinkedHashMap 来存储所有元素。                      |
-|                              |                                                              |               |                                                              |
-| 二叉树 Binary Tree           |                                                              |               |                                                              |
-| 表达式树 Expression Tree     |                                                              |               |                                                              |
-| 二叉查找树Binary Search Tree |                                                              |               |                                                              |
-| AVL数                        |                                                              |               |                                                              |
-| 红黑树 Red Black Tree        |                                                              |               |                                                              |
-|                              |                                                              |               |                                                              |
-|                              |                                                              |               |                                                              |
-|                              |                                                              |               |                                                              |
-|                              |                                                              |               |                                                              |
+- [usfca Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
+- Java 8+ Source Code
 
 
 
@@ -45,23 +40,25 @@
 
 
 
-## 表（list）
+## 列表(list)：顺序、可重复、可为0
 
-**空表（empty list）**：大小为0的特殊表。
+**空表（empty list）**：大小为0的特殊表。**除空表外，列表中的元素都是依次连续存储的。**列表有时称为序列。
 
-**除空表外，列表中的元素都是依次连续（顺序）存储的。**（有时列表称为序列）
+**表的实现：**
 
-**表的实现：**数组列表 和 链表
+- 数组列表-顺序连续存储，元素可重复、可为null；
+- 链表-无序不连续存储，元素可重复、可为null；
 
-### 数组列表（Array List）
+### 数组列表(Array List)
 
 数组可以实现列表上的所有操作，列表最简单的实现是通过数组。但是数组是定长的，列表是变长的，因此会涉及数组的扩展以保证可增长性。
 
 ```java
-//数组扩展的实现
 int[] arr = new int[10];
-//...
-int[] newArr = new int[arr.length*2];
+//数组扩展的实现：创建新的数组，将原数组元素一一复制过去
+int oldCap = arr.length;
+int newCap = oldCap + oldCap>>1;
+int[] newArr = new int[newCap];
 for(int i=0; i<arr.lenght; i++){
   newArr[i] = arr[i];
 }
@@ -70,25 +67,74 @@ newArr = arr;
 
 **操作消耗**：
 
-- printList消耗线性时间，findKth消耗常数时间；
+- 遍历(printList)消耗线性时间，随机查找(findKth)消耗常数时间；
 
 - **但插入和删除潜藏着昂贵开销**（为了保证连续存储，开销取决于操作元素的位置，平均需要移动一半元素，因此仍然需要线性时间）。
 
-  
+#### Java ArrayList-自增长数组
 
-#### Java中ArrayList通过可增长的数组实现
+底层通过数组实现，容量可在创建时传入，默认是10；
 
-优点是get和set花费常数时间（快速访问和遍历速度快），缺点是添加和删除潜藏代价昂贵。
+添加元素时，如果容量用尽时，则自动扩容 newCapacity = oldCapacity + (oldCapacity >> 1) ，取值范围在[oldCapacity+1, Integer.MAX_VALUE]。
+
+删除元素时，不会自动缩容，提供了手动缩容方法 trimToSize 。
+
+ArrayList 的 get/set/size/isEmpty/iterator/listIterator 操作的花费时间为常量，add操作的花费时间为摊销常量时间O(n)，其他操作大致需要线性时间，并且其常量因子低于LinkedList的。
+
+核心方法
+
+- boolean add(E e) 增，自动扩容
+- E remove(int index) / boolean remove(Object o)  删，不自动缩容
+- E set(int index, E element) 改
+- E get(int index) 查
+- void trimToSize()  手动缩容
+
+特点
+
+- 优点：因为顺序连续存储，序号即为索引，元素的随机访问、更新、遍历的速度快；
+
+- 缺点：添加时可能有扩容成本，删除时则有元素移动的成本。
+
+源码：
+
+```java
+    /**
+     * Returns a capacity at least as large as the given minimum capacity.
+     * Returns the current capacity increased by 50% if that suffices.
+     * Will not return a capacity greater than MAX_ARRAY_SIZE unless
+     * the given minimum capacity is greater than MAX_ARRAY_SIZE.
+     *
+     * @param minCapacity the desired minimum capacity
+     * @throws OutOfMemoryError if minCapacity is less than zero
+     */
+    private int newCapacity(int minCapacity) {
+        // overflow-conscious code
+        int oldCapacity = elementData.length;
+        int newCapacity = oldCapacity + (oldCapacity >> 1);
+        if (newCapacity - minCapacity <= 0) {
+            if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
+                return Math.max(DEFAULT_CAPACITY, minCapacity);
+            if (minCapacity < 0) // overflow
+                throw new OutOfMemoryError();
+            return minCapacity;
+        }
+        return (newCapacity - MAX_ARRAY_SIZE <= 0)
+            ? newCapacity
+            : hugeCapacity(minCapacity);
+    }
+```
 
 
 
-### 链表（Linked List）
+### 链表(Linked List)
 
-为了避免插入和删除的线性开销，需要保证列表可以不连续存储。链表就用来解决这些问题。
+为了避免插入和删除的线性开销，需要列表可以不连续存储。链表就用来解决这个问题。
 
-#### 简单链表/单向链表（single linked list）
+#### 简单链表/单向链表(single linked list)
 
-由一系列的节点组成，这些节点不必在内存中相连，每个节点含有该元素和包含该元素后继的节点的链（link），称作next链，最后一个节点的next链引用null。
+单向链表由一系列的节点组成，这些节点在内存中不需要连续，每个节点含有：自身元素和后继节点的链(next link)；
+
+最后一个节点的 next 链引用 null。
 
 **操作消耗**：
 
@@ -98,27 +144,67 @@ newArr = arr;
 
 - remove方法可以通过修改一个next引用来实现；insert方法需要用new操作从系统中取得一个节点，然后执行两次引用的调整，这两个操作只涉及常数个节点链的改变。
 
-#### 双向链表（double linked list）
+#### 双向链表(double linked list)
 
-是在单向链表的基础上，每个节点含有：元素，后继节点的链以及前驱节点的链。
+是在单向链表特性的基础上，每个节点含有：元素、后继节点的链(next link)、前驱节点的链(pre link)。
+
+第一个节点的pre链为null，最后一个节点的next链为null。
 
 <img src="images/datastructure_linkedlist.png" alt="image-20200304172428668" style="zoom:50%;" />
 
-#### Java中的LinkedList是双向链表
+#### Java LinkedList-双向链表，
 
-**优点是（在变动位置已知时）**新项插入和现有项删除开销均很小，缺点时不容易作索引，因此get调用昂贵，除非调用端点附近的。
+特性：
+
+优点: 在变动位置已知时，新项插入和现有项删除，只需要修改节点的两个链，开销均很小;
+
+缺点:由于存储位置无序不连续，不容易作索引，因此get调用昂贵，除非调用端点附近的，遍历成本也很昂贵。
+
+源码：
+
+```java
+   // 结点对象定义
+   private static class Node<E> {
+        E item; //元素
+        Node<E> next; //前驱
+        Node<E> prev; //后继
+        Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
+   // 随机访问：如果index位于链的前半部分，则从头结点往后查，否则则从尾结点往前查；
+   public E get(int index) {
+        checkElementIndex(index);
+        return node(index).item;
+   }
+   Node<E> node(int index) {
+        // assert isElementIndex(index);
+        if (index < (size >> 1)) {
+            Node<E> x = first;
+            for (int i = 0; i < index; i++)
+                x = x.next;
+            return x;
+        } else {
+            Node<E> x = last;
+            for (int i = size - 1; i > index; i--)
+                x = x.prev;
+            return x;
+        }
+    }
+```
 
 
 
-## 哈希表/散列表(hash table)
+## 哈希表/散列表(hash table): 无序，key唯一
 
-哈希表/散列表（hash table）的实现常叫做哈希/散列（hashing）。哈希是一种用于以常数平均时间执行插入、删除和查找的技术。另外，哈希表是字典的一种替代方法。
+哈希表/散列表(hash table)的实现常叫做哈希/散列(hashing)，是通过散列法来存储元素的线性表。通常，散列表的存储空间是一个一维数组，其哈希地址为数组的下标。另外，哈希表是字典的一种替代方法。
 
-**哈希表(hash table)**是一个存储多个元素的数据结构。
+将key通过**哈希函数(hash function)**映射为元素在哈希表中的存放位置地址，这种方法叫**哈希(hashing)**。
 
-将key通过**哈希函数(hash function)**映射为元素在哈希表中的存放位置，这种方法叫**哈希（hashing）**。
-
-hashing 使得 hash table 处理插入、删除、查找的时间成本可以为O(1)。
+哈希表处理插入、删除、查找的时间成本可以为O(1)。
 
 <img src="images/datastructure_hashing_example.png" alt="image-20200304133623576" style="zoom:50%;" />
 
@@ -130,13 +216,32 @@ hashing 使得 hash table 处理插入、删除、查找的时间成本可以为
 
 <img src="images/datastructure_hashing_example_detail.png" alt="image-20200304134801051" style="zoom:50%;" />
 
-Java中的实现类HashMap、HashTable、
+### Java HashMap-数组+单向链表/红黑树，无序
 
 
 
-## 树（tree）
+### Java LinkedHashMap-链表，按插入(默认)/访问排序
 
-### 表达式树（expression tree）
+
+
+```java
+    transient LinkedHashMap.Entry<K,V> head;
+    transient LinkedHashMap.Entry<K,V> tail;
+    final boolean accessOrder;
+    
+    static class Entry<K,V> extends HashMap.Node<K,V> {
+        Entry<K,V> before, after;
+        Entry(int hash, K key, V value, Node<K,V> next) {
+            super(hash, key, value, next);
+        }
+    }
+```
+
+
+
+## 树(tree)
+
+### 表达式树(expression tree)
 
 二元操作的表达式树：所有的树叶都是**操作数(operand)**，所有的父节点都是**操作符(operator)**。如：
 
@@ -332,21 +437,47 @@ InnoDB存储引擎中页的大小为16KB，一般表的主键类型为INT（占�
 
 
 
-## 位图
+## 栈(stack)- LIFO-Array/LinkedList实现
 
-位图的原理就是用一个 bit 来标识一个数字是否存在，采用一个 bit 来存储一个数据，所以这样可 以大大的节省空间。 bitmap 是很常用的数据结构，比如用于 Bloom Filter 中;用于无重复整数的 排序等等。bitmap 通常基于数组来实现，数组中每个元素可以看成是一系列二进制数，所有元素 组成更大的二进制集合。
+栈(stack)是限制插入和删除只能在末端的表，这个位置称作栈的顶（top）。
+
+栈有时又称作**后进先出（LIFO）表**。
+
+**基本操作**：
+
+- 进栈(push)，相当于插入；
+
+- 出栈(pop)，是删除最后插入的元素。
+
+**特性：**
+
+- 对空栈，进行 pop 或 top，一般认为是栈ADT错误；
+
+- 当运行 push 时，空间用尽是一个实现限制，但不是ADT错误。
+
+<img src="images/stack_struture.png" alt="image-20200326165442756" style="zoom: 33%;" />
+
+**栈的实现:**
+
+由于栈是一个表，因此任何实现表的操作都能实现栈。ArrayList 和 LinkedList 都支持栈操作，并在99%情况下是最合理的选择，偶尔设计特殊目的实现可能会更快。
+
+- [栈的链表实现](https://www.cs.usfca.edu/~galles/visualization/StackLL.html)
+
+  <img src="images/datastructure_stack_linkedlist.png" alt="image-20200904093814209" style="zoom:33%;" />
+
+- [栈的数组实现](https://www.cs.usfca.edu/~galles/visualization/StackArray.html)
+
+  <img src="images/datastructure_stack_array.png" alt="image-20200904093625658" style="zoom: 33%;" />
 
 
 
-
-
-## 队列（queue）
+## 队列(queue)-FIFO-Array/LinkedList实现
 
 像栈一样，队列（queue）也是表。但使用队列时，插入在一端进行，而删除则在另一端进行。
 
 是**先进先出（FIFO）表**。
 
-队列的基本操作：
+**基本操作：**
 
 - 入队（enqueue）
 
@@ -354,36 +485,20 @@ InnoDB存储引擎中页的大小为16KB，一般表的主键类型为INT（占�
 
 <img src="images/queue_structure.png" alt="image-20200326165631220" style="zoom:50%;" />
 
-## 栈（stack）
+**堆的实现：**
 
-栈（stack）是限制插入和删除只能在末端的表，这个位置称作栈的顶（top）。
-
-栈，有时又称作**后进先出（LIFO）表**。
-
-<img src="images/stack_struture.png" alt="image-20200326165442756" style="zoom: 50%;" />
-
-**基本操作**：
-
-- 进栈（push），相当于插入；
-
-- 出栈（pop），是删除最后插入的元素。
-
-对空栈进行pop或top一般认为是栈ADT中的一个错误；当运行push时，空间用尽是一个实现限制，但不是ADT错误。
-
-**栈的实现：**由于栈是一个表，因此任何实现表的操作都能实现栈。ArrayList和LinkedList都支持栈操作，并在99%情况下是最合理的选择，偶尔设计特殊目的实现可能会更快。
-
-- 栈的链表实现
-- 栈的数组实现
+- [数组实现](https://www.cs.usfca.edu/~galles/visualization/QueueArray.html)
+- [链表实现](https://www.cs.usfca.edu/~galles/visualization/QueueLL.html)
 
 
 
-## 堆（heap）-优先队列
+## [堆(heap)](https://www.cs.usfca.edu/~galles/visualization/BinomialQueue.html)-优先队列-数组实现的完全二叉树
 
-堆就是一棵被完全填满的二叉树，只有底层例外，底层上的元素从左往右填入，这样的二叉树称为**完全二叉树**。
+堆，就是一棵被完全填满的二叉树，只有底层例外，底层上的元素从左往右填入；这样的二叉树称为**完全二叉树**。
 
 堆就是用**数组**实现的完全二叉树，所以它没有使用父指针或者子指针。**堆根据“堆属性”来排序**，“堆属性”决定了树中节点的位置。
 
-### 堆属性
+**堆属性**
 
 堆分为两种：*最大堆*和*最小堆*，两者的差别在于节点的排序方式。
 
@@ -393,20 +508,28 @@ InnoDB存储引擎中页的大小为16KB，一般表的主键类型为INT（占�
 
 这就是所谓的“堆属性”，并且这个属性对堆中的每一个节点都成立。
 
-### 堆的性质：结构性和堆序性
+**堆的性质**
 
 - 结构性
 - 堆序性（heap-order property）
 
 对堆的一次操作可能破坏这堆的两个性质中的一个，因此，对堆的操作必须到堆所有性质都被满足才能终止。
 
-### 堆的常见用法：
+**堆的实现**
+
+
+
+**应用场景**
 
 - 构建优先队列
+- 快速找出一个集合中的最小值(最小堆)或者最大值(最大堆)；
 - 支持堆排序
-- 快速找出一个集合中的最小值（或者最大值）
 
 
+
+## 位图
+
+位图的原理就是用一个 bit 来标识一个数字是否存在，采用一个 bit 来存储一个数据，所以这样可 以大大的节省空间。 bitmap 是很常用的数据结构，比如用于 Bloom Filter 中;用于无重复整数的 排序等等。bitmap 通常基于数组来实现，数组中每个元素可以看成是一系列二进制数，所有元素 组成更大的二进制集合。
 
 
 
