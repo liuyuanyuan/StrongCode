@@ -1,8 +1,8 @@
-## Java 集合
+# Java 集合
 
 [TOC]
 
-### 参考：
+## 参考：
 
 - [Java Platform Standard Edition 8 Documentation](https://docs.oracle.com/javase/8/docs/)
 
@@ -22,44 +22,6 @@
 
 代表集合的抽象数据类型 。接口允许独立于其表示的细节来操纵集合。在面向对象的语言中，接口通常形成层次结构。
 
-接口类：
-
-Collection、
-
-- List、
-
-- Set、SortedSet(元素排序)、
-
-- Map、SortedMap(元素的key排序)、
-
-- Queue<Deque
-
-### 2 实现（Implementations）
-
-这些是集合接口的具体实现（类）。本质上，它们是可重用的数据结构。
-
-实现类：
-
-- ArrayList、LinkedList；
-
-- HashMap、LinkedHashMap、TreeMap；
-- HashSet、LinkedHashSet、TreeSet；
-- ArrayQueue、LinkedList
-
-
-
-### 3 算法（Algorithms）
-
-是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
-
-算法类：Collections, Iterator（集合元素迭代器）。
-
-![image-20200304161815903](images/java_collection_diagram.png)
-
-
-
-## 集合接口（interface）
-
 >Java中数据存储方式分为两种数据结构：
 >
 >1 数组：连续空间、顺序存储，寻址迅速，但是在增、删元素可能需要较大幅度的移动；
@@ -78,7 +40,7 @@ Collection、
 
 - Map 映射 - 键值对(key-value entry)的集合，key值唯一，按key的hashCode来保存结点；
 
-  SortedMap —可排序Map接口， 默认按键的升序排列其映射的。
+  - SortedMap —可排序Map接口， 默认按键的升序排列其映射的。
 
   **注意**：要实现集合元素的排序和不可重复，元素对象必须正确实现 [Object 的 equals() 和 hashCode() 方法](https://howtodoinjava.com/java/basics/java-hashcode-equals-methods/) ，如：Set是通过元素的hashCode来比较，Map通过元素的Key的hashCode来比较。
 
@@ -94,11 +56,9 @@ Collection、
 
   Deque可同时用作FIFO（先进先出）和LIFO（后进先出）。
 
+### 2 实现（Implementations）
 
-
-## 集合实现类（Implements）
-
-普通实现类：
+这些是集合接口的具体实现（类）。本质上，它们是可重用的数据结构。
 
 | Interfaces | Hash table Implementations | Resizable array Implementations | Tree Implementations | Linked list Implementations | Hash table + Linked list Implementations | thread-safe implementations  |
 | ---------- | -------------------------- | ------------------------------- | -------------------- | --------------------------- | ---------------------------------------- | ---------------------------- |
@@ -108,9 +68,17 @@ Collection、
 | Map        | `HashMap`                  |                                 | `TreeMap`(SortedMap) |                             | `LinkedHashMap`                          | Hashtable  ConcurrentHashMap |
 | Set        | `HashSet`                  |                                 | `TreeSet`(SortedSet) |                             | `LinkedHashSet`                          |                              |
 
+### 3 算法（Algorithms）
+
+是实现集合接口的对象里的方法执行的一些有用的计算，例如：搜索和排序。这些算法被称为多态，那是因为相同的方法在相似的接口上有着不同的实现。
+
+算法类：Collections, Iterator（集合元素迭代器）。
+
+![image-20200304161815903](images/java_collection_diagram.png)
 
 
-## Array数组-定长，按插入顺序、连续存储，元素允许重复/null
+
+## Array数组-定长、按插入顺序、连续存储，元素允许重复/null
 
 ## List列表
 
@@ -149,7 +117,9 @@ Array和ArrayList区别：
 
 ## [Map](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html) 映射
 
-### [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html)-数组+单向链表/红黑树，key/value允许null值 
+### 非线程安全Map：key/value 允许 null值 
+
+#### [HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html)-数组+单向链表/红黑数
 
 参考：[美团-Java8 HashMap](https://tech.meituan.com/2016/06/24/java-hashmap.html)
 
@@ -162,7 +132,8 @@ jdk1.8以后，HashMap由**数组+链表/红黑树**组成，元素为Node<k,v>�
 
 **特点**：
 
-- 以 key 的 hashCode() 值作为哈希桶存储地址，随机存储(key允许1个null值 ，value允许多个null值)，随机查找、添加/修改、删除元素的时间复杂度为O(1)。
+- 以 key 的 hashCode() 值作为哈希桶存储地址，随机存储存在扩容时rehashing的成本，
+- 随机查找、修改、删除元素的时间复杂度为O(1)。
 
 - 但因为是随机存储，所以顺序访问比较慢。
 
@@ -340,63 +311,6 @@ threshold = 16*0.75 = 12
 将冲突结点集合从红黑树退化为链表，发生在remove元素时：
 
 ```java
-    @Override
-    public boolean remove(Object key, Object value) {
-        return removeNode(hash(key), key, value, true, true) != null;
-    }
-
-		
-    /**
-     * Implements Map.remove and related methods.
-     *
-     * @param hash hash for key
-     * @param key the key
-     * @param value the value to match if matchValue, else ignored
-     * @param matchValue if true only remove if value is equal
-     * @param movable if false do not move other nodes while removing
-     * @return the node, or null if none
-     */
-    final Node<K,V> removeNode(int hash, Object key, Object value,
-                               boolean matchValue, boolean movable) {
-        Node<K,V>[] tab; Node<K,V> p; int n, index;
-        if ((tab = table) != null && (n = tab.length) > 0 &&
-            (p = tab[index = (n - 1) & hash]) != null) {
-            Node<K,V> node = null, e; K k; V v;
-            if (p.hash == hash &&
-                ((k = p.key) == key || (key != null && key.equals(k))))
-                node = p;
-            else if ((e = p.next) != null) {
-                if (p instanceof TreeNode)
-                    node = ((TreeNode<K,V>)p).getTreeNode(hash, key);
-                else {
-                    do {
-                        if (e.hash == hash &&
-                            ((k = e.key) == key ||
-                             (key != null && key.equals(k)))) {
-                            node = e;
-                            break;
-                        }
-                        p = e;
-                    } while ((e = e.next) != null);
-                }
-            }
-            if (node != null && (!matchValue || (v = node.value) == value ||
-                                 (value != null && value.equals(v)))) {
-                if (node instanceof TreeNode)
-                    ((TreeNode<K,V>)node).removeTreeNode(this, tab, movable);
-                else if (node == p)
-                    tab[index] = node.next;
-                else
-                    p.next = node.next;
-                ++modCount;
-                --size;
-                afterNodeRemoval(node);
-                return node;
-            }
-        }
-        return null;
-    }
-
 
         /**
          * Removes the given node, that must be present before this call.
@@ -525,65 +439,94 @@ threshold = 16*0.75 = 12
         }
 ```
 
-
-
-
-
 **提问**
 
 **1 为什么loadFactor默认值为0.75？**
 
+答案参考https://zhuanlan.zhihu.com/p/149687607；
+
+1 适当扩容来减少哈希冲突
+
+HashMap的底层其实也是哈希表/散列表，而解决冲突的方式是链地址法。HashMap的初始容量大小默认是16，为了减少冲突发生的概率，当HashMap的数组长度到达一个临界值的时候，就会触发扩容，把所有元素rehash之后再放在扩容后的容器中，这是一个相当耗时的操作。
+
+而扩容的临界值，就是由 loadFactor 和当前容器的 capacity 来确定的：
+
+> 扩容的临界值 = DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR
+>
+> 即默认情况下，长度达到 16 x 0.75=12 时，就会触发扩容操作。
+
+那么为什么选择了0.75作为HashMap的加载因子呢？这是根据一个重要的统计学原理—泊松分布。
+
+> 泊松分布
+>
+> 是统计学和概率学常见的离散概率分布，适用于描述单位时间内随机事件发生的次数的概率分布，详情可参考：维基百科或阮一峰老师文章[《泊松分布和指数分布：10分钟教程》](http://www.ruanyifeng.com/blog/2015/06/poisson-distribution.html)。
+>
+> 
+
+HashMap 中影响性能的因素，除了哈希算法，还有初始容量和加载因子。初始容量是哈希表在创建时的容量(缺省16)，加载因子是哈希表在其容量自动扩容之前可以达到多满的一种度量。
+
+维基百科中描述加载因子为：
+
+> 对于开放定址法，加载因子是特别重要因素，应严格限制在0.7-0.8以下。超过0.8，查表时的CPU缓存不命中（cache missing）按照指数曲线上升。因此，一些采用开放定址法的hash库，如Java的系统库限制了加载因子为0.75，超过此值将resize散列表。
+
+在设置初始容量时应该考虑到映射中所需的条目数及其加载因子，以便最大限度地减少扩容rehash操作次数，所以，一般在使用HashMap时建议根据预估值设置初始容量，以便减少扩容操作。
+
+选择0.75作为默认的加载因子，完全是时间和空间成本上寻求的一种折衷选择。
 
 
-**2 ConcurrentHashmap HashMap和Hashtable都是key-value存储结构，但他们的有个不同点是 ConcurrentHashmap、Hashtable不支持key或者value为null，而HashMap是支持的。是出于什么原因这样设计的？**
+
+**2 几种Map实现的区分**
+
+**ConcurrentHashmap HashMap和Hashtable都是key-value存储结构，但他们的有个不同点是?**
+
+<img src="images/HashMap_ConcurrentHashMap.png" alt="image-20200309090806288" style="zoom: 67%;" />
+
+
+
+**ConcurrentHashmap、Hashtable不支持key或者value为null，而HashMap是支持的。是出于什么原因这样设计的？**
 
 - ConcurrentHashmap 和 Hashtable都是线程安全的，那么当通过 get(k) 获取对应的 value 时，如果获取到的是 null 时，你无法判断，它是 put(k,v)  的时候 value 为null，还是这个 key 从来没有做过映射。(contains(key) 和 get(key) 是两个分离的操作，在并发中无法保证前后一致，所以无法区分null值的两种情况)
 
-- HashMap是线程安全的，可以通过 contains(key) 来做这个判断，而支持并发的 Map 在调用 m.contains(key) 和 m.get(key) 时 m 可能已经不同了。
-   
+- HashMap不是线程安全的，可以通过 contains(key) 来做这个判断；而支持并发的 Map 在调用 m.contains(key) 和 m.get(key) 时 m 可能已经不同了。
 
-- ##### [LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) （按元素插入顺序）:  
-
-  继承自 HashMap，其底层仍然是由**数组和链表/红黑树**组成。另外增加了一条双向链表，来维护键值对的插入顺序，实现了元素的访问顺序。
-
-  特点：近乎HashMap的性能，iterator按插入顺序遍历，先插入的数据先得到。
-
-- ##### [TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)（按key排序，默认升序） :  
-
-  实现了SortedMap接口方法，使用红黑树(自平衡的排序二叉树)原理排序，默认按key的升序排列。
-
-  > 在使用 TreeMap 时，key 必须实现 Comparable 接口或者在构造 TreeMap 传入自定义的 Comparator，否则会在运行时抛出 java.lang.ClassCastException 类型的异常。
-
-- ##### HashTable（线程安全的）:  
-
-  **key 和 value 都不允许为null。**
-
-  底层数据结构 与jdk1.8之前的 HashMap 类似，都是采用 **数组+链表**，数组是主体，链表则主要为了解决哈希冲突。
-
-  特点：**使用synchronzied关键字，对数据对象整体加单锁**，随着元素增多并发效率急剧下降；在并发实践中优先使用效率更高的ConcurrentHashMap而不推荐Hashtable。
-
-  **并发实现  **
-
-- ##### [ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) 
-
-  **key 和 value 都不允许为 null。**
   
-  实现了 [java.util.concurrent](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [ConcurrentMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 Map 的原子方法（CAS） `putIfAbsent`, `remove` 和 `replace` ）。
-  
-  - jdk1.8之前，将**主体分为多个Segment**（Segment size = capacity / concurrencyLevel ），来对每个 Segment 加一个 ReentrantLock，达到锁分离，来提高并发效率；
-  -  jdk1.8之后，直接用**Node数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
+
+#### [LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) - 按元素插入/访问顺序 
+
+继承自 HashMap，其底层仍然是由**数组和单向链表/红黑树**组成。另外增加了一条双向链表，来维护键值对的插入顺序，实现了元素的访问顺序。
+
+特点：近乎HashMap的性能，iterator按插入顺序遍历，先插入的数据先得到。
+
+#### [TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) - 按key排序，默认升序:  
+
+底层实现是通过红黑树(自平衡的排序二叉树)，实现了SortedMap接口方法，默认按key的升序排列。
+
+> 在使用 TreeMap 时，key 必须实现 Comparable 接口或者在构造 TreeMap 传入自定义的 Comparator，否则会在运行时抛出 java.lang.ClassCastException 类型的异常。
+
+### 线程安全Map：**key 和 value 都不允许为null。**
+
+#### HashTable - synchronized + HashMap , 并发性能低
+
+底层数据结构 与jdk1.8之前的 HashMap 类似，都是采用 **数组+链表**，数组是主体，链表则主要为了解决哈希冲突。
+
+特点：**使用synchronzied关键字，对数据对象整体加单锁**，随着元素增多并发效率急剧下降；在并发实践中优先使用效率更高的ConcurrentHashMap而不推荐Hashtable。
+
+**并发实现  **
+
+#### [ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) - 用于替代Hashtable，优化并发性能的
+
+实现了 [java.util.concurrent](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html) 包中的  [ConcurrentMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html) 接口 （该接口继承了 Map 的原子方法（CAS） `putIfAbsent`, `remove` 和 `replace` ）。
+
+- jdk1.8之前，将**主体分为多个Segment**（Segment size = capacity / concurrencyLevel ），来对每个 Segment 加一个 ReentrantLock，达到锁分离，来提高并发效率；
+-  jdk1.8之后，直接用**Node<K,V>数组+链表/红黑树**的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap，虽然在JDK1.8中还能看到Segment的数据结构，但已经简化，只是为了兼容旧版本。
 
 ConcurrentHashMap 支持全并发的检索和高度并发的更新，其所有操作都是线程安全的（虽然在检索时没有加锁，在更新时也未对数据整体加锁）。 允许客户端选择用于更新的并发级别（concurrencyLevel：估计的执行并发更新的线程数）。
 
 ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法，只是实现线程安全的细节不同。
 
-##### 区分HashMap、Hashtable、ConcurrentHashMap，如下：
-
-<img src="images/HashMap_ConcurrentHashMap.png" alt="image-20200309090806288" style="zoom: 67%;" />
-
    
 
-**特殊用途实现**
+### **特殊用途的Map实现类**
 
 - [EnumMap](https://docs.oracle.com/javase/8/docs/api/java/util/EnumMap.html) : EnumMap 在内部实现为数组，是一种用于枚举键的高性能Map实现。此实现将Map接口的丰富性和安全性与接近数组的速度结合在一起。如果要将枚举映射到值，则应始终使用EnumMap优先于数组。
 - [WeakHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/WeakHashMap.html) : WeakHashMap 是Map接口的实现，该接口仅存储对其键的弱引用。当不再在WeakHashMap外部引用键值对时，仅存储弱引用将允许对键值对进行垃圾回收。此类提供了利用弱引用功能的最简单方法。这对于实现“类似注册表的”数据结构非常有用，在这种结构中，当任何线程都无法再访问其键时，该条目的实用程序就会消失.
@@ -591,23 +534,24 @@ ConcurrentHashMap旨在替代Hashtable，它支持Hashtable特有的所有方法
 
 ## Set集合-元素不重复
 
-- ##### HashSet (用HashMap存元素)：
+### HashSet (用HashMap存元素)：
 
-  内部采用 HashMap 来保存所有元素，将元素对象作为key，value则统一用一个 new Object()；
+内部采用 HashMap 来保存所有元素，将元素对象作为key，value则统一用一个 new Object()；
 
-- ##### LinkedHashSet(有序，HashSet + LinkedHashMap）：
+### LinkedHashSet(有序，HashSet + LinkedHashMap）：
 
-  LinkedHashSet 继承于 HashSet，内部是通过 LinkedHashMap 来保存所有元素。
+LinkedHashSet 继承于 HashSet，内部是通过 LinkedHashMap 来保存所有元素。
 
-  内部增加了一条针对多有entry的双向链表，来保证元素的顺序。
+内部增加了一条针对多有entry的双向链表，来保证元素的顺序。
 
-- ##### TreeSet (可排序，用TreeMap保存元素)：
+### TreeSet-可排序，用TreeMap保存元素
 
-  内部采用 TreeMap 来保存所有元素；
+内部采用 TreeMap 来保存所有元素；
 
-  使用红黑树(自平衡的排序二叉树)原理。每次新添加对象时，都要按照排序规则（升序/降序）进行排序，将对象插入二叉树的指定位置。（删除对象时则需要重新平衡树结构）
+使用红黑树(自平衡的排序二叉树)原理。每次新添加对象时，都要按照排序规则（升序/降序）进行排序，将对象插入二叉树的指定位置。（删除对象时则需要重新平衡树结构）
 
-  > **注意：**
+> **注意：**
+
 >
   > Integer 和 String 对象都可以进行默认的 TreeSet 排序，而自定义的类必须实现 Comparable 接口，并且覆写相应的 compareTo()函数，才可以正常使用。
 >
@@ -803,10 +747,6 @@ while (iter.hasNext())
 }
 System.out.println();
 ```
-
-
-
-
 
 
 
