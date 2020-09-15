@@ -12,13 +12,13 @@
 
 - [数组、字符串](1array_string.md)
 
-- [链表](2linked_list.md)
+- [链表(单向/双向/循环)](2linkedlist.md)
+- [哈希表](3hashtable)
 
 - 栈
 
-- 队列
+- 队列/双端队列
 
-- 双端队列
 - 堆
 
 - 树
