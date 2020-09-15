@@ -18,11 +18,17 @@
 
 ### FULL  [OUTER]  JOIN
 
-返回所有联接的行，再为不匹配的左手行（在右边扩展为空）加一行，再为不匹配的右手行（扩展在左边为空）加一行。
+返回所有联接的行，再为不匹配的左手行（在右边扩展为空）加一行，再为不匹配的右手行（左边扩展在为空）加一行。
 
-### CROSS JOIN
+### CROSS JOIN (慎用：产生笛卡尔积m*n个结果)
 
 CROSS JOIN 等价于 INNER JOIN ON (TRUE)。这种联接类型只是一种符号上的方便，因为它完成的工作用 FROM 和 WHERE 也能完成。
+
+<img src="img/sql_joins.png" alt="image-20200914221211092" style="zoom: 33%;" />
+
+<img src="img/sql_joins_multi.png" alt="image-20200914221430154" style="zoom: 67%;" />
+
+
 
 
 
@@ -46,6 +52,20 @@ having count(course)=3::bigint
 HAVING条件 与 WHERE条件的声明形式是一样的；HAVING条件中的字段必须是GROUP BY的字段或者在查询中使用了聚合函数的字段；
 
 WHERE 过滤的是使用 GROUP BY 之前的独立行，而 HAVING 过滤的是  GROUP BY 创建的组行；
+
+
+
+## join实现原理
+
+### hash join
+
+
+
+### merge join
+
+
+
+### nestloop join
 
 
 

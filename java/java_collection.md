@@ -137,7 +137,7 @@ jdk1.8以后，HashMap由**数组+链表/红黑树**组成，元素为Node<k,v>�
 
 - 但因为是随机存储，所以顺序访问比较慢。
 
-![image-20200906164700604](images/java_hashmap.png)
+![image-20200909234909950](images/java_hashmap.png)
 
 **源码分析：**
 
@@ -179,7 +179,6 @@ threshold = 16*0.75 = 12
      * bootstrapping mechanics that are currently not needed.)
      */
     transient Node<K,V>[] table;
-
     /**
      * Basic hash bin node, used for most entries.  (See below for
      * TreeNode subclass, and in LinkedHashMap for its Entry subclass.)
@@ -475,7 +474,15 @@ HashMap 中影响性能的因素，除了哈希算法，还有初始容量和加
 
 
 
-**2 几种Map实现的区分**
+**2 JDK 1.7 中 HashMap 的扩容机制**
+
+可以看见，1.7 中整个扩容过程就是一个取出数组元素（实际数组索引位置上的每个元素是每个独立单向链表的头部，也就是发生 Hash 冲突后最后放入的冲突元素）然后遍历以该元素为头的单向链表元素，依据每个被遍历元素的 hash 值计算其在新数组中的下标然后进行交换（**即原来 hash 冲突的单向链表尾部变成了扩容后单向链表的头部）。**
+
+而在 JDK 1.8 中 HashMap 的扩容操作就显得更加的骚气了，由于扩容数组的长度是 2 倍关系，所以对于假设初始 tableSize = 4 要扩容到 8 来说就是 0100 到 1000 的变化（左移一位就是 2 倍），**在扩容中只用判断原来的 hash 值与左移动的1位（newtable 的值）按位与操作是 0 或 1 就行，0 的话索引就不变，1 的话索引变成原索引加上扩容前数组，**所以其实现如下流程图所示：
+
+<img src="images/java8_hashmap_resize.png" alt="image-20200909235521685" style="zoom:50%;" />
+
+**3 几种Map实现的区分**
 
 **ConcurrentHashmap HashMap和Hashtable都是key-value存储结构，但他们的有个不同点是?**
 

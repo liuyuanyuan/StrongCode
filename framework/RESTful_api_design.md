@@ -266,8 +266,6 @@ Definition of [Idempotence](https://en.wikipedia.org/wiki/Idempotence): A HTTP m
 
 ### 用 URL PATCH 来部分更新资源个体
 
-
-
 ![image-20200828181902692](img/http_patch.png)
 
 

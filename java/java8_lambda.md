@@ -1,8 +1,22 @@
-# Java 8 Lambda 表达式 编程
+# Java 8 Lambda 编程
+
+[TOC]
+
+## 1 表达式编程
 
 
 
-### 例子
+## 2 函数式编程
+
+
+
+## 3 流式计算
+
+
+
+## 编程实践
+
+### 函数式编程
 
 ```java
 package com.lyy.arithmetic;
@@ -21,12 +35,9 @@ public class LambdaTest {
     interface MathOperation {
         int operation(int a, int b);
     }
-
     private int operate(MathOperation mathOperation, int a, int b){
         return mathOperation.operation(a, b);
     }
-
-
     interface GreetingService {
         void sayMessage(String message);
     }

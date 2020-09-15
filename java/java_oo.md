@@ -1,43 +1,328 @@
-# 概念基础篇
+# Java面向对象编程(OOP)基础
 
 [TOC]
 
-## 1 面向对象编程的三大特征：封装、继承、多态
+## 0 类(抽象类/具体类)、对象/实例、接口
 
-## 封装(Encapsulation)：
+### 所有类的父类(超级父类)-Object：
+
+- public final native Class<?> getClass();
+
+  对象的运行时类
+
+- public String **toString**() {  return getClass().getName() + "@" + Integer.toHexString(hashCode());  //对象哈希码的无符号十六进制表示}
+
+  对象的字符串描述
+
+- public native int **hashCode**()
+
+  返回对象的哈希码值，支持此方法是为了使哈希表（例如HashMap的提供的哈希表）受益；对哈希码的规定如下：
+
+  - 在1个Java应用程序的1次操作中多次调用同1个对象时：必须始终返回相同的整数，前提是在对象equals比较中使用的信息，没有被修改；此整数不必在统一应用程序的两次执行中保持一致。
+
+  - 如果两个对象通过equals比较相同，那么他们的hashCode也必须相同；
+  - 如果两个对象通过equals比较不同，那么并不强制他们的hashCode必须不同；但是程序员应该知道：提供不同的哈希值，可以提升哈希表的性能。
+
+  
+
+- public boolean **equals**(Object obj)  { return (this == obj); }
+
+  对于非空引用(null)对象x，y；
+
+  - x.equals(x)   ==  true；
+  - 对于 x.equals(y)  == true ，有且仅有 y.equals(x) == true
+  - 如果 x.equals(y) == true 且 y.equals(z) ，可以得出 x.equals(z)
+  - x.equals(null) == false
+
+  类 Object 的 equals 方法在对象上实现了最有区别的对等关系。也就是说，对于任何非空引用值x和y，当且仅当x和y引用同一对象时(即(x==y)==true)，此方法才返回 x.equals(y)==true；。
+
+  请注意，通常每当重写此方法时，都必须重写{@code hashCode}方法，以维护{@code hashCode}方法的常规协定，该协定规定相等的对象必须具有相等的哈希码。
+
+```java
+public class Person {
+    private Integer id;
+    private String name;
+    public Person(Integer id, String name){
+        this.id = id;
+        this.name = name;
+    }
+    public void setId(Integer id){
+        this.id = id;
+    }
+}
+
+public class TestObject {
+    public static void main(String[] args) {
+        Person p1 = new Person(1, "lily");
+        printAll(p1);
+      
+        Person p2 = p1; //对象传递
+        p2.setId(2); // 对象的属性修改后，hashCode也变化
+        printAll(p1);
+        printAll(p2);
+        System.out.println(p1.equals(p2) + "|" + (p1==p2));
+
+        Person p3 = new Person(2, "lily");
+        System.out.println(p1.equals(p3) + "|" + (p1==p3));  //Objects的equal和==比较的对象存储地址
+    }
+
+    public static void printAll(Object obj){
+        System.out.print("class=" + obj.getClass().getName());
+        System.out.print(",toString=" + obj.toString());
+        System.out.print(",hashCode=" + obj.hashCode());
+        System.out.println();
+    }
+
+}
+输出结果：
+class=com.lyy.oop.Person,toString=Person(id=1, name=lily),hashCode=3325401
+class=com.lyy.oop.Person,toString=Person(id=2, name=lily),hashCode=3325401
+class=com.lyy.oop.Person,toString=Person(id=2, name=lily),hashCode=3325401 
+true|true
+false|false
+
+
+```
+
+
+
+```java
+public class Object {
+    private static native void registerNatives();
+    static {
+        registerNatives();
+    }
+    /**
+     * Constructs a new object.
+     */
+    @HotSpotIntrinsicCandidate
+    public Object() {}
+    
+    @HotSpotIntrinsicCandidate
+    public final native Class<?> getClass();
+    
+    @HotSpotIntrinsicCandidate
+    public native int hashCode();
+    public boolean equals(Object obj) {
+        return (this == obj);
+    }
+    
+    HotSpotIntrinsicCandidate
+    protected native Object clone() throws CloneNotSupportedException;
+    
+    public String toString() {
+        return getClass().getName() + "@" + Integer.toHexString(hashCode());
+    }
+
+		@HotSpotIntrinsicCandidate
+    public final native void notify();
+    @HotSpotIntrinsicCandidate
+    public final native void notifyAll();
+    
+    public final void wait() throws InterruptedException {
+        wait(0L);
+    }
+    public final native void wait(long timeoutMillis) throws InterruptedException;
+		public final void wait(long timeoutMillis, int nanos) throws InterruptedException {
+        if (timeoutMillis < 0) {
+            throw new IllegalArgumentException("timeoutMillis value is negative");
+        }
+        if (nanos < 0 || nanos > 999999) {
+            throw new IllegalArgumentException(
+                                "nanosecond timeout value out of range");
+        }
+        if (nanos > 0 && timeoutMillis < Long.MAX_VALUE) {
+            timeoutMillis++;
+        }
+
+        wait(timeoutMillis);
+    }
+    
+    @Deprecated(since="9")
+    protected void finalize() throws Throwable { }
+}
+```
+
+
+
+- 类：电路的设计蓝图；
+
+  - 抽象类(abstract class Animal，只被子类extends)：
+
+    可以有抽象方法(方法需要显式声明 abstract )，也可以有具体方法；
+
+  - 具体类(class Rabbit，只被子类extends)：
+
+    不能有抽象方法
+
+- 接口(interface EatHabbit，只被子类implements)：电路的遥控器的设计蓝图；
+
+  接口中只支持抽象方法(不需要显式声明abstract);
+
+- 对象/实例)：依据蓝图生成的电路实际主体；
+
+  类进行实例化(即new)得到实际的具体对象(rabbit = new Rabbit("rabbit")；
+
+  <img src="images/java_oop_level.png" alt="image-20200914105735914" style="zoom:33%;" />
+
+```java
+/** 动物抽象父类 **/
+public abstract class Animal {
+    private String name;
+    public Animal(String name){
+        this.name = name;
+    }
+    abstract String hair(); //抽象方法，必须显式地注明 abstract
+    public String introduce(){
+        return "I am " + name;
+    }
+}
+/** 哺乳动物接口父类 **/
+public abstract class Mammal extends Animal{
+    public Mammal(String name) {
+        super(name);
+    }
+
+    abstract String isEatMeat();
+    public String isHeatStable(){
+        return ",isHeatStable=true";
+    }
+}
+/** 饮食习惯接口 **/
+public interface EatHabbit {
+    String eat(); // 抽象方法，可以不显式地注明 abstract
+    default String eatStep(){
+        return ",find and eat";
+    }
+}
+/** 兔子实现类 **/
+public class Rabbit extends Mammal implements EatHabbit, ExerciseHabbit {
+    public Rabbit(String name) {
+        super(name);
+    }
+    @Override
+    String hair() {
+        return ",short hair";
+    }
+    @Override
+    String isEatMeat() {
+        return ",isEatMeat=false";
+    }
+    @Override
+    public String eat() {
+        return ",eat grass";
+    }
+    @Override
+    public String run() {
+        return ",run fast";
+    }
+}
+/**白兔子实现类**/
+public class WhiteRabbit extends Rabbit {
+    public WhiteRabbit(String name) {
+        super(name);
+    }
+    @Override
+    public String hair(){
+        return ",white short hair";
+    }
+}
+
+```
+
+
+
+```java
+public class TestOOP {
+    public static void main(String[] args) {
+        // 数据类型的缩小/向上转换，是自动的：
+        Animal animal = new Rabbit("animal"); // Rabbit 转为 Animal
+        System.out.print(animal.introduce());
+        System.out.print(animal.hair());
+        // 其他Rabbit的属性，Animal的实例对象无法访问
+        System.out.println();
+
+        // 数据类型的扩大转换/向下转换，是被动的，需要显式的强制类型转换：
+        Rabbit rabbitFromAnimal = (Rabbit)animal; // Animal 转 Rabbit
+        printAll(rabbitFromAnimal);
+        System.out.println("animalHashCode=" + animal.hashCode()
+                        + ",rabbitFromAnimalHashCode=" + rabbitFromAnimal.hashCode()
+                        + ",equals=" + animal.equals(rabbitFromAnimal));
+
+        Rabbit rabbit = new Rabbit("rabbit");
+        printAll(rabbit);
+
+        WhiteRabbit whiteRabbit = new WhiteRabbit("white rabbit");
+        printAll(whiteRabbit);
+    }
+    public static void printAll(Rabbit rabbit){
+        System.out.print(rabbit.introduce());
+        System.out.print(rabbit.hair());
+        System.out.print(rabbit.isEatMeat());
+        System.out.print(rabbit.isHeatStable());
+        System.out.print(rabbit.eat());
+        System.out.print(rabbit.eatStep());
+        System.out.print(rabbit.run());
+        System.out.print(", toString=" + rabbit.toString());
+        System.out.print(", hashCode=" + rabbit.hashCode());
+        System.out.println();
+    }
+}
+
+//输出结果：
+I am animal,short hair
+I am animal,short hair,isEatMeat=false,isHeatStable=true,eat grass,find and eat,run fast, toString=com.lyy.oop.Rabbit@3b764bce, hashCode=997608398
+animalHashCode=997608398,rabbitFromAnimalHashCode=997608398,equals=true
+I am rabbit,short hair,isEatMeat=false,isHeatStable=true,eat grass,find and eat,run fast, toString=com.lyy.oop.Rabbit@759ebb3d, hashCode=1973336893
+I am white rabbit,white short hair,isEatMeat=false,isHeatStable=true,eat grass,find and eat,run fast, toString=com.lyy.oop.WhiteRabbit@45fe3ee3, hashCode=1174290147
+
+```
+
+
+
+## 1 面向对象编程的三大特征：封装( 类)、继承、多态
+
+### 封装(Encapsulation)
 
 在面向对象程式设计方法中，封装是一种将抽象性函式接口的实现细节部分包装、隐藏起来的方法（private 或者 final修饰的任何外部类均不可修改）。
 
 封装可以被认为是一个保护屏障，防止该类的代码和数据被外部类定义的代码随机访问。
 
-把客观的事物封装成抽象的类，用封装来实现高内聚，低耦合。
+把客观的事物封装成抽象的类，用封装来实现高内聚、低耦合。
 
    - 内聚：是指一个模块内部各个部分之间的关联程度;
    - 耦合：指各个模块之间的关联程度;
 
 
 
-## 继承(extends)：
+### 继承(extends)
 
 **继承是Java面向对象编程技术的一块基石**，因为它允许创建分等级层次的类。
 
-继承就是子类继承父类的特征和行为，使得子类对象（实例）具有父类的实例域和方法，或子类从父类继承方法，使得子类具有父类相同的行为。
+继承就是子类继承父类的特征和行为，使得子类对象(实例）具有父类的实例域和方法，或子类从父类继承方法，使得子类具有父类相同的行为。
 
 **类的继承格式：**
 
 在 Java 中通过 extends 关键字可以申明一个类是从另外一个类继承而来的，一般形式如下：
 
-```
-class 父类 { }  class 子类 extends 父类 { }
+```java
+class 父类 { }  
+class 子类 extends 父类 { }
 ```
 
-### Java中，仅支持单继承（不支持多继承），但支持多重继承：
+#### Java的单继承多实现：
+
+#### 仅支持继承1个父类，不支持多继承，但支持多重继承：这是为了避免方法调用的歧义性/二义性；
+
+假设类 B 和类 C 继承自类 A，且都重写了类 A 中的同一个方法do()，而类 D 同时继承了类 B 和类 C，那么此时类 D 会继承 B、C 的方法do，那类 D 继承的是哪个类中的方法do()呢，是类B还是类C？这里就会产生歧义。
+
+#### 支持实现多个接口：这是因为接口中都是抽象方法(没有方法体)，不会产生方法调用的歧义，还能起到拓展子类功能的作用。
 
 ![image-20200312105312257](images/java_extends.png)
 
 
 
-## 多态(polymorphism)：
+### 多态(polymorphism)
 
 多态是同一个行为，具有多个不同表现形式或形态的能力。
 
@@ -45,15 +330,15 @@ class 父类 { }  class 子类 extends 父类 { }
 
 **多态的实现方式：**
 
-- 重写：将父类方法的行为重写；
-- 接口：被具体类继承，对接口中的抽象方法实现不同行为；
+- 重写(@override)：将父类方法的行为重写；
+- 接口(interface)：被具体类继承，对接口中的抽象方法实现不同行为；
 - 抽象类和抽象方法：被具体类实现，从而对抽象方法实现不同的行为；
 
 **多态存在的三个必要条件**：
 
-- 继承
-- 重写
-- 父类引用指向子类对象
+- 继承(extends)
+- 重写(@override)
+- 父类引用指向子类的对象
 
 ```java
 //继承
@@ -72,7 +357,7 @@ class Cat extends Animal {
 public class Test {
     public static void main(String[] args) {            
       //父类指向子类
-      Animal a = new Cat();  // 向上转型  
+      Animal a = new Cat();  // 类型向上/缩小转换
       show(a);
     }  
     public static void show(Animal a)  {
@@ -84,7 +369,7 @@ public class Test {
 
 
 
-## 抽象类与抽象方法(abstract)
+## 2 抽象类与抽象方法(abstract)
 
 在面向对象的概念中，所有的对象都是通过类来描绘的，但是反过来，并不是所有的类都是用来描绘对象的；**如果一个类中没有包含足够的信息来描绘一个具体的对象，这样的类就是抽象类。**
 
@@ -107,7 +392,7 @@ Abstract 关键字同样可以用来声明抽象方法，抽象方法只包含�
 
 
 
-## 接口(interface）：接口不是类，不具有类的功能
+## 3 接口(interface）：接口不是类，不具有类的功能
 
 接口（Interface），在JAVA编程语言中是一个抽象类型**，是抽象方法的集合**，接口通常以interface来声明。一个类通过继承接口的方式，从而来继承接口的抽象方法。
 
@@ -174,7 +459,7 @@ Abstract 关键字同样可以用来声明抽象方法，抽象方法只包含�
 
   
 
-## Java包(package)
+## 4 Java包(package)
 
 为了更好地组织类，Java 提供了包机制，用于区别类名的命名空间。
 
@@ -194,7 +479,7 @@ package pkg1[．pkg2[．pkg3…]];
 
 
 
-## 方法的重载(override)、重写(overload) 
+## 5 方法的重写(override)、重载(overload) 
 
 ### 方法(非构造函数)的重写(override)
 
@@ -226,7 +511,7 @@ package pkg1[．pkg2[．pkg3…]];
 
 最常用的地方就是构造器的重载。
 
-#### 方法/构造函数的重载规则:
+#### 方法/构造函数的重载规则
 
 - 被重载的方法必须改变参数列表(参数个数或类型不一样)；
 
@@ -242,7 +527,15 @@ package pkg1[．pkg2[．pkg3…]];
 
   
 
-## final 关键字
+
+
+## 6 类修饰关键字及访问控制：private、(缺省)、procted、public 
+
+
+
+
+
+## 7 final 关键字
 
 final 关键字声明类可以把类定义为不能继承的，即最终类；或者用于修饰方法，该方法不能被子类重写。
 
@@ -260,7 +553,7 @@ final 关键字声明类可以把类定义为不能继承的，即最终类；�
 
 
 
-## super 与 this 关键字
+## 8 super 与 this 关键字
 
 - super关键字：我们可以通过super关键字来实现对父类成员的访问，用来引用当前对象的父类。
 
@@ -290,4 +583,8 @@ final 关键字声明类可以把类定义为不能继承的，即最终类；�
   ```
 
   
+
+
+
+## 9 Java 基础数据类型、引用数据类型
 

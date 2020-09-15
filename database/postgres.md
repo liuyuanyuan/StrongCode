@@ -1,6 +1,16 @@
-# PostgreSQL数据类型
+# PostgreSQL
 
-[Chapter 8. Data Types](https://www.postgresql.org/docs/12/datatype.html)
+
+
+## 集群解决方案
+
+
+
+
+
+
+
+## [数据类型](https://www.postgresql.org/docs/12/datatype.html)
 
 [51.63. `pg_type`](https://www.postgresql.org/docs/12/catalog-pg-type.html)
 

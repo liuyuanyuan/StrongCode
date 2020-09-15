@@ -2,8 +2,6 @@
 
 消息中间件：RobbitMQ、kafark；
 
-
-
 ## 消息队列：通过异步处理提高系统性能
 
 ![image-20200409103923254](images/MQ.png)

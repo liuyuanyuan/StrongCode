@@ -7,47 +7,50 @@
 - 书籍：Design Pattern  GoF （鼻祖）
 - 书籍：Head First Design Patterns （生动形象）
 
+## 概述
 
+设计结构不仅有助于组织代码实现业务，也有利于系统性能优化；熟悉典型设计模式和方法，有助于设计高性能软件。
 
-设计结构对系统性能的影响要远高于代码优化。熟悉一些典型的设计模式和方法，有助于设计高性能软件。
-
-## 设计模式的渊源
+### 由来
 
 在 1994 年，由 Erich Gamma、Richard Helm、Ralph Johnson 和 John Vlissides 四人合著出版了一本名为 **Design Patterns - Elements of Reusable Object-Oriented Software（中文译名：设计模式 - 可复用的面向对象软件元素）** 的书，该书首次提到了软件开发中设计模式的概念。
 
-四位作者合称 **GOF（四人帮，全拼 Gang of Four）**。他们所提出的设计模式主要是基于以下的面向对象设计原则。
+四位作者合称 **GOF（Gang of Four，四人帮，）**。他们所提出的设计模式主要是基于以下的面向对象设计原则：
 
 - 对接口编程而不是对实现编程。
 - 优先使用对象组合而不是继承。
 
-## 概念和分类
+### 概念
 
 设计模式（Design pattern）代表了最佳的实践，是软件开发人员在软件开发过程中面临的一般问题的解决方案。
 
 设计模式是一套被反复使用的、多数人知晓的、经过分类编目的、代码设计经验的总结。使用设计模式是为了重用代码、让代码更容易被他人理解、保证代码可靠性。设计模式使代码编制真正工程化，设计模式是软件工程的基石。
 
-根据设计模式的参考书 **Design Patterns - Elements of Reusable Object-Oriented Software（中文译名：设计模式 - 可复用的面向对象软件元素）** 中所提到的，**总共有 23 种设计模式**。这些模式可以分为**3大类**：**创建型模式（Creational Patterns）、结构型模式（Structural Patterns）、行为型模式（Behavioral Patterns）。**
+### 分类
 
-**GOF提出的设计模式总共有23种，分为以下三类：**
+#### GOF的3大类23种模式
 
-- **创建型模式(5种**，绿色)：
+根据GOF的设计模式参考书 Design Patterns - Elements of Reusable Object-Oriented Software（中文翻译《设计模式 - 可复用的面向对象软件元素》）中所提到的，**总共有 23 种设计模式，划分为3大类**：
+
+- **创建型模式 Creational Patterns (5种**，绿色)：
 
 **单例模式、工厂方法模式、抽象工厂模式、**建造者模式、原型模式。
 
-- **结构型模式(7种**，橙色)：
+- **结构型模式 Structural Patterns(7种**，橙色)：
 
 适配器模式、**装饰器模式、代理模式、**外观模式、桥接模式、组合模式、享元模式。
 
-- **行为型模式(11种**，粉色)：
+- **行为型模式 Behavioral Patterns (11种**，粉色)：
 
 策略模式、模板方法模式、**观察者模式**、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。
 
 
-以下是网上经典的设计模式关系图：
+以下引自网上经典的设计模式关系图：
 
 <img src="images/design_pattern_relationship.png" alt="img" style="zoom:75%;" />
 
-**J2EE 模式**
+#### J2EE 模式
+
 除了GoF提出的23种设计模式之外，常用的还有J2EE设计模式：这些设计模式特别关注表示层。这些模式是由 Sun Java Center 鉴定的。
 
 - MVC 模式（MVC Pattern）
@@ -61,11 +64,9 @@
 
 
 
-## 单例模式（Singleton Design Pattern）
+## 单例模式(Singleton Design Pattern)
 
-单例模式是最简单的设计模式之一。单例模式是一种**创建型模式**。
-
-提供了创建对象实例的最佳方式：确保系统中一个类只产生一个实例。
+单例模式：属于**创建型模式**，是最简单的设计模式之一，提供了创建对象实例的最佳方式 - 确保系统中一个类只产生一个实例。
 
 **意图：**
 
@@ -87,42 +88,26 @@
 
 4 配置文件的读取
 
+#### 饿汉式
+
 ```java
-//最简单的单实例实现，不能做到延迟加载实例。(饿汉式，可保证线程安全)
+//最简单的单实例实现，不能做到延迟加载实例。(饿汉式，线程安全，内存浪费)
 public class Singleton {
-  //私有化构造方法
-  private Singleton(){
-      //todo
-  }
   private static Singleton instance = new Singleton();
 	public static Singleton getInstance() {
 		return instance;
 	}
+  //私有化构造方法
+  private Singleton(){
+  }
 }
+```
 
-/*
-* 使用内部类来实现单实例，实例是在类加载时完成创建。
-* 既做到了延迟加载，又对多线程友好（不必使用synchronized关键字），是一种比较完善的实现。
-*/
-public class Singleton {
-  //私有化构造方法，防止外部调用
-	private Singleton(){	
-    //todo
-	}
-	private static class Handler{
-    ////在类加载时创建对象实例
-		private static Singleton instance = new Singleton();
-	}
-	public static Singleton getInstance() {
-		return Handler.instance;
-	}
-}
+#### 懒汉式
 
-
+```java
 /**
-* 双端检锁方式实现-线程安全的单例模式
-synchronized可以保证单例的线程安全，但性能却不容乐观，因为对整个方法体加了同步锁。
-其实仅在首次初始化对象的时候需要同步，对于之后的获取不需要同步锁。使用双端检锁可以解决这个问题。
+* 直接在获取实例的方法上加synchronized。（懒汉式，线程安全，性能低）
 */
 public class SyncLock {
     private static SyncLock instance;  
@@ -133,32 +118,80 @@ public class SyncLock {
         return instance;  
     }  
 }
+
+/*
+* 使用内部类来实现单实例，实例是在类加载时完成创建。（懒汉式，线程安全，性能高，推荐）
+* 既做到了延迟加载，又对多线程友好（不必使用synchronized关键字），是一种比较完善的实现。
+*/
+public class Singleton {
+	private static class Handler{
+		private static Singleton instance = new Singleton();
+	}
+	public static Singleton getInstance() {
+		return Handler.instance;
+	}
+  //私有化构造方法，防止外部调用
+	private Singleton(){	
+	}
+}
+// 通过枚举来实现（推荐）
+public class EnumSingleton{
+     private EnumSingleton(){
+     }
+     public static EnumSingleton getInstance(){
+         return Holder.HOLDER.instance;
+     }
+     private enum Holder{
+         HOLDER;
+         private final EnumSingleton instance;
+         Holder(){
+            instance = new EnumSingleton();
+         }
+     }
+}
+
+/**
+* 线程安全的单例模式-双端检锁方式实现（懒汉式，线程安全，性能高）
+*/
 public class DoubleCheckedLock {
     private static DoubleCheckedLock instance;  
     public static DoubleCheckedLock getInstance() {  
-        if (instance != null) // 第一次检查
-        { 
+        if (instance != null) {// 第一次检查，弱非空直接返回，提高性能
           return instance;  
         }
-        synchronized (DoubleCheckedLock.class) // 再次检查
-        {
-        		if(instance == null){
-        			 instance=new DoubleCheckedLock();
+        synchronized (DoubleCheckedLock.class) {
+        		if(instance == null) { // 再次检查，保证只有一个线程进行new实例。
+        			 instance = new DoubleCheckedLock();
         		}
         }
         return instance;  
     }
 }  
-
 ```
 
 
 
-## 代理模式（Proxy Design Pattern）
+## 享元模式(Flyweight Pattern)
 
-**定义：**
+它属于**结构型模式**。通过共享技术，最大限度的复用对象；
 
-使用代理对象完成用户请求，屏蔽用户对真实对象的访问。（如同现实生活中的代理人一样）属于**结构型模式**。
+主要用于减少创建对象的数量，以减少内存占用和提高性能。
+
+单例模式是享元模式的一种特殊情况，它通过共享单个实例，达到对象的复用。
+
+
+
+## 原型模式(Prototype) 
+
+首先创建一个实例，然后通过这个实例进行新对象的创建；
+
+在Java中，最典型的是 Object 类的 clone 方法。
+
+
+
+## 代理模式(Proxy Design Pattern）
+
+**定义：**属于**结构型模式**。使用代理对象完成用户请求，屏蔽用户对真实对象的访问。（如同现实生活中的代理人一样）
 
 **主要参与者：**
 
@@ -174,8 +207,6 @@ public class DoubleCheckedLock {
 用于远程调用的网络代理、考虑安全因素的安全代理、延迟加载。
 
 代理模式用于延迟加载，可以有效提升系统的启动速度，对改善用户体验有很大帮助。
-
-
 
 ### 静态代理
 
@@ -223,23 +254,21 @@ public class Client {
 
 ### 动态代理
 
-代理类在运行时动态生成并加载的，称为动态代理。即：代理类的字节码将在运行时生成并载入当前的 ClassLoader。
+动态代理：是代理类在运行时动态生成并加载的，即代理类的字节码将在运行时生成并加载到当前的 类加载器中。
 
-**生成动态代理类的方法：**
+**创建动态代理类的方法：**
 
-- JDK自带的动态代理：内置在JDK中，无需引入第三方jar，使用简单；
-- CGLib和Javassist：都是高级的字节码生成库，总体性能比JDK自带的动态代理好，且功能十分强大；
+- JDK 自带动态代理：JDK中内置无需引入第三方jar包，仅面向接口的；
+
+  JDK 动态代理，使用Java反射技术生成代理类，**只能代理实现了接口的类，没有实现接口的类不能实现动态代理；**
+
+  > jdk动态代理类必须继承Proxy类，形如：`final class $Proxy0 extends Proxy implements IXx`；又因为Java是单继承的，所以 Jdk 只能实现接口类。
+
+- CGLib 和 Javassist 动态代理：都是高级的字节码生成库，总体性能比 JDK 动态代理略好(最新版中两者性能已不相上下)，面向普通类；
+
+  CGLib 会在运行时动态的生成一个被代理类的子类，子类重写了被代理类中所有非 final 的方法，在子类中采用方法拦截的技术拦截所有父类方法的调用，不需要被代理类对象实现接口，从而 CGLIB 动态代理效率比 Jdk 动态代理反射技术效率要高。
+
 - ASM库：是低级的字节码生成工具，使用ASM近乎使用Java bytecode编码，对开发人员要求高，当然也是性能最好。但是ASM程序可维护性差，如非性能要求苛刻，还是建议使用CGLIB和Javassist。
-
-**JDK动态代理、CGLib动态代理的适用场景：**
-
-- JDK 动态代理，使用Java反射技术生成代理类，**只能代理实现了接口的类，没有实现接口的类不能实现动态代理；**
-
-  > 因为jdk动态代理生成的类都是形如：`final class $Proxy0 extends Proxy implements IXx`
-  >
-  > 是必须继承Proxy类，又因为Java是单继承的，所以Jdk只能实现接口类。
-
-- CGLib 会在运行时动态的生成一个被代理类的子类，子类重写了被代理类中所有非final的方法，在子类中采用方法拦截的技术拦截所有父类方法的调用，不需要被代理类对象实现接口，从而 CGLIB 动态代理效率比 Jdk 动态代理反射技术效率要高。
 
 #### JDK动态代理
 
@@ -273,15 +302,16 @@ public class Client {
 }
 ```
 
-
-
 #### CGLib动态代理
 
 目标类不能为 final，目标对象的方法如果为 final / static，那么就不会被拦截，即不会执行目标对象额外的业务方法。
 
+- MethodInterceptor
+- Enhancer
+
 **1 引入 CGLib 依赖**
 
-Spring环境下不需要，因为Spring-Core里已经引入了。以下Maven引入依赖：
+以下Maven引入CGLib依赖；Spring环境下不需要引入，因为Spring-Core里已经引入。
 
 ```xml
 <dependency>
@@ -306,7 +336,6 @@ public class FruitShop {
 
 ```java
 public class CGLibProxy implements MethodInterceptor{
-
 	private FruitShop fshop;
 	CGLibProxy(FruitShop fshop){
 		this.fshop = fshop;
@@ -346,7 +375,7 @@ public class Test{
 
 
 
-## 工厂模式（Factory Design Pattern）
+## 工厂模式(Factory Design Pattern)
 
 参考：https://www.jianshu.com/p/d951ac56136e
 
@@ -737,6 +766,3 @@ public class DecoratorPatternDemo {
 
 
 
-## 享元模式（Flyweight Pattern）
-
-主要用于减少创建对象的数量，以减少内存占用和提高性能。它属于**结构型模式**。它提供了减少对象数量从而改善应用所需的对象结构的方式。

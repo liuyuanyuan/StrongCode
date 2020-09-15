@@ -2,37 +2,40 @@
 
 [TOC]
 
+## 单体架构下的锁
+
+锁是用于保护资源避免并发竞争的工具，在JVM的发展过程中锁的演化更是历久弥新：当下，可以用公平锁实现顺序排队、用非公平锁实现优先级管理、用可重入锁减少死锁的几率、用读写锁提升读取性能，JVM更是实现了从偏向锁到轻量级锁再到重量级锁的逐渐膨胀优化，更多的情况下我们还可以基于 CAS 的原子操作包（java.util.concurrent.atomic）实现无锁（乐观锁）编程。
+
+单机环境下，锁只作用于同一JVM；在分布式系统中锁要跨JVM作用于多个节点，实现的难度及成本都要远高于前者。
+
+在谈分布式锁之前我们必须明，如非必要切勿用锁：
+
+- 一方面锁会将并行逻辑转成串行严重影响性能，
+
+- 另一方面还要考虑锁的容错，处理不当可能导致死锁。
+
+如果可能笔者更推荐使用如下方案：
+
+- Set化后的MQ替代分布式锁，比如上面的例子，我们可以按用户ID做Set（用户ID % Set数）进而分成多个组，为不同的组创建不同的MQ队列，这样一个用户同一时间只在一个队列中，一个队列的处理是串行化的，实现了锁的功能，同时又有多个Set来完成并行化，在性能上会好于分布式锁，并且代码上没有太多改动
+
+- 使用乐观锁，再如上面的例子，为account创建一个更新版本字段（update_version）,每次更新时版本加1，更新的条件是版本号要等于传入版本号：
+
+  ```java
+    var (balance,currentVersion) = db.account.getBalanceAndVersion(id)
+    if(balance < amount){
+      return error("余额少于扣款金额")
+    }
+    // 此操作对应的SQL: UPDATE account SET balance = balance  - <amount> , update_verison = update_verison + 1 WHERE id = <id> AND update_version = <currentVersion>
+    if(db.account.updateBalance(id,-amount, currentVersion) == 0){
+    return error("扣款失败") // 或递归执行此代码进行重试
+    }
+  ```
+
+但在一些情况下我还是会不得不用锁，比如如果要同时加锁诸如用户、订单、商品、SKU等多个对象时用锁反而可能是更好的选择（当然前提要反思这样的业务操作是否合理、设计架构是否有缺陷，对此本节不展开讨论），再如在并发量很高的情况下很可能用悲观锁会比乐观锁效率更高。如需要使用分布式锁，我们必要注意这些问题：
 
 
-## 1 幂等性处理
 
-### 幂等性概念：
-
-幂等一词源自数学概念，在程序中如果相同条件下多次请求对资源的影响表现一致则称请求为幂等请求，对应的接口为幂等接口。
-
-### 幂等性处理:
-
-##### 1 使用数据库主键、唯一索引，防止重复数据插入；
-
-特点：实现简单，但通用性差，也无法解决并发请求对应用服务的消耗；
-
-##### 2 使用分布式锁（可通过redis实现）
-
-分布式锁一般适用于需要长时间处理的任务，在任务处理期间防止重复请求，如数据导出、复杂计算等，由于这些操作本身就要求串行处理，所以加锁对性能地影响有限（锁粒度为请求条件）
-
-##### 3 缓存请求URI并设定超时时长
-
-URI做为请求Token再加上过期时间，比如 `PUT /user/001` 幂等有效时间30秒，则在30秒内同一个URI请求都视为重复直接过滤，这种做法可简化请求方操作但仅限于REST请求且符合REST规范。
-
-##### 4 将请求放到MQ然后再进行处理
-
-主流的 MQ 实现在 `autocommit=true` 时天然实现了幂等；但考虑业务处理可能出错的情况我们一般会将 autocommit 设置成 false ，在业务处理成功后再提交，这时就需要使用上述幂等方案了：在接收到消息时写入请求Token以实现去重判断（Token可为Topic+Offset）提交后删除Token，整体上可以做到对业务透明。
-
-### dos攻击预防：
-
-
-
-## 2 分布式锁
+## 分布式锁
 
 ### 实现原理
 
@@ -67,12 +70,14 @@ URI做为请求Token再加上过期时间，比如 `PUT /user/001` 幂等有效�
 
 实现方式：
 
-#### 直接使用Redis的命令：
+#### 直接使用Redis命令：
 
-创建锁对象使用命令 SETNX，没有原子化的值比较命令，无法原子化确认占用锁的是否是当前实例的当前线程，导致比较难实现重入锁；
+使用命令 SETNX 创建锁对象，没有原子化的值比较命令，无法原子化确认占用锁的是否是当前实例的当前线程，导致比较难实现重入锁；
 
 特点：保证了锁的原子性、超时限制；但是没法保证释放锁的一致性，不能对锁续期；
 
+> 参考[Redis 官方文档](http://www.redis.cn/documentation.html)
+>
 > **SETNX命令（SET if Not eXists）**
 > 语法：SETNX key value
 > 功能：原子性操作，当且仅当 key 不存在，将 key 的值设为 value ，并返回1；若给定的 key 已经存在，则 SETNX 不做任何动作，并返回0。
@@ -85,7 +90,7 @@ URI做为请求Token再加上过期时间，比如 `PUT /user/001` 幂等有效�
 > 语法：DEL key [KEY …]
 > 功能：删除给定的一个或多个 key ,不存在的 key 会被忽略。
 
-#### 使用Lua脚本实现Redis锁的原子操作：
+#### 使用Lua脚本实现Redis原子操作：
 
 获取锁时：使用Lua脚本将【 SETNX 、超时设置Expire、GET锁对象并一致性确认】合为一个原子操作；
 
@@ -93,31 +98,41 @@ URI做为请求Token再加上过期时间，比如 `PUT /user/001` 幂等有效�
 
 特点：获取锁和释放锁实现了原子性、超时限制和一致性，但是锁使用中超时没有续期处理。
 
-#### 使用Redisson（推荐，具有最高的A）：
+#### 使用Redisson（推荐，具有最高性能）：
 
 在通过Lua脚本实现获取锁、释放锁的原子操作的基础上，增加定时任务实现锁续期。
 
-优点：在Redis单节点服务中，在实现了CP的同时，具有最高的A，单机Redis可以达到 10w QPS；
+优点：在Redis单节点服务中，在实现了CP的同时，具有最高的性能和A，单机Redis可以达到 10w QPS；
 
 缺点：在Redis集群服务中，由于创建锁时，主备结点的数据复制是异步的，所以在负载均衡和主备间切换时，存在数据复制不及时的风险，可能造成边界锁对象不可用。
 
-#### 使用Redlock（不推荐，A差）
+#### 使用Redlock（不推荐，性能差）
 
 在 Redisson 实现的基础上，对Redis分布式集群做了处理（创建锁对象时，要同步在所有结点创建完毕后才返回锁对象）；
 
-特点：这样保证了Redis集群结点之间数据的强一致性，但是锁对象的创建成本增大，系统的可用性降低。
+特点：这样保证了Redis集群结点之间数据的强一致性，但是锁对象的创建成本增大，系统的性能和A降低。
 
 
 
-### 方案3：Zookeeper
+### 方案3：分布式
+
+#### Zookeeper
 
 可使用Zookeeper的持久节点（PERSISTENT）、临时节点（EPHEMERAL）、时序节点（SEQUENTIAL ）的特性组合及 watcher 接口实现，这一方案可保证最为严格的数据一致性、在性能及高可用也有着比较好的表现，推荐对一致性高要求极高、并发量大的场景使用。
 
 
 
-## 编码实践
+#### etcd
 
-### Redisson + SpringBoot 实践
+etcd 是一个分布式的、可靠的、 key-value 存储的分布式系统。它不仅仅用于存储，还提供配置共享及服务发现。etcd与zookeeper类似，算是后起之秀。
+
+
+
+
+
+### 编码实践
+
+#### Redisson + SpringBoot 实践
 
 pom.xml 引入
 
@@ -182,7 +197,7 @@ public class RedissonConfig {
 }
 ```
 
-应用代码：
+**使用 RLock 实现分布式锁操作：**
 
 ```java
 import org.redisson.api.RedissonClient;
@@ -210,6 +225,33 @@ public  class TestLock{
 }
 ```
 
-#### 
+**使用 RAtomicLong 实现 Redis 原子操作：**
 
-### Zookeeper 实践
+RAtomicLong 是 Java 中 AtomicLong 类的分布式“替代品”，用于在并发环境中保存长值。以下是 RAtomicLong 的用法：
+
+```java
+import org.redisson.Redisson;
+import org.redisson.api.RAtomicLong;
+import org.redisson.api.RedissonClient;
+
+public class AtomicLongExamples {
+    public static void main(String[] args) {
+        // 默认连接上127.0.0.1:6379
+        RedissonClient client = Redisson.create();
+        
+        RAtomicLong atomicLong = client.getAtomicLong("myLong");
+        System.out.println("Init value: " + atomicLong.get());
+        atomicLong.incrementAndGet();
+        System.out.println("Current value: " + atomicLong.get());
+        atomicLong.addAndGet(10L);
+        System.out.println("Final value: " + atomicLong.get());
+
+        client.shutdown();
+    }
+}
+```
+
+
+
+
+#### Zookeeper 实践
