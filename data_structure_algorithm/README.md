@@ -4,8 +4,8 @@
 
 #### 参考
 
-- [Data Structures and Algorithm Analysis in Java (Third Edition)](https://users.cs.fiu.edu/~weiss/#dsaajava3)  (by [Mark Allen Weiss](https://users.cs.fiu.edu/~weiss/))
 - [usfca Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
+- [Data Structures and Algorithm Analysis in Java (Third Edition)](https://users.cs.fiu.edu/~weiss/#dsaajava3)  (by [Mark Allen Weiss](https://users.cs.fiu.edu/~weiss/))
 - Java 8+ Source Code
 
 ### 常用数据结构
@@ -19,9 +19,9 @@
 
 - 队列/双端队列
 
-- 堆
+- 堆(最大堆/最小堆)
 
-- 树
+- 树(二叉树、AVL树、红黑树、B树、B+树，前/中/后序)
 
 ### 特点分析角度
 
