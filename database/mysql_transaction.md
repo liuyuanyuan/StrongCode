@@ -30,7 +30,7 @@
 
 
 
-## 数据库的锁
+## 数据库的锁(锁是对MVCC的补充，但并不常用)
 
 ### 1按性能分：乐观锁(用版本比对实现) & 悲观锁
 
@@ -253,55 +253,13 @@ SET tx_isolation='REPEATABLE-READ';
 
 
 
-### JDBC的隔离级别设置：
+#### JDBC的隔离级别设置：
 
 ```java
-    /**
-     * A constant indicating that transactions are not supported.
-     */
-    int TRANSACTION_NONE             = 0;
-
-    /**
-     * A constant indicating that
-     * dirty reads, non-repeatable reads and phantom reads can occur.
-     * This level allows a row changed by one transaction to be read
-     * by another transaction before any changes in that row have been
-     * committed (a "dirty read").  If any of the changes are rolled back,
-     * the second transaction will have retrieved an invalid row.
-     */
+    int TRANSACTION_NONE             = 0;//transactions are not supported
     int TRANSACTION_READ_UNCOMMITTED = 1;
-
-    /**
-     * A constant indicating that
-     * dirty reads are prevented; non-repeatable reads and phantom
-     * reads can occur.  This level only prohibits a transaction
-     * from reading a row with uncommitted changes in it.
-     */
     int TRANSACTION_READ_COMMITTED   = 2;
-
-    /**
-     * A constant indicating that
-     * dirty reads and non-repeatable reads are prevented; phantom
-     * reads can occur.  This level prohibits a transaction from
-     * reading a row with uncommitted changes in it, and it also
-     * prohibits the situation where one transaction reads a row,
-     * a second transaction alters the row, and the first transaction
-     * rereads the row, getting different values the second time
-     * (a "non-repeatable read").
-     */
     int TRANSACTION_REPEATABLE_READ  = 4;
-
-    /**
-     * A constant indicating that
-     * dirty reads, non-repeatable reads and phantom reads are prevented.
-     * This level includes the prohibitions in
-     * <code>TRANSACTION_REPEATABLE_READ</code> and further prohibits the
-     * situation where one transaction reads all rows that satisfy
-     * a <code>WHERE</code> condition, a second transaction inserts a row that
-     * satisfies that <code>WHERE</code> condition, and the first transaction
-     * rereads for the same condition, retrieving the additional
-     * "phantom" row in the second read.
-     */
     int TRANSACTION_SERIALIZABLE     = 8;
 ```
 
@@ -312,7 +270,7 @@ Connection conn = null;
 try{
     conn = JdbcUtil.getConnection(jdbcInfo);
     //设置事务隔离级别
-  	    conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+  	conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
     //开启事务（非自动提交事务）
     conn.setAutoCommit(false);
     //...
@@ -332,49 +290,94 @@ try{
 
 ## 事务多版本并发控制(MVCC)
 
-MVCC (Multi-Version Concurrency Control)是事务的多版本并发控制机制，关系型数据库MySQL(InnoDB 引擎支持事务)、PostgreSQL都有实现。
+MVCC (Multi-Version Concurrency Control)是事务的多版本并发控制机制，MySQL InnoDB 引擎(支持事务)、PostgreSQL、Oracle都有实现。
 
-### InnoDB 事务隔离级别实现机制
+### MySQL InnoDB 事务隔离级别实现机制
 
-| MySQL InnoDB 隔离级别 | 实现机制 |      |
-| --------------------- | -------- | ---- |
-| 读未提交              | 无隔离   |      |
-| 读已提交              | MVCC     |      |
-| 可重复读              | MVCC     |      |
-| 串行化                | 互斥锁   |      |
+| MySQL InnoDB 事务隔离级别 | 实现机制                |      |
+| ------------------------- | ----------------------- | ---- |
+| 读未提交                  | 无隔离                  |      |
+| 读已提交                  | MVCC                    |      |
+| 可重复读                  | MVCC                    |      |
+| 串行化                    | 互斥锁/写锁(读写均阻塞) |      |
 
-读已提交/可重复读 是 通过MVCC机制来实现的：对一行数据的读和写两个操作，默认不通过加锁互斥来保证隔离性，避免了频繁加锁互斥；
+读已提交/可重复读是通过MVCC机制来实现的：对一行数据的读和写两个操作，默认不通过加锁互斥来保证隔离性，避免了频繁加锁互斥，提高了读写操作的性能。
 
 > InnoDB 日志：
 >
 > - undo log 回滚日志：事务提交前的原行数据，用于事务Rollback；
+>
 > - redo log 重做日志：事务提交后的新行数据，用于事务Commit;
 >
+>   redo log是WAL， 每次数据库DML都会先写WAL日志大盘磁盘(顺序写，速度快)，再写数据到磁盘(随机写，速度慢)，这保证了宕机时的数据丢失(使用WAL重演即可补齐数据)。
+>
+> MySQL binlog：所有操作的日志；
 
-### InnoDB 的 MVCC 实现
+### MySQL InnoDB 的 MVCC 实现
+
+#### InnoDB 行记录的数据结构
 
 MySQL InnoDB 行记录中，除了行数据本身，还存了一些额外信息：DATA_TRX_ID，DATA_ROLL_PTR，DB_ROW_ID，DELETE BIT 。
 
-| 列名          | 长度  | 备注                                                         |
-| ------------- | ----- | ------------------------------------------------------------ |
-| DATA_TRX_ID   | 6byte | 标记了最新更新这条行记录的transaction id，每处理一个事务，值自动+1； |
-| DATA_ROLL_PTR | 7byte | 指向当前记录项的rollback segment的undo log记录，找之前版本的数据就是通过这个指针 |
-| DB_ROW_ID     | 6byte | InnoDB自动产生聚集索引时，聚集索引包括这一列，否则聚集索引中不包括这个值。 |
-| DELETE BIT    |       | 位用于标识该记录是否被删除，这里的不是真正的删除数据，而是标志出来的删除。真正的删除是在commit的时候。 |
+| 行记录的结构组成 | 长度  | 备注                                                         |
+| ---------------- | ----- | ------------------------------------------------------------ |
+| 行数据           | 变长  | 本行数据自身                                                 |
+| DATA_TRX_ID      | 6byte | 标记了最新更新这条行记录的 transaction id，每处理一个事务，值自动+1； |
+| DATA_ROLL_PTR    | 7byte | 指向当前记录项的 rollback segment 的undo log记录，找之前版本的数据就是通过这个指针 |
+| DB_ROW_ID        | 6byte | InnoDB自动产生聚集索引时，聚集索引包括这一列，否则聚集索引中不包括这个值。 |
+| DELETE BIT       |       | 位用于标识该记录是否被删除，这里的不是真正的删除数据，而是标志出来的删除。真正的删除是在commit的时候。 |
+
+#### InnoDB 事务ID
+
+- MySQL  InnoDB 中，每个事务都有一个自己的事务id，并且是唯一的、递增的 。
+
+- 对于每个数据行，每次事务更新数据时，都会生成一个新事务版本，存储在该数据行的 trx_id 中。
+
+- 执行 begin/start 命令时，不会为事务分配新的id；只有事务中执行到第一个DML时，事务才真正启动，MySQL 会为事务分配一个id，MySQL时严格按照事务启动顺序来分配事务id的。
+
+<img src="img/mysql_innodb_mvcc.png" alt="image-20200924155437389" style="zoom:50%;" />
 
 
 
-MySQL  InnoDB 中，每个事务都有一个自己的事务id，并且是唯一的、递增的 。对于每一个数据行，每次事务更新数据时，都会生成一个新的数据版本，存储在该数据行的 trx_id 中。
+#### 一致性视图 read-view ：
 
-![image-20200916120033561](/Users/liuyuanyuan/Library/Application Support/typora-user-images/image-20200916120033561.png)
+事务开启后，执行任何查询sql时，首先会生成当前事务的 **一致性视图read-view**，该视图由执行查询时所有未提交事务id数组(数组里最小的id为min_id)和已创建的最大事务id(max_id)组成，事务里的任何sql查询结果需要从对应版本链里的最新数据开始逐条跟 read-view 做比对从而得到最终的快照结果。
+
+- 读已提交隔离级别-在每次执行查询sql时都会重新生成read-view；
+- 可重复度隔离级别-在初次执行查询sql时生成read-view，在该事务结束之前都不会变；
+
+#### 行记录的事务回滚日志(redolog)版本链比对规则：
+
+1. 若row的 trx_id 落在紫色部分( trx_id<min_id )，表示这个版本是已提交的事务生成的，这个数据是可见的; 
+2. 如row的 trx_id 落在蓝色部分( trx_id>max_id )，表示这个版本是由将来启动的事务生成的，是不可见的(若 row 的 trx_id 就是当前自己的事务是可见的);
+3. 若 row 的 trx_id 落在绿色部分(min_id <=trx_id<= max_id)，那就包括两种情况：
+   - 若 row 的 trx_id 在视图数组中，表示这个版本是由还没提交的事务生成的，不可见。(若 row 的 trx_id 就是当前自己的事务，则是可见的);
+   -  若 row 的 trx_id 不在视图数组中，表示这个版本是已经提交了的事务生成的，可见。
+
+对于删除的情况，可以认为是 update 的特殊情况，会将版本链上最新的数据复制一份，然后将 trx_id 修改成删除操作的 trx_id，同时在该条记录的头信息(record header)里的(deleted_flag)标记位写上true，来表示当前记录已经被 删除，在查询时按照上面的规则查到对应的记录如果delete_flag标记位为true，意味着记录已被删除，则不返回数据。
+
+| 事务100                                 | 事务101                                              | 事务102                                 | 事务103                                              | 可重复读                                                    | 读已提交                                                     |
+| --------------------------------------- | ---------------------------------------------------- | --------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| update t1 set name=‘lily0‘ where id=1； |                                                      |                                         |                                                      | readview：99，{100};                       查询结果：1,lily | readview：99，{100};                       查询结果：1,lily  |
+|                                         | update t1 set name=‘lily1‘ where id=1；  **commit;** |                                         |                                                      |                                                             |                                                              |
+|                                         |                                                      |                                         |                                                      | readview：99，{100};                   查询结果：1,lily     | readview：101，{100,101};                       查询结果：**1,lily1** |
+|                                         |                                                      | update t1 set name=‘lily2‘ where id=1； |                                                      | readview：99，{100};                   查询结果：1,lily     | readview：101，{100,101,102};        查询结果：**1,lily1**   |
+|                                         |                                                      |                                         | update t1 set name=‘lily3‘ where id=1；  **commit;** |                                                             |                                                              |
+|                                         |                                                      |                                         |                                                      | readview：99，{100};                   查询结果：1,lily     | readview：103，{100,101,102,103};查询结果：**1,lily3**       |
 
 
 
 
 
+## InnoDB 执行 SQL 的 BufferPool 缓存机制
 
+![img](img/mysql_innodb_sql_bufferpool.png)
 
+为什么Mysql不能直接更新磁盘上的数据而设置这么一套复杂的机制来执行SQL了? 因为来一个请求就直接对磁盘文件进行随机读写，然后更新磁盘文件里的数据性能可能相当差。
 
+- 因为磁盘随机读写的性能是非常差的，所以直接更新磁盘文件是不能让数据库抗住很高并发的。
 
+- MySQL这套机制看起来复杂，但它可以保证每个更新请求都是更新内存BufferPool，然后顺序写日志文件，同时还能保证各种异常情况下的数据一致性。 
 
+  更新内存的性能是极高的，然后顺序写磁盘上的日志文件的性能也是非常高的，要远高于随机读写磁盘文件。 正是通过这套机制，才能让MySQL数据库在较高配置的机器上可以抗下每秒几千的读写请求。
 
