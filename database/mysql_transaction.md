@@ -1,8 +1,8 @@
-# 关系型数据库事务原理
+# 关系型数据库(MySQL)事务原理
 
 [TOC]
 
-## 事务的4大特性
+## 事务的ACID4大特性
 
 如果说数据库支持事务，就是说数据库具备事务的四大特征。数据库中事务具有四大特性（ACID）：
 
@@ -25,8 +25,6 @@
 持久性是指已被提交的事务对数据库的修改应该永久保存在数据库中。
 
 即一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即便是在数据库系统遇到故障的情况下也不会丢失提交事务的操作。
-
-> 检查点checkpoint：
 
 
 
@@ -251,8 +249,6 @@ SET tx_isolation='REPEATABLE-READ';
 >
 > - 对于JDBC操作数据库来说，一个 Connection 对象相当于一个链接，而对于Connection对象设置的隔离级别只对该Connection对象有效，与其他链接Connection对象无关。
 
-
-
 #### JDBC的隔离级别设置：
 
 ```java
@@ -361,7 +357,7 @@ MySQL InnoDB 行记录中，除了行数据本身，还存了一些额外信息�
 - 读已提交隔离级别-在每次执行查询sql时都会重新生成read-view；
 - 可重复度隔离级别-在初次执行查询sql时生成read-view，在该事务结束之前都不会变；
 
-#### 行记录的事务回滚日志(redolog)版本链比对规则：
+#### 行记录的事务回滚日志(undolog)版本链比对规则：
 
 1. 若row的 trx_id 落在紫色部分( trx_id<min_id )，表示这个版本是已提交的事务生成的，这个数据是可见的; 
 2. 如row的 trx_id 落在蓝色部分( trx_id>max_id )，表示这个版本是由将来启动的事务生成的，是不可见的(若 row 的 trx_id 就是当前自己的事务是可见的);
@@ -384,7 +380,7 @@ MySQL InnoDB 行记录中，除了行数据本身，还存了一些额外信息�
 
 
 
-## InnoDB 执行 SQL 的 BufferPool 缓存机制
+## InnoDB SQL 执行的 BufferPool 缓存机制
 
 ![img](img/mysql_innodb_sql_bufferpool.png)
 
