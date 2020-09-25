@@ -1,4 +1,4 @@
-# Coding Strongly 
+# Coding better 
 
 Tutorials to help coding, especially in java. Welcome to exchange knowledge :)
 
