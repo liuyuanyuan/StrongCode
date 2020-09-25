@@ -1,7 +1,6 @@
+# Python vs Golang
 
-https://baike.baidu.com/item/Python/407313?fr=aladdin#9
 
-https://baike.baidu.com/item/Go%E8%AF%AD%E8%A8%80/3246011?fromtitle=Golang&fromid=2215139&fr=aladdin#5
 
 ## Python
 
@@ -34,6 +33,8 @@ Python 是一个高层次的结合了解释性、编译性、互动性和面向�
 
 这也许不应该被称为局限，但是它用缩进来区分语句关系的方式还是给很多初学者带来了困惑。即便是很有经验的Python程序员，也可能陷入陷阱当中。
 运行速度慢：这里是指与C和C++相比。
+
+
 
 ## Go
 

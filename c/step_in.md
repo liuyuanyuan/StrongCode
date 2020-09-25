@@ -1,6 +1,4 @@
-##### Reference： https://www.runoob.com/cprogramming/c-storage-classes.html
-
-
+# C语言入门
 
 ##### Linux:
 
@@ -39,12 +37,7 @@ ls -l
 ./a.out  (or ./hello.out)
 	Hello World
 
-
 ```
-
-
-
-
 
 
 

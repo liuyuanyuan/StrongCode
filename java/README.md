@@ -1,6 +1,6 @@
-# Java手记
+# Java 手记
 
-**Java知识**
+## Java基础
 
 - Java & JDK 官方文档
 
@@ -50,7 +50,7 @@
 - [消息队列](msg_queue.md)
 - [netty](netty.md)
 
-**编程通识：**
+## 编程通识：
 
 - [设计原则](design_rule.md)
 - [设计模式](design_pattern.md)

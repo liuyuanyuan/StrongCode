@@ -32,7 +32,7 @@
 
 ### SpringMVC
 
-![image-20200409101715983](../images/spingmvc.png)
+![image-20200409101715983](img/sping_mvc.png)
 
 客户端发送请求-> 前端控制器 DispatcherServlet 接受客户端请求 -> 找到处理器映射 HandlerMapping 解析请求对 应的 Handler-> HandlerAdapter 会根据 Handler 来调用真正的处理器开处理请求，并处理相应的业务逻辑 -> 处理 器返回一个模型视图 ModelAndView -> 视图解析器进行解析
 

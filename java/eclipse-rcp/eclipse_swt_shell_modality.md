@@ -1,17 +1,17 @@
-Eclipse SWT： Shell - Style和模态设置
+# Eclipse SWT： Shell - Style和模态设置
 
---------------------
-在Dialog中的修改方法：
+## 在Dialog中的修改方法：
+
 Dialog打开后的显示方式主要跟Dialog的parant Shell的style的设置有关，但style的设置参数仅仅是HINT，也就是说这些个设置不一定有效（上下文设置/操作系统）。
 在Dialog的构造方法中重写：setShellStyle(SWT.DIALOG_TRIM | SWT.MODELESS); 可以修改shell的style。	
 
-在Shell初始化时修改方法
+## 在Shell初始化时修改方法
+
 参考：https://www.cnblogs.com/pfxiong/articles/3581224.html
 Shell dialogShell = new Shell(topShell, SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
 
+## Shell有3种模态模式：
 
------------------
-Shell有3种模态模式：
 PRIMARY_MODAL, 仅针对于父窗口Dialog（Shell）。
 APPLICATION_MODAL, 针对当前Display的所有Shell窗口。
 SYSTEM_MODAL, 不但包含APPLICATION_MODAL的当前Display，还包括其他应用程序窗口。
@@ -23,9 +23,8 @@ Shell有1种非模态模式：
 MODELESS， 和上面提到的三种模态模式（PRIMARY_MODAL， APPLICATION_MODAL， SYSTEM_MODAL）是相互排斥的，不能同时使用。
 注意：非模态模式，表示该Shell窗口不会阻止其他Shell内的操作。反之，模态模式则或多或少的阻止一些Shell窗口。
 
+## SWT的style介绍：
 
----------------
-SWT的style介绍：
 参考：http://blog.sina.com.cn/s/blog_67532a0d010110cn.html
 
 BORDER——当只有BORDER的时候，窗口是一个只有细细白色边框的空白窗口，没有title那一圈蓝色的边框，也没有最大化，最小化，关闭。不能resize，不能移动。在任务栏里右键没有反应。
@@ -48,31 +47,30 @@ PRIMARY_MODAL——当只有PRIMARY_MODAL存在的时候，窗口的外观和APP
 SYSTEM_MODAL——和PRIMARY_MODAL一样。
 注意，APPLICATION_MODAL、MODELESS、PRIMARY_MODAL、SYSTEM_MODAL只能指定一种。
 
------------------------------------
-官方：org.eclipse.swt.widgets.Shell
-Instances of this class represent the "windows" which the desktop or "window manager" is managing. 
-Instances that do not have a parent (that is, they are built using the constructor, which takes a Display as the argument) are described as top level shells. 
-Instances that do have a parent are described as secondary or dialog shells. 
-
-Instances are always displayed in one of the maximized, minimized or normal states: 
-• When an instance is marked as maximized, the window manager will typically resize it to fill the entire visible area of the display, and the instance is usually put in a state where it can not be resized (even if it has style RESIZE) until it is no longer maximized. 
-• When an instance is in the normal state (neither maximized or minimized), its appearance is controlled by the style constants which were specified when it was created and the restrictions of the window manager (see below). 
-• When an instance has been marked as minimized, its contents (client area) will usually not be visible, and depending on the window manager, it may be "iconified" (that is, replaced on the desktop by a small simplified representation of itself), relocated to a distinguished area of the screen, or hidden. Combinations of these changes are also possible. 
-
-
-The modality of an instance may be specified using style bits. The modality style bits are used to determine whether input is blocked for other shells on the display. 
-The PRIMARY_MODAL style allows an instance to block input to its parent. 
-The APPLICATION_MODAL style allows an instance to block input to every other shell in the display. 
-The SYSTEM_MODAL style allows an instance to block input to all shells, including shells belonging to different applications. 
-
-Note: The styles supported by this class are treated as HINTs, since the window manager for the desktop on which the instance is visible has ultimate control over the appearance and behavior of decorations and modality. For example, some window managers only support resizable windows and will always assume the RESIZE style, even if it is not set. In addition, if a modality style is not supported, it is "upgraded" to a more restrictive modality style that is supported. For example, if PRIMARY_MODAL is not supported, it would be upgraded to APPLICATION_MODAL. A modality style may also be "downgraded" to a less restrictive style. For example, most operating systems no longer support SYSTEM_MODAL because it can freeze up the desktop, so this is typically downgraded to APPLICATION_MODAL. 
-Styles:BORDER, CLOSE, MIN, MAX, NO_MOVE, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
-Events:Activate, Close, Deactivate, Deiconify, 
-IconifyClass SWT provides two "convenience constants" for the most commonly required style combinations: 
-	SHELL_TRIM: the result of combining the constants which are required to produce a typical application top level shell: (that is, CLOSE | TITLE | MIN | MAX | RESIZE) 
-	DIALOG_TRIM: the result of combining the constants which are required to produce a typical application dialog shell: (that is, TITLE | CLOSE | BORDER) 
-
-Note: Only one of the styles APPLICATION_MODAL, MODELESS, PRIMARY_MODAL and SYSTEM_MODAL may be specified. 
-
-IMPORTANT: This class is not intended to be subclassed. 
-See Also:DecorationsSWTShell snippetsSWT Example: ControlExampleSample code and further information@noextendThis class is not intended to be subclassed by clients.
+> **官方 org.eclipse.swt.widgets.Shell**
+> Instances of this class represent the "windows" which the desktop or "window manager" is managing. 
+> Instances that do not have a parent (that is, they are built using the constructor, which takes a Display as the argument) are described as top level shells. 
+> Instances that do have a parent are described as secondary or dialog shells. 
+>
+> Instances are always displayed in one of the maximized, minimized or normal states: 
+> • When an instance is marked as maximized, the window manager will typically resize it to fill the entire visible area of the display, and the instance is usually put in a state where it can not be resized (even if it has style RESIZE) until it is no longer maximized. 
+> • When an instance is in the normal state (neither maximized or minimized), its appearance is controlled by the style constants which were specified when it was created and the restrictions of the window manager (see below). 
+> • When an instance has been marked as minimized, its contents (client area) will usually not be visible, and depending on the window manager, it may be "iconified" (that is, replaced on the desktop by a small simplified representation of itself), relocated to a distinguished area of the screen, or hidden. Combinations of these changes are also possible. 
+>
+>
+> The modality of an instance may be specified using style bits. The modality style bits are used to determine whether input is blocked for other shells on the display. 
+> The PRIMARY_MODAL style allows an instance to block input to its parent. 
+> The APPLICATION_MODAL style allows an instance to block input to every other shell in the display. 
+> The SYSTEM_MODAL style allows an instance to block input to all shells, including shells belonging to different applications. 
+>
+> Note: The styles supported by this class are treated as HINTs, since the window manager for the desktop on which the instance is visible has ultimate control over the appearance and behavior of decorations and modality. For example, some window managers only support resizable windows and will always assume the RESIZE style, even if it is not set. In addition, if a modality style is not supported, it is "upgraded" to a more restrictive modality style that is supported. For example, if PRIMARY_MODAL is not supported, it would be upgraded to APPLICATION_MODAL. A modality style may also be "downgraded" to a less restrictive style. For example, most operating systems no longer support SYSTEM_MODAL because it can freeze up the desktop, so this is typically downgraded to APPLICATION_MODAL. 
+> Styles:BORDER, CLOSE, MIN, MAX, NO_MOVE, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL, SHEET, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
+> Events:Activate, Close, Deactivate, Deiconify, 
+> IconifyClass SWT provides two "convenience constants" for the most commonly required style combinations: 
+> 	SHELL_TRIM: the result of combining the constants which are required to produce a typical application top level shell: (that is, CLOSE | TITLE | MIN | MAX | RESIZE) 
+> 	DIALOG_TRIM: the result of combining the constants which are required to produce a typical application dialog shell: (that is, TITLE | CLOSE | BORDER) 
+>
+> Note: Only one of the styles APPLICATION_MODAL, MODELESS, PRIMARY_MODAL and SYSTEM_MODAL may be specified. 
+>
+> IMPORTANT: This class is not intended to be subclassed. 
+> See Also:DecorationsSWTShell snippetsSWT Example: ControlExampleSample code and further information@noextendThis class is not intended to be subclassed by clients.

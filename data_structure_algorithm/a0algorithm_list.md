@@ -1,8 +1,14 @@
-# 常用算法
+# 算法
 
+## Recursion 递归
 
+- [Factorial](https://www.cs.usfca.edu/~galles/visualization/RecFact.html)
 
+- [Reversing a String](https://www.cs.usfca.edu/~galles/visualization/RecReverse.html)
 
+- [N-Queens Problem](https://www.cs.usfca.edu/~galles/visualization/RecQueens.html)
+
+  
 
 ## Sort 排序算法
 
@@ -17,18 +23,6 @@
   - [Counting Sort](https://www.cs.usfca.edu/~galles/visualization/CountingSort.html) 计数排序
   - [Radix Sort](https://www.cs.usfca.edu/~galles/visualization/RadixSort.html) 基数排序
   - [Heap Sort](https://www.cs.usfca.edu/~galles/visualization/HeapSort.html) 堆排序
-
-
-
-## Recursion 递归
-
-- - [Factorial](https://www.cs.usfca.edu/~galles/visualization/RecFact.html)
-  - [Reversing a String](https://www.cs.usfca.edu/~galles/visualization/RecReverse.html)
-  - [N-Queens Problem](https://www.cs.usfca.edu/~galles/visualization/RecQueens.html)
-
-
-
-## 动态规划
 
 
 
@@ -58,6 +52,5 @@
 
 
 
+## 动态规划
 
-
-- 

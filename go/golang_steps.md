@@ -1,5 +1,9 @@
 # Golang in Using
 
+[TOC]
+
+
+
 ## Config Golang on Win:
 
 #### 1.install go
@@ -78,14 +82,14 @@ ref: https://blog.csdn.net/youbaopipa/article/details/75530665
 ## Config Golang on Linux
 
 1. **install golang**
-  yum install golang
+    yum install golang
 
 2. **get install path**
-  go env
-  returns GOROOT=/usr/lib/golang
+    go env
+    returns GOROOT=/usr/lib/golang
 
 3. **create go workspace**
-  makedir /root/Desktop/GoWorkspace
+    makedir /root/Desktop/GoWorkspace
 
 4. **config env**
 

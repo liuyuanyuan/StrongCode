@@ -1,14 +1,10 @@
 # 数据库
 
-- [事务与隔离机制](transaction.md)
+- [ELK-日志存储搜索系统](elk.md)
+- [redis - 内存数据库/分布式外部缓存](redis.md)
+- [mongodb-文档数据库](mongodb.md)
 
-- [SQL 查询编写](sql.md)
-
-- SQL 优化
-
-- [redis - 分布式外部缓存中间件](redis.md)
-
-- [mysql](mysql.md)
-
-  
+- [greenplum-](greenplum.md)
+- [postgres-](postgres.md)
+- [mysql-](mysql.md)
 
