@@ -1,12 +1,164 @@
 [TOC]
 
-## 树Tree
+## 树 (Tree)
 
-### 表达式树(expression tree)
+树结构：
+
+- 只有结点和连线，没有环；
+
+- 结点与结点之间是一对多的关系；
+
+  
+
+## 二叉树(binary tree)
+
+二叉树（binary tree）是每个节点最多有2个子节点的树。
+
+一棵平均二叉树的深度要比节点个数N小得多，这个性质有时很重要。二叉树的平均深度为:
+$$
+O(\sqrt{N})
+$$
+### 二叉树的层次与深度/高度
+
+树中结点的最大层次数，就是这棵树的深度(也称为高度)。
+
+<img src="img/5binarytree_height.png" alt="img" style="zoom: 20%;" />
+
+### 二叉树的分类与存储
+
+#### 二叉树的分类
+
+- 满二叉树(除了叶子结点外，所有结点都有两个子结点)
+- 完全二叉树(存储空间利用率的100%)
+- 非完全二叉树
+
+<img src="img/7binarytree_classify.png" alt="image" style="zoom:25%;" />
+
+#### 二叉树的2种存储方式
+
+- 基于指针的链式存储法(通用方法)
+
+  ```java
+  //二叉树节点类定义
+  class BinaryNode {
+  	Object     value;//data in the node
+  	BinaryNode left;//left child
+  	BinaryNode right;//right child
+  }
+  ```
+
+- 基于数组的顺序存储法
+
+链式存储法，也就是像链表一样，每个结点有3个字段，一个存储数据，另外两个分别存放指向左右子结点的指针，如下图所示：
+
+<img src="https://s0.lgstatic.com/i/image/M00/1F/E1/CgqCHl7nVhKAJVYKAABbMx2OS5o954.png" alt="image" style="zoom: 20%;" />
+
+顺序存储法，就是按照规律把结点存放在数组里，如下图所示，为了方便计算，我们会约定把根结点放在下标为 1 的位置。随后，B 结点存放在下标为 2 的位置，C 结点存放在下标为 3 的位置，依次类推。
+
+<img src="https://s0.lgstatic.com/i/image/M00/1F/E1/CgqCHl7nVhyAF-yqAAFEIfF2-z4697.png" alt="img" style="zoom: 20%;" />
+
+根据这种存储方法，我们可以发现如果结点 X 的下标为 i，那么 X 的左子结点总是存放在 2 * i 的位置，X 的右子结点总是存放在 2 * i + 1 的位置。
+
+之所以称为完全二叉树，是从存储空间利用效率的视角来看的。对于一棵完全二叉树而言，仅仅浪费了下标为 0 的存储位置。而如果是一棵非完全二叉树，则会浪费大量的存储空间。
+
+<img src="https://s0.lgstatic.com/i/image/M00/1F/D5/Ciqc1F7nVi2AVfUZAAFA7ZImLgI310.png" alt="image" style="zoom:20%;" />
+
+### 结点遍历方式(父结点)-使用递归遍历
+
+- 先序遍历：**节点自身**，左子树，右子树；
+
+  对树中的任意结点，先打印结点自身，然后前序遍历它的左子树，最后前序遍历它的右子树。
+
+- 中序遍历：左子树，**节点自身**，右子树；
+
+  对树中的任意结点，先中序遍历它的左子树，然后打印结点自身，最后中序遍历它的右子树。
+
+- 后序遍历：左子树，右子树，**父节点**；
+
+  对树中的任意结点，先中序遍历它的左子树，然后打印结点自身，最后中序遍历它的右子树。
+
+<img src="img/7binarytree_order_traverse.png" alt="image" style="zoom:25%;" />
+
+```java
+// 先序遍历
+public static void preOrderTraverse(Node node) {
+    if (node == null){
+    	return;
+    } 
+    System.out.print(node.data + " ");
+    preOrderTraverse(node.left);
+    preOrderTraverse(node.right);
+}
+// 中序遍历
+public static void inOrderTraverse(Node node) {
+    if (node == null){
+    	return;
+    }
+    inOrderTraverse(node.left);
+    System.out.print(node.data + " ");
+    inOrderTraverse(node.right);
+}
+// 后序遍历
+public static void postOrderTraverse(Node node) {
+    if (node == null){
+    	return;
+    }
+    postOrderTraverse(node.left);
+    postOrderTraverse(node.right);
+    System.out.print(node.data + " ");
+}
+//计算树结点总数
+public static int countNode(Node root){
+  if (node == null){
+    	return 0;
+  }
+  return 1 + countNode(root.left) + countNode(root.right);
+}
+//根据层次遍历树结点
+public static void levelTraverse(Node root) {
+    if (root == null) {
+        return;
+    }
+    LinkedList<Node> queue = new LinkedList<Node>();
+    Node current = null;
+    queue.offer(root); // 根节点入队
+    while (!queue.isEmpty()) { // 只要队列中有元素，就可以一直执行，非常巧妙地利用了队列的特性
+        current = queue.poll(); // 出队队头元素
+        System.out.print("-->" + current.data);
+        // 左子树不为空，入队
+        if (current.leftChild != null){
+           queue.offer(current.leftChild);
+        } 
+        // 右子树不为空，入队
+        if (current.rightChild != null){
+           queue.offer(current.rightChild);
+        }
+    }
+}
+
+```
+
+
+
+### 操作的时间复杂度
+
+- 遍历的时间复杂度：O(n)
+- 查找的时间复杂度：O(n)
+- 增、删处理的时间复杂度：查找O(n)+操作O(1)
+
+### 二叉树的2种用途：
+
+- 用于编译器的设计领域(表达式树）
+
+- 用于查找(二叉查找树)；
+
+  
+
+## 表达式树(expression tree)
 
 二元操作的表达式树：所有的树叶都是**操作数(operand)**，所有的父节点都是**操作符(operator)**。如：
 
-<img src="/Users/liuyuanyuan/github/StrongCode/java/images/expression-tree.png" alt="image-20200304173305792" style="zoom:40%;" />
+<img src="img/7expression-tree.png" alt="image-20200304173305792" style="zoom: 25%;" />
 $$
 (a+b*c) + ((d*e+f)*g)
 $$
@@ -14,69 +166,53 @@ $$
 
 > 注意：一目减运算符（unary minus operator）的表达式树中：一个节点只有一个子节点。如：-1。
 
-树结点的遍历方式(主要是父结点的优先级)：
-
-先序遍历：父节点，左子，右子；
-
-中序遍历：左子，父节点，右子；
-
-后序遍历：左子，右子，父节点；
 
 
 
-### 二叉树（binary tree）
 
-二叉树（binary tree）是一棵树，每个节点最多有2个子节点。
+## 二叉查找树(binary search tree)
 
-一棵平均二叉树的深度要比节点个数N小得多，这个性质有时很重要。二叉树的平均深度为:
-$$
-O(\sqrt{N})
-$$
-二叉树有两个作用：
+二叉查找树(也称作二叉搜索树)具备以下特性：
 
-- 一个是用于查找（二叉查找树）；
-- 另一个是用于编译器的设计领域（表达式树）。
+- 任一结点中的值，大于其左子树中任一节点的值，小于其右子树中任一节点的值。
 
-```
-//二叉树节点类
-class BinaryNode {
-	Object     element;//data in the node
-	BinaryNode left;//left child
-	BinaryNode right;//right child
-}
-```
+- 二叉查找树要求所有节点中的值都能够排序（即可比较的，Java中二叉查找树的类需要实现Comparable接口，使用compareTo方法来进行两项间比较，如：TreeMap和TreeSet）。[BinarySearchTree.java](https://users.cs.fiu.edu/~weiss/dsaajava3/code/BinarySearchTree.java)
 
+- 在二叉查找树中，会尽可能规避两个结点数值相等的情况。
 
+- 对二叉查找树进行中序遍历，就可以的到一个从小到大的有序数据队列。
 
-#### 二叉查找树（binary search tree）
+  如下图所示，中序遍历的结果就是 10、13、15、16、20、21、22、26。
 
-二叉查找树中，任意结点中的项，大于左子树中任意节点中的项，小于右子树中任意节点中的项。
+  <img src="img/7binarysearchtree_inorder_traverse.png" alt="image" style="zoom:25%;" />
 
-二叉查找树要求所有节点中的项都能够排序（即可比较的，Java中二叉查找树的类需要实现Comparable接口，使用compareTo方法来进行两项间比较，如：TreeMap和TreeSet）。
+### 操作的时间复杂度
 
-[BinarySearchTree.java](https://users.cs.fiu.edu/~weiss/dsaajava3/code/BinarySearchTree.java)
+- 遍历的时间复杂度：O(n)
+- 查找的时间复杂度(因为有序，所以是二分查找)：**O(log n)**
+- 增、删处理的时间复杂度：查找O(n)+操作O(1)
 
 
 
-#### AVL树：带平衡条件（balance condition）的二叉树
+### AVL树：带平衡条件的二叉查找树
 
 平衡条件必须容易保持，并且保证树的深度必须是：O(log N)。
 
 平衡条件：
 
-要求根节点的左、右子树具有相同的高度；（这会出现左子树只有左节点，右子树只有右接节点的情况。）
+- 要求根节点的左、右子树具有相同的高度；（这会出现左子树只有左节点，右子树只有右接节点的情况。）
 
-要求每个节点的具有相同高度的左、右子树。如果空子树的高度定义为-1（通常如此），那么只有具有（2的k次方-1）节点的理想平衡树满足这个条件。因此这种平衡树保证了树的深度小，但是它太严格而难以使用，需要方框条件。
+- 要求每个节点的具有相同高度的左、右子树。如果空子树的高度定义为-1（通常如此），那么只有具有（2的k次方-1）节点的理想平衡树满足这个条件。因此这种平衡树保证了树的深度小，但是它太严格而难以使用，需要放宽条件。
 
 **一棵AVL树是其每个节点的左子树和右子树的高度最多差1的二叉查找树（空树的高度定义为-1）。**实际AVL树的高度只略大于logN。
 
-向AVL树中插入新节点可能会破坏平衡，通过对树进行简单修正来达到平衡条件的要求，这称作旋转（rotation）。
+**操作消耗**：向AVL树中插入新节点可能会破坏平衡，通过对树进行简单修正来达到平衡条件的要求，这称作旋转（rotation）。
 
 [AvlTree.java](https://users.cs.fiu.edu/~weiss/dsaajava3/code/AvlTree.java)
 
 
 
-#### 红黑树（red black tree）：节点带红、黑着色的二叉查找树
+### 红黑树(red black tree)：节点带红、黑着色的二叉查找树
 
 历史上AVL树流行的一个变种是红黑树（red black tree）。红黑树的最大时间复杂度为O(log N)。
 
@@ -95,7 +231,7 @@ class BinaryNode {
 
 
 
-### B-Tree（平衡多路查找树）
+### B-Tree(平衡多路查找树）
 
 B-tree 又叫平衡多叉查找树。一棵 m 阶的 B-tree (m 叉树)的特性如下(其中 ceil(x)是一个取上限的函数):
 
@@ -113,12 +249,9 @@ B-tree 又叫平衡多叉查找树。一棵 m 阶的 B-tree (m 叉树)的特性�
 >
 > 5. 每个非终端结点中包含有 n 个关键字信息: (n，P0，K1，P1，K2，P2，......，Kn，Pn)。其中:
 >
+>   - Ki (i=1...n)为关键字，且关键字按顺序排序 K(i-1)< Ki。
+>    - Pi 为指向子树根的接点，且指针 P(i-1)指向子树种所有结点的关键字均小于 Ki，但都大于 K(i- c) 关键字的个数 n 必须满足: ceil(m / 2)-1 <= n <= m-1。
 >
-> a) Ki (i=1...n)为关键字，且关键字按顺序排序 K(i-1)< Ki。
->
-> b) 1)。
->
-> Pi 为指向子树根的接点，且指针 P(i-1)指向子树种所有结点的关键字均小于 Ki，但都大于 K(i- c) 关键字的个数 n 必须满足: ceil(m / 2)-1 <= n <= m-1。
 
 
 
@@ -139,24 +272,32 @@ B-tree 又叫平衡多叉查找树。一棵 m 阶的 B-tree (m 叉树)的特性�
 **B-Tree结构的数据可以让系统高效的找到数据所在的磁盘块。**为了描述B-Tree，首先定义一条记录为一个二元组[key, data] ，key为记录的键值，对应表中的主键值，data为一行记录中除主键外的数据。对于不同的记录，key值互不相同。
 
 一棵m阶的B-Tree有如下特性： 
-\1. 每个节点最多有m个孩子。 
-\2. 除了根节点和叶子节点外，其它每个节点至少有Ceil(m/2)个孩子。 
-\3. 若根节点不是叶子节点，则至少有2个孩子 
-\4. 所有叶子节点都在同一层，且不包含其它关键字信息 
-\5. 每个非终端节点包含n个关键字信息（P0,P1,…Pn, k1,…kn） 
-\6. 关键字的个数n满足：ceil(m/2)-1 <= n <= m-1 
-\7. ki(i=1,…n)为关键字，且关键字升序排序。 
-\8. Pi(i=1,…n)为指向子树根节点的指针。P(i-1)指向的子树的所有节点关键字均小于ki，但都大于k(i-1)
+
+1. 每个节点最多有m个孩子。 
+
+2. 除了根节点和叶子节点外，其它每个节点至少有Ceil(m/2)个孩子。 
+
+3. 若根节点不是叶子节点，则至少有2个孩子 
+
+4. 所有叶子节点都在同一层，且不包含其它关键字信息 
+
+5. 每个非终端节点包含n个关键字信息（P0,P1,…Pn, k1,…kn） 
+
+6. 关键字的个数n满足：ceil(m/2)-1 <= n <= m-1 
+
+7. ki(i=1,…n)为关键字，且关键字升序排序。 
+
+8. Pi(i=1,…n)为指向子树根节点的指针。P(i-1)指向的子树的所有节点关键字均小于ki，但都大于k(i-1)
 
 B-Tree中的每个节点根据实际情况可以包含大量的关键字信息和分支，如下图所示为一个3阶的B-Tree： 
 
-![索引](/Users/liuyuanyuan/github/StrongCode/java/images/b-tree.png)
+![索引](img/7b-tree.png)
 
 B-Tree结构的数据可以让系统高效的找到数据所在的磁盘块。为了描述B-Tree，首先定义一条记录为一个二元组[key, data] ，key为记录的键值，对应表中的主键值，data为一行记录中除主键外的数据。对于不同的记录，key值互不相同。
 
 
 
-#### B+Tree
+### B+Tree(B-Tree的优化)
 
 B+Tree是在B-Tree基础上的一种优化，使其更适合实现数据库索引（外存储索引结构）。
 
@@ -171,7 +312,7 @@ B+Tree是在B-Tree基础上的一种优化，使其更适合实现数据库索�
 3. **数据记录都存放在叶子节点中。**
 
 将上一节中的B-Tree优化，由于B+Tree的非叶子节点只存储键值信息，假设每个磁盘块能存储4个键值及指针信息，则变成B+Tree后其结构如下图所示： 
-![索引](http://img.blog.csdn.net/20160202205105560)
+![索引](img/7b+tree.png)
 
 通常在B+Tree上有两个头指针，一个指向根节点，另一个指向关键字最小的叶子节点，而且所有叶子节点（即数据节点）之间是一种链式环结构。因此可以对B+Tree进行两种查找运算：一种是对于主键的范围查找和分页查找，另一种是从根节点开始，进行随机查找。
 

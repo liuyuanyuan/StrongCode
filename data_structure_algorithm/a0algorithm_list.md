@@ -1,18 +1,23 @@
-# 算法
+# 算法思维
 
-## Recursion 递归
 
-- [Factorial](https://www.cs.usfca.edu/~galles/visualization/RecFact.html)
 
-- [Reversing a String](https://www.cs.usfca.edu/~galles/visualization/RecReverse.html)
+## 思维
 
-- [N-Queens Problem](https://www.cs.usfca.edu/~galles/visualization/RecQueens.html)
+- Recursion 递归
+  - [Factorial](https://www.cs.usfca.edu/~galles/visualization/RecFact.html)
+  - [Reversing a String](https://www.cs.usfca.edu/~galles/visualization/RecReverse.html)
+  - [N-Queens Problem](https://www.cs.usfca.edu/~galles/visualization/RecQueens.html)
 
-  
+- 分治
+
+- 动态规划
+
+  ![image-20200915165735239](/Users/liuyuanyuan/Library/Application Support/typora-user-images/image-20200915165735239.png)
 
 ## Sort 排序算法
 
-- - Comparison Sorting 
+- - Comparison Sorting 比较排序
     - Bubble Sort 冒泡排序
     - Selection Sort 选择排序
     - Insertion Sort 插入排序
@@ -52,5 +57,5 @@
 
 
 
-## 动态规划
+
 

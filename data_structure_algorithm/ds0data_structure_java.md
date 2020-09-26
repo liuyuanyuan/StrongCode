@@ -4,23 +4,23 @@
 
 ## 数据结构的 Java 实现
 
-- 数组
+- 数组：同类数据，序列即索引
 
   - 纯定长数组：Object[] 
 
   - 可增长的数组：ArrayList<T> arrayList = new ArrayList<T>();
+
+- 哈希表  
+
+  HashMap<K, V> 
+  
+  LinkedHashMap<K,V>（按插入/访问排序）
 
 - 链表  
 
   ```java
   LinkedList<T> linkedList = new LinkedList<T>();
   ```
-
-- 哈希表  
-
-  HashMap<K, V> 
-
-  LinkedHashMap<K,V>（按插入/访问排序）
 
 - 队列(先进先出)：
 
@@ -37,12 +37,12 @@
 
   ```java
   Stack<T>  stack = new Stack(); 
-  stack.push(ele); // 入栈
+  stack.push(ele); //入栈
   stack.pop();  // 出栈，队列为空时报异常
   stack.peek(); // 获取栈顶元素
   ```
 
-- 堆：堆序性（最大堆/最小堆）
+- 堆：堆排序（最大堆/最小堆）
 
   ```java
   PriorityQueue<T> minHeap = new  PriorityQueue(); 
@@ -52,17 +52,4 @@
   ```
 
 
-
-## 算法思维
-
-- 二分查找
-- 动态规划
-
-  
-
-![image-20200915165735239](/Users/liuyuanyuan/Library/Application Support/typora-user-images/image-20200915165735239.png)
-
-
-
-- 
 
